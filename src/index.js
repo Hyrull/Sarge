@@ -11,6 +11,7 @@ const client = new Client ({
 })
 const fs = require('fs').promises
 let loginToken = ''
+let customModerators = []
 const configPath = './config.json'
 
 // Stored the token in a gitignored file for security
@@ -24,8 +25,16 @@ async function fetchToken() {
     }
 }
 
+async function fetchCustomModerators() {
+    const fileContent = await fs.readFile(configPath, 'utf8')
+    const configData = JSON.parse(fileContent)
+    customModerators = configData.moderators;
+    console.log('Custom moderators ID:', customModerators)
+}
+
 async function setup() {
     await fetchToken()
+    await fetchCustomModerators()
     client.login(loginToken)
 }
 
@@ -35,7 +44,7 @@ client.on('ready', (c) => {
 
 // Custom commands goes here.
 // Only standalone, misc. and funny stuff for now just to get a hang of discord.js.
-
+let funCommands = true
 
 client.on('messageCreate', (message) => {
     const lowerCaseContent = message.content.toLowerCase()
@@ -44,12 +53,22 @@ client.on('messageCreate', (message) => {
         message.reply('The bot IS working. hell yeah dude')
     }
 
-    if (lowerCaseContent.includes('<:gorfil:1209654573871013888>')) {
+    if (lowerCaseContent.includes('<:gorfil:1209654573871013888>') && funCommands) {
         message.react(message.guild.emojis.cache.get('1209654573871013888'))
     }
 
-    if (lowerCaseContent.includes('french') || lowerCaseContent.includes('fwench') || lowerCaseContent.includes('fwemch')) {
+    if (lowerCaseContent.includes('french') && funCommands) {
         message.react('🐍')
+    }
+
+    if (lowerCaseContent === '$toggle' && customModerators.includes(message.author.id)) {
+        funCommands = !funCommands
+        if (funCommands) {
+            message.reply('Fun commands successfully turned on.')
+        } else {
+            message.reply('Fun commands successfully turned off.')
+        }
+        console.log(`funCommands turned to ${funCommands} by ${message.author.username}`)
     }
 })
 
