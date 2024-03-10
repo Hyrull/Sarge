@@ -1,4 +1,5 @@
-Made with Discord.js. 
+Made with Discord.js
+Uses Node.js
 
 This is a simple discord bot that allows user to add and view "quotes", at any time.
 A quote is a screenshot from a conversation. This is to keep track of some funny moments that happened and people enjoy looking back to.
