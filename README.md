@@ -5,3 +5,5 @@ A quote is a screenshot from a conversation. This is to keep track of some funny
 Moderators can also remove quotes.
 
 THIS IS WIP. BOT NOT FULLY FUNCTIONAL AT THE MOMENT.
+
+Main code's in src/index.js
