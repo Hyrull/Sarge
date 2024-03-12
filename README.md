@@ -1,4 +1,4 @@
-Made with Discord.js
+Made with Discord.js v14
 Uses Node.js
 
 This is a simple discord bot that allows user to add and view "quotes", at any time.
