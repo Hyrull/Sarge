@@ -1,3 +1,5 @@
 node_modules
 config.json
 .eslintrc.json
+.env
+logs

@@ -1,161 +1,161 @@
-const { Client, IntentsBitField, Embed, EmbedBuilder } = require('discord.js')
+require('dotenv').config()
+const { Client, IntentsBitField, Embed, EmbedBuilder, InteractionCollector } = require('discord.js')
+const internal = require('stream')
 
 const client = new Client ({
-    intents: [
-        IntentsBitField.Flags.Guilds,
-        IntentsBitField.Flags.GuildMembers,
-        IntentsBitField.Flags.GuildMessages,
-        IntentsBitField.Flags.MessageContent,
-        IntentsBitField.Flags.GuildMessageReactions,
-    ]
+  intents: [
+    IntentsBitField.Flags.Guilds,
+    IntentsBitField.Flags.GuildMembers,
+    IntentsBitField.Flags.GuildMessages,
+    IntentsBitField.Flags.MessageContent,
+    IntentsBitField.Flags.GuildMessageReactions,
+  ]
 })
 const fs = require('fs').promises
 const search = require ('youtube-search')
 let opts = {
-    maxResults: 5,
-    key: '',
-    type: 'video'
+  maxResults: 5,
+  key: process.env.YT_SEARCH_API,
+  type: 'video'
 }
-let loginToken = ''
+
+function getTimeAndDate() {
+  const now = new Date()
+  const date = now.toISOString().slice(0, 10)
+  const time = now.toLocaleTimeString()
+  return `${date} | ${time}`
+}
+
+function addToLogs(data) {
+  const timeAndDate = getTimeAndDate()
+  const logMessage = `${timeAndDate} | ${data}`
+  fs.appendFile('./logs/logs.txt', logMessage + '\n', (err) => {
+    if (err) {
+      console.error('Error logging:', err)
+    }
+  })
+}
+
 let customModerators = []
-let youtubeApiKey = ''
-let tetraGuard = false
-let tetraGuardCommand = false
 let frenchSnake = true
 let gorfilReact = true
 const configPath = './config.json'
 
-// Stored the token in a gitignored file for security
-async function fetchToken() {
-    try {
-        const fileContent = await fs.readFile(configPath, 'utf8');
-        const configData = JSON.parse(fileContent);
-        loginToken = configData['login-token'];
-    } catch (error) {
-        console.error("Couldn't read the JSON file:", error);
-    }
-}
-
 // Modlist fetch
 async function fetchCustomModerators() {
-    const fileContent = await fs.readFile(configPath, 'utf8')
-    const configData = JSON.parse(fileContent)
-    customModerators = configData.moderators;
-    console.log('Custom moderators ID:', customModerators)
-}
-
-// Fetch YouTube API Key for YT Searches
-async function fetchYouTubeApiKey() {
-    const fileContent = await fs.readFile(configPath, 'utf8')
-    const configData = JSON.parse(fileContent)
-    youtubeApiKey = configData['youtube-search-api']
-    opts.key = youtubeApiKey
+  const fileContent = await fs.readFile(configPath, 'utf8')
+  const configData = JSON.parse(fileContent)
+  customModerators = configData.moderators;
+  console.log('Custom moderators ID:', customModerators)
 }
 
 // start
 async function setup() {
-    await fetchToken()
     await fetchCustomModerators()
-    await fetchYouTubeApiKey()
-    client.login(loginToken)
+    client.login(process.env.TOKEN)
 }
 
 client.on('ready', (c) => {
-    console.log(`${c.user.tag} is up! ID: ${c.user.id}`)
+  console.log(`${c.user.tag} is up! ID: ${c.user.id}`)
 })
+
+
+// Custom slash commands
+client.on('interactionCreate', async (interaction) => {
+    if (interaction.isCommand()) {
+      if(interaction.commandName === "version") {
+        interaction.reply('Bot v1.3 - March 15th, 2024')
+      }
+
+      if(interaction.commandName === "status") {
+        interaction.reply(`Fr*nch-snake set as '${frenchSnake}', gorfil set as '${gorfilReact}'.`)
+      }
+
+      if(interaction.commandName === "youtube") {
+        const query = interaction.options.get('query').value
+        let answer = await search(query, opts)
+        if (answer.results && answer.results.length > 0) {
+          interaction.reply(answer.results[0].link)
+          addToLogs(`User ${interaction.user.globalName}[${interaction.user.id}] searched for '${query}'. Returned the following link: ${answer.results[0].link} ("${answer.results[0].title}" by ${answer.results[0].channelTitle})"`)
+        } else {
+          interaction.reply('No search results found.')
+        }
+      }
+      
+      if (interaction.commandName === "toggle") {
+        const frenchSnakeOption = interaction.options.get('french-snake')?.value
+        const gorfilOption = interaction.options.get('gorfil')?.value
+        const replies = []
+        const logLine = []
+        
+        if (!customModerators.includes(interaction.user.id)) {
+          interaction.reply('This feature can only be used by a bot moderator.')
+          return
+        }
+        if (frenchSnakeOption !== undefined) {
+          frenchSnake = frenchSnakeOption
+          replies.push(`Feature "french snake" set to ${frenchSnake}.`)
+          logLine.push(`User ${interaction.user.globalName}[${interaction.user.id}] set "French snake" to ${frenchSnake}.`)
+        }
+        if (gorfilOption !== undefined) {
+          gorfilReact = gorfilOption
+          replies.push(`Feature "Gorfil react" set to ${gorfilReact}.`)
+          logLine.push(`User ${interaction.user.globalName}[${interaction.user.id}] set "Gorfil reactions" to ${gorfilReact}.`)
+        }
+
+        if (replies.length === 0) {
+          interaction.reply('Please select a feature to toggle on or off.')
+        } else {
+          interaction.reply(replies.join('\n'))
+          addToLogs(logLine.join(' '))
+        }
+      }
+    }
+  }
+)
+
+
 
 // Custom commands goes here.
 // Only standalone, misc. and funny stuff for now just to get a hang of discord.js.
 client.on('messageCreate', async (message) => {
-    if(message.author.bot) return;
-    const lowerCaseContent = message.content.toLowerCase()
+  if(message.author.bot) return;
+  const lowerCaseContent = message.content.toLowerCase()
     
-    if (lowerCaseContent === '$hyrul') {
-        message.reply('The bot IS working. hell yeah dude')
-    }
+  if (lowerCaseContent.includes('<:gorfil:1209654573871013888>') && gorfilReact) {
+    message.react(message.guild.emojis.cache.get('1209654573871013888'))
+  }
 
-    if (lowerCaseContent.includes('<:gorfil:1209654573871013888>') && gorfilReact) {
-        message.react(message.guild.emojis.cache.get('1209654573871013888'))
-    }
+  if (lowerCaseContent.includes('french') && frenchSnake) {
+    message.react('🐍')
+  }
 
-    if (lowerCaseContent.includes('french') && frenchSnake) {
-        message.react('🐍')
-    }
+  if (lowerCaseContent.includes('i love you') && message.author.id === '102080304008695808') {
+    message.react('❤️')
+  }
 
-    if (lowerCaseContent.includes('i love you') && message.author.id === '102080304008695808') {
-        message.react('❤️')
-    }
+  // YouTube Search
+  if (lowerCaseContent.startsWith('$youtube')) {
+    const query = lowerCaseContent.slice('$youtube '.length)
 
-    // YouTube Search
-    if (lowerCaseContent.startsWith('$youtube')) {
-        const query = lowerCaseContent.slice('$youtube '.length)
+    if (query.length > 0) {
+      let answer = await search(query, opts)
+      if (answer.results && answer.results.length > 0) {
+        message.reply(answer.results[0].link)
+        addToLogs(`${message.author.displayName}[${message.author.id}] searched for '${query}'. Returned the following link: ${answer.results[0].link} ("${answer.results[0].title}" by ${answer.results[0].channelTitle})`)
+      } else {
+        message.reply('No search results found.')
+      }
+    } else {
+      message.reply('Please input a search.')
+    }
+  }
 
-        if (query.length > 0) {
-            let results = await search(query, opts)
-            console.log(results)
-            if (results.results && results.results.length > 0) {
-                message.reply(results.results[0].link)
-            } else {
-                message.reply('No search results found.')
-            }
-        } else {
-            console.log('No response received.')
-        }
-    }
-
-    // MOD-ONLY COMMANDS
-    // $toggle
-    if (lowerCaseContent === '$toggle' && customModerators.includes(message.author.id)) {
-        message.reply("New commands are as follows: `$toggle garfil`, `$toggle snake`, or `$toggle all-on` and `toggle all-off`. Also there's `$changingoftheguard`")
-    }
-    // $toggle snake
-    if (lowerCaseContent === '$toggle snake' && customModerators.includes(message.author.id)) {
-        frenchSnake = !frenchSnake
-        if (frenchSnake) {
-            message.reply('Anti-fr*nch snake successfully turned on.')
-        } else {
-            message.reply('Anti-fr*nch snake successfully turned off.')
-        }
-        console.log(`frenchSnake turned to ${frenchSnake} by ${message.author.username}`)
-    }
-
-    // $toggle gorfil
-    if (lowerCaseContent === '$toggle gorfil' && customModerators.includes(message.author.id)) {
-        gorfilReact = !gorfilReact
-        if (gorfilReact) {
-            message.reply('<:gorfil:1209654573871013888> reactions successfully turned on.')
-        } else {
-            message.reply('<:gorfil:1209654573871013888> reactions successfully turned off.')
-        }
-        console.log(`gorfilReact turned to ${gorfilReact} by ${message.author.username}`)
-    }
-
-    // $toggle all-on / $toggle all-off
-    if (lowerCaseContent === '$toggle all-on' && customModerators.includes(message.author.id)) {
-        gorfilReact = true
-        frenchSnake = true
-        message.reply('All features successfully turned on.')
-        console.log(`All fun commands turned ON by ${message.author.username}`)
-    }
-    if (lowerCaseContent === '$toggle all-off' && customModerators.includes(message.author.id)) {
-        gorfilReact = false
-        frenchSnake = false
-        message.reply('All features successfully turned off.')
-        console.log(`All fun commands turned OFF by ${message.author.username}`)
-    }
-
-    // $changingoftheguard
-    if (lowerCaseContent === '$changingoftheguard' && customModerators.includes(message.author.id) && tetraGuardCommand) {
-        tetraGuard = !tetraGuard
-        if (tetraGuard) {
-            message.reply(`${message.author.displayName}, Lilo-Sleep Security Mode Activated`)
-        } else {
-            message.reply(`${message.author.displayName}, Lilo-Sleep Security Mode Deactivated`)
-        }
-    } 
-    if (lowerCaseContent === '$changingoftheguard' && !customModerators.includes(message.author.id)) {
-        message.reply(`${message.author.displayName}, **Access Denied**, Magos Authentication Required`)
-    }
+  // MOD-ONLY COMMANDS
+  // $toggle
+  if (lowerCaseContent === '$toggle' && customModerators.includes(message.author.id)) {
+    message.reply("It's now a slash command. Feel free to use /toggle and select what feature to set to true and false.")
+  }
 })
 
 setup()
