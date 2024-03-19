@@ -130,7 +130,7 @@ client.on('messageCreate', async (message) => {
     message.react('🐍')
   }
 
-  if (lowerCaseContent === 'good bot') {
+  if (lowerCaseContent.includes('good bot')) {
     message.react('🩵')
   }
 
