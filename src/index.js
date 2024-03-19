@@ -64,7 +64,7 @@ client.on('ready', (c) => {
 client.on('interactionCreate', async (interaction) => {
     if (interaction.isCommand()) {
       if(interaction.commandName === "version") {
-        interaction.reply('Bot v1.3 - March 15th, 2024')
+        interaction.reply('Bot v1.3.1 - March 19th, 2024')
       }
 
       if(interaction.commandName === "status") {
@@ -130,8 +130,8 @@ client.on('messageCreate', async (message) => {
     message.react('🐍')
   }
 
-  if (lowerCaseContent.includes('i love you') && message.author.id === '102080304008695808') {
-    message.react('❤️')
+  if (lowerCaseContent === 'good bot') {
+    message.react('🩵')
   }
 
   // YouTube Search
