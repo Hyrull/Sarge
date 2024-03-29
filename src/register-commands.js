@@ -4,7 +4,7 @@ const { REST, Routes, ApplicationCommandOptionType } = require('discord.js');
 const globalCommands = [
   {
     name: 'version',
-    description: 'Gives the bot current version'
+    description: 'Gives the bot current version and a link to the changelog'
   }
 ]
 
