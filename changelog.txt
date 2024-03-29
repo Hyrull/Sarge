@@ -1,0 +1,31 @@
+v1.3.2
+- Every command is now server-specific, except for /version
+- 
+
+v1.3.1
+- The bot reacts with a blue heart when users says "good bot"
+- Commands are now global
+
+v1.3
+- Updated internal config files for easier use
+- Added a log system
+- "$"-type commands removed in favor for / commands. 
+ -- /toggle allows custom mods to enter paramaters and toggles features of their choice on or off
+ -- /youtube is added, same feature as $youtube. The latter is kept as some users got used to it.
+ -- /status allows any user to see what feature is enabled or disabled.
+ -- /version displays the current bot version
+
+v1.2
+- $youtube allows user to let the bot search for a video on YouTube and send the link of the first result in chat
+- Reacts a heart if user "Hyrul" says "I love you"
+- '$toggle' is now split with '$toggle snake' and '$toggle gorfil' depending on what the custom mods want to toggle
+- $toggle all-on and $toggle all-off allows custom mods to toggle all features on or off directly
+
+V1.1
+ - The bot now has its own modlist 
+ - Custom mods can now toggle the :gorfil: and french snake features on or off with $toggle
+
+V1.0 - First release.
+ - $hyrul command now returns a message (this command is here to check if the bot is online)
+ - Now reacts a :gorfil: emote under anyone who uses it 
+ - Now reacts s snake emoji under anyone saying "french"
