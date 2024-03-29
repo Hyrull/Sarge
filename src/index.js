@@ -77,15 +77,11 @@ client.on('ready', (c) => {
 client.on('interactionCreate', async (interaction) => {
     if (interaction.isCommand()) {
       if(interaction.commandName === "version") {
-        interaction.reply('Bot v1.3.2 - March 29th, 2024')
+        interaction.reply('Bot v1.3.3 - March 29th, 2024 \nHere is the [changelog](https://github.com/Hyrull/Immersive-Quotes/blob/main/changelog.txt)!')
       }
 
       if(interaction.commandName === "status") {
         interaction.reply(`Fr*nch-snake set as '${frenchSnake}', gorfil set as '${gorfilReact}'.`)
-      }
-
-      if(interaction.commandName === "changelog") {
-        interaction.reply(`Here is the [changelog](https://github.com/Hyrull/Immersive-Quotes/blob/main/changelog.txt)!`)
       }
 
       if(interaction.commandName === "french-snake-count") {

@@ -29,10 +29,6 @@ const guildCommands = [
     name: 'status',
     description: 'Shows what features are currently enabled.'
   },
-  {
-    name: 'changelog',
-    description: 'Shows the changelog for all bot updates.'
-  },
   { 
     name: 'french-snake-count',
     description: 'Shows how many times I reacted a snake to "french".'
