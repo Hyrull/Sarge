@@ -1,3 +1,9 @@
+v1.3.2
+- Every command is now server-specific, except for /version
+- Added /changelog for users to see what you're reading now
+- The bot now keeps track of how many times it reacted a snake to "french"
+- /french-snake-count now allows users to see how many times the bot reacted a snake to "french"
+
 v1.3.1
 - The bot reacts with a blue heart when users says "good bot"
 - Commands are now global

@@ -1,5 +1,6 @@
 require('dotenv').config()
 const { Client, IntentsBitField, Embed, EmbedBuilder, InteractionCollector } = require('discord.js')
+const { config } = require('dotenv')
 const internal = require('stream')
 
 const client = new Client ({
@@ -19,6 +20,11 @@ let opts = {
   type: 'video'
 }
 
+let customModerators = []
+let frenchSnake = true
+let gorfilReact = true
+const configPath = './config.json'
+
 function getTimeAndDate() {
   const now = new Date()
   const date = now.toISOString().slice(0, 10)
@@ -36,10 +42,17 @@ function addToLogs(data) {
   })
 }
 
-let customModerators = []
-let frenchSnake = true
-let gorfilReact = true
-const configPath = './config.json'
+async function incrementSnakeCount() {
+  try {
+    const data = await fs.readFile(configPath, 'utf8')
+    const config = JSON.parse(data)
+    config['frenchSnake-count'] += 1
+    await fs.writeFile(configPath, JSON.stringify(config, null, 2))
+  } catch (err) {
+    console.error('Error:', err)
+  }
+}
+
 
 // Modlist fetch
 async function fetchCustomModerators() {
@@ -64,11 +77,28 @@ client.on('ready', (c) => {
 client.on('interactionCreate', async (interaction) => {
     if (interaction.isCommand()) {
       if(interaction.commandName === "version") {
-        interaction.reply('Bot v1.3.1 - March 19th, 2024')
+        interaction.reply('Bot v1.3.2 - March 29th, 2024')
       }
 
       if(interaction.commandName === "status") {
         interaction.reply(`Fr*nch-snake set as '${frenchSnake}', gorfil set as '${gorfilReact}'.`)
+      }
+
+      if(interaction.commandName === "changelog") {
+        interaction.reply(`Here is the [changelog](https://github.com/Hyrull/Immersive-Quotes/blob/main/changelog.txt)!`)
+      }
+
+      if(interaction.commandName === "french-snake-count") {
+        console.log('Starting the reading')
+        try {
+          const data = await fs.readFile(configPath, 'utf8')
+          const config = JSON.parse(data)
+          const count = config['frenchSnake-count']
+          interaction.reply(`I have reacted a snake to "french" ${count} times!`)
+        } catch (err) {
+          console.error('Error:', err)
+        }
+
       }
 
       if(interaction.commandName === "youtube") {
@@ -128,6 +158,7 @@ client.on('messageCreate', async (message) => {
 
   if (lowerCaseContent.includes('french') && frenchSnake) {
     message.react('🐍')
+    incrementSnakeCount()
   }
 
   if (lowerCaseContent.includes('good bot')) {

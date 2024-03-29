@@ -1,11 +1,14 @@
 require('dotenv').config();
 const { REST, Routes, ApplicationCommandOptionType } = require('discord.js');
 
-const commands = [
+const globalCommands = [
   {
     name: 'version',
     description: 'Gives the bot current version'
-  },
+  }
+]
+
+const guildCommands = [
   {
     name: 'toggle',
     description: 'Toggles features on or off.',
@@ -24,7 +27,15 @@ const commands = [
   },
   {
     name: 'status',
-    description: 'See what features are currently enabled.'
+    description: 'Shows what features are currently enabled.'
+  },
+  {
+    name: 'changelog',
+    description: 'Shows the changelog for all bot updates.'
+  },
+  { 
+    name: 'french-snake-count',
+    description: 'Shows how many times I reacted a snake to "french".'
   },
   {
     name: 'youtube',
@@ -44,17 +55,24 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
 (async () => {
   try {
-    console.log('Registering slash commands...');
+    console.log('Registering global slash commands...')
+    await rest.put(
+      Routes.applicationCommands(process.env.BOT_ID),
+      { body: globalCommands}
+    )
+
+
+    console.log('Registering guild slash commands...');
 
     await rest.put(
       Routes.applicationGuildCommands(
         process.env.BOT_ID,
         process.env.GUILD_ID
       ),
-      { body: commands }
+      { body: guildCommands }
     );
 
-    console.log('Slash commands were registered successfully!');
+    console.log('Guild slash commands were registered successfully!');
   } catch (error) {
     console.log(`There was an error: ${error}`);
   }
