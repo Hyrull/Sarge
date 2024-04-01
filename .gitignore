@@ -2,3 +2,5 @@ node_modules
 .eslintrc.json
 .env
 logs
+secret.js
+quotes

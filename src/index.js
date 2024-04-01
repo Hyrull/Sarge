@@ -2,6 +2,9 @@ require('dotenv').config()
 const { Client, IntentsBitField, Embed, EmbedBuilder, InteractionCollector } = require('discord.js')
 const { config } = require('dotenv')
 const internal = require('stream')
+const { secretRuleCheck } = require('./secret');
+const fs = require('fs')
+const fsPromises = require('fs').promises
 
 const client = new Client ({
   intents: [
@@ -12,7 +15,8 @@ const client = new Client ({
     IntentsBitField.Flags.GuildMessageReactions,
   ]
 })
-const fs = require('fs').promises
+
+//YT Search Settings
 const search = require ('youtube-search')
 let opts = {
   maxResults: 5,
@@ -35,7 +39,7 @@ function getTimeAndDate() {
 function addToLogs(data) {
   const timeAndDate = getTimeAndDate()
   const logMessage = `${timeAndDate} | ${data}`
-  fs.appendFile('./logs/logs.txt', logMessage + '\n', (err) => {
+  fsPromises.appendFile('./logs/logs.txt', logMessage + '\n', (err) => {
     if (err) {
       console.error('Error logging:', err)
     }
@@ -44,10 +48,10 @@ function addToLogs(data) {
 
 async function incrementSnakeCount() {
   try {
-    const data = await fs.readFile(configPath, 'utf8')
+    const data = await fsPromises.readFile(configPath, 'utf8')
     const config = JSON.parse(data)
     config['frenchSnake-count'] += 1
-    await fs.writeFile(configPath, JSON.stringify(config, null, 2))
+    await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
   } catch (err) {
     console.error('Error:', err)
   }
@@ -56,7 +60,7 @@ async function incrementSnakeCount() {
 
 // Modlist fetch
 async function fetchCustomModerators() {
-  const fileContent = await fs.readFile(configPath, 'utf8')
+  const fileContent = await fsPromises.readFile(configPath, 'utf8')
   const configData = JSON.parse(fileContent)
   customModerators = configData.moderators;
   console.log('Custom moderators ID:', customModerators)
@@ -85,9 +89,8 @@ client.on('interactionCreate', async (interaction) => {
       }
 
       if(interaction.commandName === "french-snake-count") {
-        console.log('Starting the reading')
         try {
-          const data = await fs.readFile(configPath, 'utf8')
+          const data = await fsPromises.readFile(configPath, 'utf8')
           const config = JSON.parse(data)
           const count = config['frenchSnake-count']
           interaction.reply(`I have reacted a snake to "french" ${count} times!`)
@@ -95,6 +98,11 @@ client.on('interactionCreate', async (interaction) => {
           console.error('Error:', err)
         }
 
+      }
+
+      if(interaction.commandName === "secret-test") {
+        secretRuleCheck(interaction)
+        // command is in secret.js, which isn't public. Sorry, no cheating by checking the code!
       }
 
       if(interaction.commandName === "youtube") {
