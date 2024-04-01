@@ -81,7 +81,7 @@ client.on('ready', (c) => {
 client.on('interactionCreate', async (interaction) => {
     if (interaction.isCommand()) {
       if(interaction.commandName === "version") {
-        interaction.reply('Bot v1.3.3 - March 29th, 2024 \nHere is the [changelog](https://github.com/Hyrull/Immersive-Quotes/blob/main/changelog.txt)!')
+        interaction.reply('Bot v1.4 - April 1st, 2024 \nHere is the [changelog](https://github.com/Hyrull/Immersive-Quotes/blob/main/changelog.txt)!')
       }
 
       if(interaction.commandName === "status") {
@@ -98,6 +98,10 @@ client.on('interactionCreate', async (interaction) => {
           console.error('Error:', err)
         }
 
+      }
+
+      if(interaction.commandName === "quotes") {
+        interaction.reply('Here is the [quotes thread](<https://discord.com/channels/512393440726745120/1224432486134714389/1224432793187258431>)!')
       }
 
       if(interaction.commandName === "secret-test") {

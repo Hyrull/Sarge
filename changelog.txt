@@ -1,3 +1,7 @@
+V1.4
+- Added /quotes for people to have a quick access to the quotes thread.
+- Added /secret-rule, a game where people have to guess the secret rule by trying out different texts!
+
 V.1.3.3
 - Removed /changelog
 - Changelog link added to /version

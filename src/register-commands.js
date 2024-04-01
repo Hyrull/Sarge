@@ -33,6 +33,9 @@ const guildCommands = [
     name: 'french-snake-count',
     description: 'Shows how many times I reacted a snake to "french".'
   },
+  { name: 'quotes',
+    description: 'Sends the link to the "quotes" thread.'
+  },
   {
     name: 'secret-test',
     description: 'Check if your input message passes the secret rule.',
