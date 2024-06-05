@@ -1,10 +1,6 @@
 require('dotenv').config()
 const { Client, IntentsBitField, EmbedBuilder } = require('discord.js')
-const { config } = require('dotenv')
-const internal = require('stream')
-const fs = require('fs')
 const fsPromises = require('fs').promises
-
 
 const { secretRuleCheck } = require('./secret');
 const { youtubeSearchCommand } = require('./slash-commands/youtube')
@@ -22,6 +18,7 @@ const client = new Client ({
 
 //////////////////////////////////////////////////////////////////////////////////
 
+let adminId = ''
 let customModerators = []
 let frenchSnake = true
 let gorfilReact = true
@@ -39,12 +36,12 @@ async function fetchCurrentConfig() {
   }
 }
 
-// function getTimeAndDate() {
-//   const now = new Date()
-//   const date = now.toISOString().slice(0, 10)
-//   const time = now.toLocaleTimeString()
-//   return `${date} | ${time}`
-// }
+function getTimeAndDate() {
+  const now = new Date()
+  const date = now.toISOString().slice(0, 10)
+  const time = now.toLocaleTimeString()
+  return `${date} @ ${time}`
+}
 
 // function addToLogs(data) {
 //   const timeAndDate = getTimeAndDate()
@@ -64,7 +61,7 @@ async function incrementSnakeCount(message) {
     await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
 
     if (config['frenchSnake-count'] % 100 === 0) {
-      message.reply(`This is my ${config['frenchSnake-count']}th fr*nch :snake: reaction! :rat:`)
+      message.reply(`This is my ${config['frenchSnake-count']}th fr*nch :snake: reaction! :mouse:`)
     }
   } catch (err) {
     console.error('Error:', err)
@@ -76,7 +73,8 @@ async function incrementSnakeCount(message) {
 async function fetchCustomModerators() {
   const fileContent = await fsPromises.readFile(configPath, 'utf8')
   const configData = JSON.parse(fileContent)
-  customModerators = configData.moderators;
+  customModerators = configData.moderators
+  adminId = configData.admin
   console.log('Custom moderators ID:', customModerators)
 }
 
@@ -174,6 +172,25 @@ client.on('interactionCreate', async (interaction) => {
         toggleFeatures(frenchSnakeOption, gorfilOption, customModerators, interaction, configPath)
         fetchCurrentConfig
       }
+
+      if (interaction.commandName === 'feedback') {
+        const admin = await client.users.fetch(adminId)
+        const timeAndDate = getTimeAndDate()
+        const feedback = interaction.options.get('query')?.value
+        const displayName = interaction.member.user.globalName
+        const realName = interaction.member.user.username
+
+        const embed = new EmbedBuilder()
+        .setColor('009dff')
+        .setTitle(`${displayName} (${realName}):`)
+        .setDescription(feedback)
+        .addFields(
+          {name : 'Sent:', value: timeAndDate}
+        )
+
+        await admin.send({ content: '## There is feedback!\n', embeds: [embed] })
+        await interaction.reply({ content: 'Your feedback has successfully been sent.', ephemeral: true })
+      }
     }
   }
 )
@@ -192,6 +209,9 @@ client.on('messageCreate', async (message) => {
   if (lowerCaseContent.includes('french') && frenchSnake) {
     message.react('🐍')
     incrementSnakeCount(message)
+  }
+  if (lowerCaseContent.includes('fr3nch') && frenchSnake) {
+    message.react('👀')
   }
 
   if (lowerCaseContent.includes('good bot')) {

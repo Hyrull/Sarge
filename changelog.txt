@@ -1,11 +1,12 @@
 V1.5 - June 4th, 2024
+- Added /feedback
 - /secret-rule removed as the secret code was found (& command code is now public)
-- /quote now displays in a rich embed.
-- /french-snake-count now displays in a rich embed.
-- /version now displays in a rich embed.
-- /status now displays in a rich embed.
+- /quote now displays in a rich embed
+- /french-snake-count now displays in a rich embed
+- /version now displays in a rich embed
+- /status now displays in a rich embed
 - "React" command's config is now persistent between sessions
-- Sarge now celebrates every 100 'french-snake' reaction with a message.
+- Sarge now celebrates every 100 'french-snake' reaction with a message
 
 V1.4 - April 1st, 2024
 - Added /quotes for people to have a quick access to the quotes thread.

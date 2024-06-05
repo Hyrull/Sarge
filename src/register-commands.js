@@ -59,6 +59,18 @@ const guildCommands = [
         required: true
       }
     ]
+  },
+  {
+    name: 'feedback',
+    description: "Provide any feedback for Sarge. Only you and the bot admin will see it.",
+    options: [
+      {
+        name: 'query',
+        description: "What do you want to say?",
+        type: ApplicationCommandOptionType.String,
+        required: true
+      }
+    ]
   }
 ]
 
