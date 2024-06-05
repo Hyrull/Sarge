@@ -2,9 +2,12 @@ require('dotenv').config()
 const { Client, IntentsBitField, Embed, EmbedBuilder, InteractionCollector } = require('discord.js')
 const { config } = require('dotenv')
 const internal = require('stream')
-const { secretRuleCheck } = require('./secret');
 const fs = require('fs')
 const fsPromises = require('fs').promises
+
+
+const { secretRuleCheck } = require('./secret');
+const { youtubeSearchCommand } = require('./slash-commands/youtube')
 
 const client = new Client ({
   intents: [
@@ -16,14 +19,7 @@ const client = new Client ({
   ]
 })
 
-//YT Search Settings
-const search = require ('youtube-search');
-const { channel } = require('diagnostics_channel');
-let opts = {
-  maxResults: 5,
-  key: process.env.YT_SEARCH_API,
-  type: 'video'
-}
+
 
 let customModerators = []
 let frenchSnake = true
@@ -82,6 +78,7 @@ client.on('ready', (c) => {
 client.on('interactionCreate', async (interaction) => {
     if (interaction.isCommand()) {
       if(interaction.commandName === "version") {
+
         const embed = new EmbedBuilder()
         .setColor('009dff')
         .setTitle("Sarge's latest version")
@@ -92,8 +89,6 @@ client.on('interactionCreate', async (interaction) => {
         .setFooter({ text: 'Sarge is developed by Hyrul', iconURL: 'https://imgur.com/15fnxws.png'})
 
       await interaction.reply({ embeds: [embed] })
-        
-        // interaction.reply('Bot v1.4 - April 1st, 2024 \nHere is the [changelog](https://github.com/Hyrull/Immersive-Quotes/blob/main/changelog.txt)!')
       }
 
       if(interaction.commandName === "status") {
@@ -151,15 +146,9 @@ client.on('interactionCreate', async (interaction) => {
       }
 
       if(interaction.commandName === "youtube") {
-        const query = interaction.options.get('query').value
-        let answer = await search(query, opts)
-        if (answer.results && answer.results.length > 0) {
-          interaction.reply(answer.results[0].link)
-          addToLogs(`User ${interaction.user.globalName}[${interaction.user.id}] searched for '${query}'. Returned the following link: ${answer.results[0].link} ("${answer.results[0].title}" by ${answer.results[0].channelTitle})"`)
-        } else {
-          interaction.reply('No search results found.')
-        }
+        youtubeSearchCommand(interaction)
       }
+
       
       if (interaction.commandName === "toggle") {
         const frenchSnakeOption = interaction.options.get('french-snake')?.value
