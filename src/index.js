@@ -26,6 +26,18 @@ let frenchSnake = true
 let gorfilReact = true
 const configPath = './config.json'
 
+async function fetchCurrentConfig() {
+  try {
+    const data = await fsPromises.readFile(configPath, 'utf8')
+    const readableData = JSON.parse(data)
+    frenchSnake = readableData['french-react']
+    gorfilReact = readableData['gorfil-react']
+
+  } catch(err) {
+    console.error('Error: failed to read config file.')
+  }
+}
+
 function getTimeAndDate() {
   const now = new Date()
   const date = now.toISOString().slice(0, 10)
@@ -66,6 +78,7 @@ async function fetchCustomModerators() {
 // start
 async function setup() {
     await fetchCustomModerators()
+    await fetchCurrentConfig()
     client.login(process.env.TOKEN)
 }
 
@@ -154,28 +167,41 @@ client.on('interactionCreate', async (interaction) => {
         const frenchSnakeOption = interaction.options.get('french-snake')?.value
         const gorfilOption = interaction.options.get('gorfil')?.value
         const replies = []
-        const logLine = []
         
         if (!customModerators.includes(interaction.user.id)) {
           interaction.reply('This feature can only be used by a bot moderator.')
           return
         }
         if (frenchSnakeOption !== undefined) {
-          frenchSnake = frenchSnakeOption
+          try {
+            const data = await fsPromises.readFile(configPath, 'utf8')
+            const config = JSON.parse(data)
+            frenchSnake = frenchSnakeOption
+            config['french-react'] = frenchSnakeOption
+            await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
+          } catch (err) {
+            console.log('Error: Could not write to config file', err)
+          }
           replies.push(`Feature "french snake" set to ${frenchSnake}.`)
-          logLine.push(`User ${interaction.user.globalName}[${interaction.user.id}] set "French snake" to ${frenchSnake}.`)
+          
         }
         if (gorfilOption !== undefined) {
-          gorfilReact = gorfilOption
-          replies.push(`Feature "Gorfil react" set to ${gorfilReact}.`)
-          logLine.push(`User ${interaction.user.globalName}[${interaction.user.id}] set "Gorfil reactions" to ${gorfilReact}.`)
+          try {
+            const data = await fsPromises.readFile(configPath, 'utf8')
+            const config = JSON.parse(data)
+            gorfilReact = gorfilOption
+            config['gorfil-react'] = gorfilOption
+            await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
+          } catch (err) {
+            console.log('Error: Could not write to config file', err)
+          }
+          replies.push(`Feature "gorfil react" set to ${gorfilOption}.`)
         }
 
         if (replies.length === 0) {
           interaction.reply('Please select a feature to toggle on or off.')
         } else {
           interaction.reply(replies.join('\n'))
-          addToLogs(logLine.join(' '))
         }
       }
     }
