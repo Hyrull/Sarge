@@ -1,5 +1,5 @@
 require('dotenv').config()
-const { Client, IntentsBitField, Embed, EmbedBuilder, InteractionCollector } = require('discord.js')
+const { Client, IntentsBitField, EmbedBuilder } = require('discord.js')
 const { config } = require('dotenv')
 const internal = require('stream')
 const fs = require('fs')
@@ -20,7 +20,7 @@ const client = new Client ({
   ]
 })
 
-
+//////////////////////////////////////////////////////////////////////////////////
 
 let customModerators = []
 let frenchSnake = true
@@ -39,29 +39,33 @@ async function fetchCurrentConfig() {
   }
 }
 
-function getTimeAndDate() {
-  const now = new Date()
-  const date = now.toISOString().slice(0, 10)
-  const time = now.toLocaleTimeString()
-  return `${date} | ${time}`
-}
+// function getTimeAndDate() {
+//   const now = new Date()
+//   const date = now.toISOString().slice(0, 10)
+//   const time = now.toLocaleTimeString()
+//   return `${date} | ${time}`
+// }
 
-function addToLogs(data) {
-  const timeAndDate = getTimeAndDate()
-  const logMessage = `${timeAndDate} | ${data}`
-  fsPromises.appendFile('./logs/logs.txt', logMessage + '\n', (err) => {
-    if (err) {
-      console.error('Error logging:', err)
-    }
-  })
-}
+// function addToLogs(data) {
+//   const timeAndDate = getTimeAndDate()
+//   const logMessage = `${timeAndDate} | ${data}`
+//   fsPromises.appendFile('./logs/logs.txt', logMessage + '\n', (err) => {
+//     if (err) {
+//       console.error('Error logging:', err)
+//     }
+//   })
+// }
 
-async function incrementSnakeCount() {
+async function incrementSnakeCount(message) {
   try {
     const data = await fsPromises.readFile(configPath, 'utf8')
     const config = JSON.parse(data)
     config['frenchSnake-count'] += 1
     await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
+
+    if (config['frenchSnake-count'] % 100 === 0) {
+      message.reply(`This is my ${config['frenchSnake-count']}th fr*nch :snake: reaction! :rat:`)
+    }
   } catch (err) {
     console.error('Error:', err)
   }
@@ -87,6 +91,8 @@ client.on('ready', (c) => {
   console.log(`${c.user.tag} is up! ID: ${c.user.id}`)
 })
 
+
+/////////////////////////////////////////////////////////////////////
 
 // Custom slash commands
 client.on('interactionCreate', async (interaction) => {
@@ -129,7 +135,6 @@ client.on('interactionCreate', async (interaction) => {
           const data = await fsPromises.readFile(configPath, 'utf8')
           const config = JSON.parse(data)
           const count = config['frenchSnake-count']
-          // interaction.reply(`I have reacted a snake to "french" ${count} times!`)
 
           const embed = new EmbedBuilder()
             .setColor('009dff')
@@ -175,8 +180,7 @@ client.on('interactionCreate', async (interaction) => {
 
 
 
-// Custom commands goes here.
-// Only standalone, misc. and funny stuff for now just to get a hang of discord.js.
+// Misc. funny joke stuff here.
 client.on('messageCreate', async (message) => {
   if(message.author.bot) return;
   const lowerCaseContent = message.content.toLowerCase()
@@ -187,7 +191,7 @@ client.on('messageCreate', async (message) => {
 
   if (lowerCaseContent.includes('french') && frenchSnake) {
     message.react('🐍')
-    incrementSnakeCount()
+    incrementSnakeCount(message)
   }
 
   if (lowerCaseContent.includes('good bot')) {
