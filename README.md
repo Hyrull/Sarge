@@ -1,10 +1,7 @@
-Made with Discord.js v14
-Uses Node.js
+Made with Discord.js v14 & node.js
 
-This is a simple discord bot that allows user to add and view "quotes", at any time.
-A quote is a screenshot from a conversation. This is to keep track of some funny moments that happened and people enjoy looking back to.
-Moderators can also remove quotes.
+This is a simple Discord bot made for a specific server. This features some custom command allowing users for various stuff, including YouTube searches from Discord. Also some misc. stuff.
 
-THIS IS WIP. BOT NOT FULLY FUNCTIONAL AT THE MOMENT.
+THIS IS WIP. 
 
-Main code's in src/index.js
+Main code's in src/index.js, some commands are in specific files to keep it clean (could be cleaner, still).
