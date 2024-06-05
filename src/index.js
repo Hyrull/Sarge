@@ -17,7 +17,8 @@ const client = new Client ({
 })
 
 //YT Search Settings
-const search = require ('youtube-search')
+const search = require ('youtube-search');
+const { channel } = require('diagnostics_channel');
 let opts = {
   maxResults: 5,
   key: process.env.YT_SEARCH_API,
@@ -81,11 +82,37 @@ client.on('ready', (c) => {
 client.on('interactionCreate', async (interaction) => {
     if (interaction.isCommand()) {
       if(interaction.commandName === "version") {
-        interaction.reply('Bot v1.4 - April 1st, 2024 \nHere is the [changelog](https://github.com/Hyrull/Immersive-Quotes/blob/main/changelog.txt)!')
+        const embed = new EmbedBuilder()
+        .setColor('009dff')
+        .setTitle("Sarge's latest version")
+        .setDescription('I am currently in v.1.5[wip].')
+        .addFields(
+          {name : "What's new?", value: '[Changelog](https://github.com/Hyrull/Immersive-Quotes/blob/main/changelog.txt)'}
+        )
+        .setFooter({ text: 'Sarge is developed by Hyrul', iconURL: 'https://imgur.com/15fnxws.png'})
+
+      await interaction.reply({ embeds: [embed] })
+        
+        // interaction.reply('Bot v1.4 - April 1st, 2024 \nHere is the [changelog](https://github.com/Hyrull/Immersive-Quotes/blob/main/changelog.txt)!')
       }
 
       if(interaction.commandName === "status") {
-        interaction.reply(`Fr*nch-snake set as '${frenchSnake}', gorfil set as '${gorfilReact}'.`)
+        let frenchSnakeCurrentStatus = ''
+        let gorfilReactCurrentStatus = ''
+        if (frenchSnake) {frenchSnakeCurrentStatus = 'Enabled'} else {frenchSnakeCurrentStatus = 'Disabled'}
+        if (gorfilReact) {gorfilReactCurrentStatus = 'Enabled'} else {gorfilReactCurrentStatus = 'Disabled'}
+
+        const embed = new EmbedBuilder()
+        .setColor('009dff')
+        .setTitle('Current features status')
+        .setDescription(`Here's the current status for the two react features.`)
+        .addFields(
+          {name : 'French snake reaction', value: frenchSnakeCurrentStatus},
+          {name : 'Gorfil react status', value: gorfilReactCurrentStatus}
+        )
+
+      await interaction.reply({ embeds: [embed] })
+
       }
 
       if(interaction.commandName === "french-snake-count") {
@@ -93,20 +120,34 @@ client.on('interactionCreate', async (interaction) => {
           const data = await fsPromises.readFile(configPath, 'utf8')
           const config = JSON.parse(data)
           const count = config['frenchSnake-count']
-          interaction.reply(`I have reacted a snake to "french" ${count} times!`)
+          // interaction.reply(`I have reacted a snake to "french" ${count} times!`)
+
+          const embed = new EmbedBuilder()
+            .setColor('009dff')
+            .setTitle('French snake count')
+            .setDescription(`I have reacted a snake to "french" **${count}** times!`)
+            // .setFooter({ text: 'Sarge developed by Hyrul', iconURL: 'https://imgur.com/15fnxws.png'})
+
+          await interaction.reply({ embeds: [embed] })
         } catch (err) {
           console.error('Error:', err)
         }
-
       }
 
       if(interaction.commandName === "quotes") {
-        interaction.reply('Here is the [quotes thread](<https://discord.com/channels/512393440726745120/1224432486134714389/1224432793187258431>)!')
+        const embed = new EmbedBuilder()
+        .setColor('009dff')
+        .setTitle('Quotes thread')
+        .setDescription(`You can access the quotes by looking at the threads list in [immersive-chat](https://discord.com/channels/512393440726745120/512402168217731072), or by clicking the link below.`)
+        .addFields(
+          {name : 'Direct link', value: '[Quotes Thread](https://discord.com/channels/512393440726745120/1224432486134714389)'}
+        )
+
+      await interaction.reply({ embeds: [embed] })
       }
 
       if(interaction.commandName === "secret-test") {
         secretRuleCheck(interaction)
-        // command is in secret.js, which isn't public. Sorry, no cheating by checking the code!
       }
 
       if(interaction.commandName === "youtube") {

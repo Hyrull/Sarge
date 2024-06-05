@@ -36,18 +36,18 @@ const guildCommands = [
   { name: 'quotes',
     description: 'Sends the link to the "quotes" thread.'
   },
-  {
-    name: 'secret-test',
-    description: 'Check if your input message passes the secret rule.',
-    options: [
-      {
-        name: 'input',
-        description: "The message you'd like to check.",
-        type: ApplicationCommandOptionType.String,
-        required: true
-      }
-    ]
-  },
+  // {
+  //   name: 'secret-test',
+  //   description: 'Check if your input message passes the secret rule.',
+  //   options: [
+  //     {
+  //       name: 'input',
+  //       description: "The message you'd like to check.",
+  //       type: ApplicationCommandOptionType.String,
+  //       required: true
+  //     }
+  //   ]
+  // },
   {
     name: 'youtube',
     description: "Quick-search for a YouTube video. Input a search and I'll send the first result's link.",
