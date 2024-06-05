@@ -27,7 +27,7 @@ const youtubeSearchCommand = async (interaction, legacy, message) => {
     let answer = await search(query, opts)
     if (answer.results && answer.results.length > 0) {
       interaction.reply(answer.results[0].link)
-      return (`${interaction.user.globalName}[${interaction.user.id}] searched for '${query}'. Returned the following link: ${answer.results[0].link} ("${answer.results[0].title}" by ${answer.results[0].channelTitle})`)
+      return (`${interaction.user.globalName}[${interaction.user.id}] searched for '${query}' (legacy!). Returned the following link: ${answer.results[0].link} ("${answer.results[0].title}" by ${answer.results[0].channelTitle})`)
     } else {
       interaction.reply('No search results found.')
     }
