@@ -43,15 +43,15 @@ function getTimeAndDate() {
   return `${date} @ ${time}`
 }
 
-// function addToLogs(data) {
-//   const timeAndDate = getTimeAndDate()
-//   const logMessage = `${timeAndDate} | ${data}`
-//   fsPromises.appendFile('./logs/logs.txt', logMessage + '\n', (err) => {
-//     if (err) {
-//       console.error('Error logging:', err)
-//     }
-//   })
-// }
+function addToLogs(data) {
+  const timeAndDate = getTimeAndDate()
+  const logMessage = `${timeAndDate} | ${data}`
+  fsPromises.appendFile('./logs/logs.txt', logMessage + '\n', (err) => {
+    if (err) {
+      console.error('Error logging:', err)
+    }
+  })
+}
 
 async function incrementSnakeCount(message) {
   try {
@@ -125,8 +125,8 @@ client.on('interactionCreate', async (interaction) => {
         )
 
       await interaction.reply({ embeds: [embed] })
-
       }
+
 
       if(interaction.commandName === "french-snake-count") {
         try {
@@ -158,18 +158,20 @@ client.on('interactionCreate', async (interaction) => {
       await interaction.reply({ embeds: [embed] })
       }
 
-      if(interaction.commandName === "secret-test") {
-        secretRuleCheck(interaction)
-      }
+      // if(interaction.commandName === "secret-test") {
+      //   secretRuleCheck(interaction)
+      // }
 
       if(interaction.commandName === "youtube") {
-        youtubeSearchCommand(interaction)
+        const logMessage = await youtubeSearchCommand(interaction)
+        addToLogs(logMessage)
       }
 
       if (interaction.commandName === "toggle") {
         const frenchSnakeOption = interaction.options.get('french-snake')?.value
         const gorfilOption = interaction.options.get('gorfil')?.value
-        toggleFeatures(frenchSnakeOption, gorfilOption, customModerators, interaction, configPath)
+        const logMessage = await toggleFeatures(frenchSnakeOption, gorfilOption, customModerators, interaction, configPath)
+        addToLogs(logMessage)
         fetchCurrentConfig
       }
 
@@ -221,7 +223,8 @@ client.on('messageCreate', async (message) => {
   // YouTube Search (legacy)
   if (lowerCaseContent.startsWith('$youtube')) {
     const query = lowerCaseContent.slice('$youtube '.length)
-    youtubeSearchCommand(query, true, message)
+    const logMessage = await youtubeSearchCommand(query, true, message)
+    addToLogs(logMessage)
   }
 })
 

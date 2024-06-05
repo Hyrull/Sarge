@@ -2,6 +2,8 @@ const fsPromises = require('fs').promises
 
 const toggleFeatures = async (frenchSnakeOption, gorfilOption, modList, interaction, configPath) => {
   const replies = []
+  const logLine = []
+
   if (!modList.includes(interaction.user.id)) {
     interaction.reply('This feature can only be used by a bot moderator.')
     return }
@@ -13,7 +15,8 @@ const toggleFeatures = async (frenchSnakeOption, gorfilOption, modList, interact
       frenchSnake = frenchSnakeOption
       config['french-react'] = frenchSnakeOption
       await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
-      replies.push(`Feature "french snake" set to ${frenchSnake}.`)      
+      replies.push(`Feature "french snake" set to ${frenchSnake}.`)  
+      logLine.push(`User ${interaction.user.globalName}[${interaction.user.id}] set "French snake" to ${frenchSnake}.`)    
     } catch (err) {
        console.log('Error: Could not write to config file', err)
     }
@@ -30,12 +33,15 @@ const toggleFeatures = async (frenchSnakeOption, gorfilOption, modList, interact
         console.log('Error: Could not write to config file', err)
       }
     replies.push(`Feature "gorfil react" set to ${gorfilOption}.`)
+    logLine.push(`User ${interaction.user.globalName}[${interaction.user.id}] set "Gorfil reactions" to ${gorfilReact}.`)
   }
 
   if (replies.length === 0) {
     interaction.reply('Please select a feature to toggle on or off.')
+    return('Toggle called, but no option selected.')
   } else {
     interaction.reply(replies.join('\n'))
+    return (logLine.join(' '))
   }
 }
 
