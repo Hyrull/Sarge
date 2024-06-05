@@ -163,11 +163,11 @@ client.on('interactionCreate', async (interaction) => {
         youtubeSearchCommand(interaction)
       }
 
-      
       if (interaction.commandName === "toggle") {
         const frenchSnakeOption = interaction.options.get('french-snake')?.value
         const gorfilOption = interaction.options.get('gorfil')?.value
         toggleFeatures(frenchSnakeOption, gorfilOption, customModerators, interaction, configPath)
+        fetchCurrentConfig
       }
     }
   }
@@ -194,27 +194,10 @@ client.on('messageCreate', async (message) => {
     message.react('🩵')
   }
 
-  // YouTube Search
+  // YouTube Search (legacy)
   if (lowerCaseContent.startsWith('$youtube')) {
     const query = lowerCaseContent.slice('$youtube '.length)
-
-    if (query.length > 0) {
-      let answer = await search(query, opts)
-      if (answer.results && answer.results.length > 0) {
-        message.reply(answer.results[0].link)
-        addToLogs(`${message.author.displayName}[${message.author.id}] searched for '${query}'. Returned the following link: ${answer.results[0].link} ("${answer.results[0].title}" by ${answer.results[0].channelTitle})`)
-      } else {
-        message.reply('No search results found.')
-      }
-    } else {
-      message.reply('Please input a search.')
-    }
-  }
-
-  // MOD-ONLY COMMANDS
-  // $toggle
-  if (lowerCaseContent === '$toggle' && customModerators.includes(message.author.id)) {
-    message.reply("It's now a slash command. Feel free to use /toggle and select what feature to set to true and false.")
+    youtubeSearchCommand(query, true, message)
   }
 })
 
