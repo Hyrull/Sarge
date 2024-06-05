@@ -1,3 +1,10 @@
+V1.5
+- /secret-rule removed as the secret code was found (& command code is now public)
+- /quote now displays in a rich embed.
+- /french-snake-count now displays in a rich embed.
+- /version now displays in a rich embed.
+- /status now displays in a rich embed.
+
 V1.4
 - Added /quotes for people to have a quick access to the quotes thread.
 - Added /secret-rule, a game where people have to guess the secret rule by trying out different texts!
