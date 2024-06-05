@@ -4,6 +4,7 @@ V1.5 - June 4th, 2024
 - /french-snake-count now displays in a rich embed.
 - /version now displays in a rich embed.
 - /status now displays in a rich embed.
+- "React" command's config is now persistent between sessions
 
 V1.4 - April 1st, 2024
 - Added /quotes for people to have a quick access to the quotes thread.
