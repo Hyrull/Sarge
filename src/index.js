@@ -100,7 +100,7 @@ client.on('interactionCreate', async (interaction) => {
         const embed = new EmbedBuilder()
         .setColor('009dff')
         .setTitle("Sarge's latest version")
-        .setDescription(`I am currently in **v.1.5**.\nLast update: **June 4th, 2024**`)
+        .setDescription(`I am currently in **v.1.5.1**.\nLast update: **June 16th, 2024**`)
         .addFields(
           {name : "What's new?", value: '[Changelog](https://github.com/Hyrull/Immersive-Quotes/blob/main/changelog.txt)'}
         )
