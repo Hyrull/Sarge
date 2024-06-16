@@ -158,6 +158,14 @@ client.on('interactionCreate', async (interaction) => {
       await interaction.reply({ embeds: [embed] })
       }
 
+      if(interaction.commandName === 'ping') {
+        const commandTime = interaction.createdTimestamp
+        await interaction.reply({ content: `*Pong! Calculating...*`, ephemeral: true })
+        const nowTime = Date.now()
+        const latency = commandTime - nowTime
+        await interaction.editReply({ content: `*Pong! Latency: ${latency}ms*`, ephemeral: true }) 
+      }
+
       // if(interaction.commandName === "secret-test") {
       //   secretRuleCheck(interaction)
       // }
@@ -171,8 +179,8 @@ client.on('interactionCreate', async (interaction) => {
         const frenchSnakeOption = interaction.options.get('french-snake')?.value
         const gorfilOption = interaction.options.get('gorfil')?.value
         const logMessage = await toggleFeatures(frenchSnakeOption, gorfilOption, customModerators, interaction, configPath)
-        addToLogs(logMessage)
-        fetchCurrentConfig
+        await addToLogs(logMessage)
+        setTimeout(fetchCurrentConfig, 3000);
       }
 
       if (interaction.commandName === 'feedback') {

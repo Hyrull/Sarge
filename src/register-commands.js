@@ -36,6 +36,10 @@ const guildCommands = [
   { name: 'quotes',
     description: 'Sends the link to the "quotes" thread.'
   },
+  {
+    name: 'ping',
+    description: 'Simple ping test command.'
+  },
   // {
   //   name: 'secret-test',
   //   description: 'Check if your input message passes the secret rule.',
