@@ -5,6 +5,10 @@ const globalCommands = [
   {
     name: 'version',
     description: 'Gives the bot current version and a link to the changelog'
+  },
+  {
+    name: 'ping',
+    description: 'Simple ping test command.'
   }
 ]
 
@@ -35,10 +39,6 @@ const guildCommands = [
   },
   { name: 'quotes',
     description: 'Sends the link to the "quotes" thread.'
-  },
-  {
-    name: 'ping',
-    description: 'Simple ping test command.'
   },
   // {
   //   name: 'secret-test',
