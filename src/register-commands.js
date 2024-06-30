@@ -26,6 +26,11 @@ const guildCommands = [
         name: 'gorfil',
         description: 'Adds a gorfil reaction whenever someone sends this emoji.',
         type: ApplicationCommandOptionType.Boolean,
+      },
+      { 
+        name: 'crazy',
+        description: 'Has a chance to reply a certain quote when someone says "crazy".',
+        type: ApplicationCommandOptionType.Boolean,
       }
     ]
   },

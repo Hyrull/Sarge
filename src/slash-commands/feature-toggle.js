@@ -1,6 +1,6 @@
 const fsPromises = require('fs').promises
 
-const toggleFeatures = async (frenchSnakeOption, gorfilOption, modList, interaction, configPath) => {
+const toggleFeatures = async (frenchSnakeOption, gorfilOption, crazyOption, modList, interaction, configPath) => {
   const replies = []
   const logLine = []
 
@@ -34,6 +34,20 @@ const toggleFeatures = async (frenchSnakeOption, gorfilOption, modList, interact
       }
     replies.push(`Feature "gorfil react" set to ${gorfilOption}.`)
     logLine.push(`User ${interaction.user.globalName}[${interaction.user.id}] set "Gorfil reactions" to ${gorfilReact}.`)
+  }
+
+  if (crazyOption !== undefined) {
+    try {
+      const data = await fsPromises.readFile(configPath, 'utf8')
+      const config = JSON.parse(data)
+      crazyReact = crazyOption
+      config['crazy'] = crazyOption
+      await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
+      } catch (err) {
+        console.log('Error: Could not write to config file', err)
+      }
+    replies.push(`Feature "crazy react" set to ${crazyOption}.`)
+    logLine.push(`User ${interaction.user.globalName}[${interaction.user.id}] set "Crazy React" to ${crazyReact}.`)
   }
 
   if (replies.length === 0) {
