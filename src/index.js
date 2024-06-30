@@ -228,6 +228,15 @@ client.on('messageCreate', async (message) => {
     message.react('🩵')
   }
 
+  if (lowerCaseContent.includes('crazy')) {
+    const randomNumber = Math.floor(Math.random() * 10)
+    if (randomNumber === 0) {
+      message.reply('Crazy? I was crazy once. They put me in a room. A rubber room. A rubber room with rats. And rats make me crazy.')
+    } else {
+      console.log('Dodged crazy!')
+    }
+  }
+
   // YouTube Search (legacy)
   if (lowerCaseContent.startsWith('$youtube')) {
     const query = lowerCaseContent.slice('$youtube '.length)
