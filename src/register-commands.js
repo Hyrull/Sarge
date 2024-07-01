@@ -31,6 +31,11 @@ const guildCommands = [
         name: 'crazy',
         description: 'Has a chance to reply a certain quote when someone says "crazy".',
         type: ApplicationCommandOptionType.Boolean,
+      },
+      { 
+        name: 'crazy-odds',
+        description: 'Set the odds of the "crazy" reply feature.',
+        type: ApplicationCommandOptionType.Number,
       }
     ]
   },

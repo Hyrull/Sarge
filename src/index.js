@@ -23,6 +23,7 @@ let customModerators = []
 let frenchSnake = true
 let gorfilReact = true
 let crazyReact = true
+let crazyOdds = 10
 const configPath = './config.json'
 
 async function fetchCurrentConfig() {
@@ -32,6 +33,7 @@ async function fetchCurrentConfig() {
     frenchSnake = readableData['french-react']
     gorfilReact = readableData['gorfil-react']
     crazyReact = readableData['crazy']
+    crazyOdds = readableData['crazy-odds']
 
   } catch(err) {
     console.error('Error: failed to read config file.')
@@ -181,7 +183,8 @@ client.on('interactionCreate', async (interaction) => {
         const frenchSnakeOption = interaction.options.get('french-snake')?.value
         const gorfilOption = interaction.options.get('gorfil')?.value
         const crazyOption = interaction.options.get('crazy')?.value
-        const logMessage = await toggleFeatures(frenchSnakeOption, gorfilOption, crazyOption, customModerators, interaction, configPath)
+        const crazyOddsSet = interaction.options.get('crazy-odds')?.value
+        const logMessage = await toggleFeatures(frenchSnakeOption, gorfilOption, crazyOption, crazyOddsSet, customModerators, interaction, configPath)
         await addToLogs(logMessage)
         setTimeout(fetchCurrentConfig, 3000);
       }
@@ -232,11 +235,11 @@ client.on('messageCreate', async (message) => {
   }
 
   if (lowerCaseContent.includes('crazy') && crazyReact) {
-    const randomNumber = Math.floor(Math.random() * 10)
-    if (randomNumber === 0) {
+    const randomNumber = Math.floor(Math.random() * 100)
+    if (crazyOdds >= randomNumber) {
       message.reply('Crazy? I was crazy once. They put me in a room. A rubber room. A rubber room with rats. And rats make me crazy.')
     } else {
-      console.log('Dodged crazy!')
+      console.log(`Dodged crazy! RNG was ${randomNumber}`)
     }
   }
 
