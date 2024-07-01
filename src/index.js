@@ -116,16 +116,20 @@ client.on('interactionCreate', async (interaction) => {
       if(interaction.commandName === "status") {
         let frenchSnakeCurrentStatus = ''
         let gorfilReactCurrentStatus = ''
+        let crazyReactCurrentStatus = ''
         if (frenchSnake) {frenchSnakeCurrentStatus = 'Enabled'} else {frenchSnakeCurrentStatus = 'Disabled'}
         if (gorfilReact) {gorfilReactCurrentStatus = 'Enabled'} else {gorfilReactCurrentStatus = 'Disabled'}
+        if (crazyReact) {crazyReactCurrentStatus = 'Enabled'} else {crazyReactCurrentStatus = 'Disabled'}
+        console.log(crazyOdds)
 
         const embed = new EmbedBuilder()
         .setColor('009dff')
         .setTitle('Current features status')
-        .setDescription(`Here's the current status for the two react features.`)
+        .setDescription(`Here's the current status for the react features.`)
         .addFields(
           {name : 'French snake reaction', value: frenchSnakeCurrentStatus},
-          {name : 'Gorfil react status', value: gorfilReactCurrentStatus}
+          {name : 'Gorfil react status', value: gorfilReactCurrentStatus},
+          {name : 'Crazy react status', value: `${crazyReactCurrentStatus} - ${crazyOdds}%`}
         )
 
       await interaction.reply({ embeds: [embed] })
