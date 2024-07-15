@@ -2,9 +2,10 @@ require('dotenv').config()
 const { Client, IntentsBitField, EmbedBuilder } = require('discord.js')
 const fsPromises = require('fs').promises
 
-const { secretRuleCheck } = require('./secret');
 const { youtubeSearchCommand } = require('./slash-commands/youtube')
 const { toggleFeatures } = require('./slash-commands/feature-toggle')
+
+const greetingsVideo = './data/greetings.mp4'
 
 const client = new Client ({
   intents: [
@@ -170,13 +171,13 @@ client.on('interactionCreate', async (interaction) => {
         const commandTime = interaction.createdTimestamp
         await interaction.reply({ content: `*Pong! Calculating...*`, ephemeral: true })
         const nowTime = Date.now()
-        const latency = commandTime - nowTime
+        const latency = nowTime - commandTime
         await interaction.editReply({ content: `*Pong! Latency: ${latency}ms*`, ephemeral: true }) 
       }
 
-      // if(interaction.commandName === "secret-test") {
-      //   secretRuleCheck(interaction)
-      // }
+      if(interaction.commandName === "greetings") {
+        interaction.reply({files: [greetingsVideo]})
+      }
 
       if(interaction.commandName === "youtube") {
         const logMessage = await youtubeSearchCommand(interaction)
