@@ -1,3 +1,6 @@
+V1.5.3 - July 14th, 2024
+- Added /greetings
+
 V1.5.2 - June 30th, 2024
 - Sarge can now answer a certain meme when someone says "crazy".
 - The odds of this happening is set and read from config.json
