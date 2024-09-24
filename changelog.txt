@@ -1,3 +1,7 @@
+V.1.5.4 - September 24th, 2024
+- Added $greetings for when /greetings times out
+- Now also reacts to "gud bot" like it does for "good bot"
+
 V1.5.3 - July 14th, 2024
 - Added /greetings
 

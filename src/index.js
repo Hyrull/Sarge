@@ -105,7 +105,7 @@ client.on('interactionCreate', async (interaction) => {
         const embed = new EmbedBuilder()
         .setColor('009dff')
         .setTitle("Sarge's latest version")
-        .setDescription(`I am currently in **v.1.5.3**.\nLast update: **July 14th, 2024**`)
+        .setDescription(`I am currently in **v.1.5.4**.\nLast update: **September 24th, 2024**`)
         .addFields(
           {name : "What's new?", value: '[Changelog](https://github.com/Hyrull/Immersive-Quotes/blob/main/changelog.txt)'}
         )
@@ -235,7 +235,8 @@ client.on('messageCreate', async (message) => {
     message.react('👀')
   }
 
-  if (lowerCaseContent.includes('good bot')) {
+  if (lowerCaseContent.includes('good bot') 
+    || lowerCaseContent.includes('gud bot')) {
     message.react('🩵')
   }
 
@@ -246,6 +247,10 @@ client.on('messageCreate', async (message) => {
     } else {
       console.log(`Dodged crazy! RNG was ${randomNumber}`)
     }
+  }
+
+  if (lowerCaseContent.startsWith('$greetings')) {
+    message.reply('https://cdn.discordapp.com/attachments/523257630332813324/1288019769299173407/greetings.mp4?ex=66f3a963&is=66f257e3&hm=ecb7688f9c6b6b045b920ee206d7eadf846b9bb04856dd57f8e6f4bfe5214ed4&')
   }
 
   // YouTube Search (legacy)
