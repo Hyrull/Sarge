@@ -22,6 +22,8 @@ const client = new Client ({
 let adminId = ''
 let customModerators = []
 let frenchSnake = true
+let englishTea = true
+const englishKeywords = ['british', 'english']
 let gorfilReact = true
 let crazyReact = true
 let crazyOdds = 10
@@ -58,11 +60,11 @@ function addToLogs(data) {
   })
 }
 
-async function incrementSnakeCount(message) {
+async function incrementCount(message, count) {
   try {
     const data = await fsPromises.readFile(configPath, 'utf8')
     const config = JSON.parse(data)
-    config['frenchSnake-count'] += 1
+    config[`${count}`] += 1
     await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
 
     if (config['frenchSnake-count'] % 100 === 0) {
@@ -284,8 +286,14 @@ client.on('messageCreate', async (message) => {
 
   if (lowerCaseContent.includes('french') && frenchSnake) {
     message.react('🐍')
-    incrementSnakeCount(message)
+    incrementCount(message, 'frenchSnake-count')
   }
+  
+  if (englishKeywords.some(word => lowerCaseContent.includes(word)) && englishTea) {
+    message.react('🫖')
+    // incrementCount(message, 'englishTea-count')
+  }
+  
   if (lowerCaseContent.includes('fr3nch') && frenchSnake) {
     message.react('👀')
   }
