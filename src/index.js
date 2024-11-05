@@ -73,6 +73,17 @@ async function incrementSnakeCount(message) {
   }
 }
 
+async function incrementNsfwBans() {
+  try {
+    const data = await fsPromises.readFile(configPath, 'utf8')
+    const config = JSON.parse(data)
+    config['nsfw-bans'] += 1
+    await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
+  } catch (err) {
+    console.error('Error:', err)
+  }
+}
+
 
 // Modlist fetch
 async function fetchCustomModerators() {
@@ -105,7 +116,7 @@ client.on('interactionCreate', async (interaction) => {
         const embed = new EmbedBuilder()
         .setColor('009dff')
         .setTitle("Sarge's latest version")
-        .setDescription(`I am currently in **v.1.5.4**.\nLast update: **September 24th, 2024**`)
+        .setDescription(`I am currently in **v.1.5.4 (DEV)**.\nLast update: **ONGOING**`)
         .addFields(
           {name : "What's new?", value: '[Changelog](https://github.com/Hyrull/Immersive-Quotes/blob/main/changelog.txt)'}
         )
@@ -177,6 +188,50 @@ client.on('interactionCreate', async (interaction) => {
 
       if(interaction.commandName === "greetings") {
         interaction.reply({files: [greetingsVideo]})
+      }
+
+      if(interaction.commandName === "nsfw") {
+        const member = interaction.member
+        const lv20Role = '518961929583198209'
+        const modLogsChannelId = '518821248768278528'
+
+        const data = await fsPromises.readFile(configPath, 'utf8')
+        const config = JSON.parse(data)
+        let count = config['nsfw-bans']
+
+        if (interaction.member.roles.cache.has(lv20Role)) {
+          interaction.reply("You are above level 20, so I'm saving you. Lucky you...")
+        } else {
+          await interaction.guild.members.ban(member, { reason: 'Fell for the /nsfw command during the purge event'})
+          console.log(`Banned ${member} due to NSFW command usage.`)
+          count+++
+          incrementNsfwBans()
+
+          switch (count) {
+            case 1: {
+              await interaction.reply(`${member} is the ${count}st person to fall!! HURRAY!`)
+              break
+            }
+            case 2: {
+              await interaction.reply(`${member} is the ${count}nd person to fall...`)
+              break
+            }
+            case 3: {
+              await interaction.reply(`${member} is the ${count}rd person to fall...`)
+              break
+            }
+            default: {
+              await interaction.reply(`${member} is the ${count}th person to fall...`)
+            }
+          }
+
+          const modLogsChannel = interaction.client.channels.cache.get(modLogsChannelId);
+          if (modLogsChannel) {
+            await modLogsChannel.send(`${member} has been banned for /nsfw usage.`);
+          } else {
+             console.log(`Channel with ID '${modLogsChannelId}' not found.`);
+          }
+        }
       }
 
       if(interaction.commandName === "youtube") {

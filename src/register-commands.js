@@ -43,6 +43,10 @@ const guildCommands = [
     name: 'status',
     description: 'Shows what features are currently enabled.'
   },
+  {
+    name: 'nsfw',
+    description: 'Tried to grant you access to the nsfw channel.'
+  },
   { 
     name: 'french-snake-count',
     description: 'Shows how many times I reacted a snake to "french".'

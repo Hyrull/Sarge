@@ -5,9 +5,10 @@
     "868875625883111475",
     "263040371779567617"
   ],
-  "frenchSnake-count": 1316,
+  "frenchSnake-count": 1774,
   "french-react": true,
   "gorfil-react": true,
   "crazy": true,
-  "crazy-odds": 10
+  "crazy-odds": 10,
+  "nsfw-bans": 60
 }
