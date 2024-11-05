@@ -1,6 +1,7 @@
 V1.6 - November 5th, 2024
 - Added /nsfw, which bans the user who uses it (if level 19 or less)
 - Now reacts a teacup to "british" and "english"
+-- Made it toggleable by moderators
 
 V.1.5.4 - September 24th, 2024
 - Added $greetings for when /greetings times out
@@ -67,4 +68,4 @@ V1.1 - March 10th, 2024
 V1.0 - First release (March 10th, 2024)
  - $hyrul command now returns a message (this command is here to check if the bot is online)
  - Now reacts a :gorfil: emote under anyone who uses it 
- - Now reacts s snake emoji under anyone saying "french"
+ - Now reacts a snake emoji under anyone saying "french"
