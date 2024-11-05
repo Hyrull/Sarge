@@ -23,6 +23,11 @@ const guildCommands = [
         type: ApplicationCommandOptionType.Boolean,
       },
       { 
+        name: 'english-tea',
+        description: 'Adds a teapot 🫖 reaction whenever someone says "English" or "British".',
+        type: ApplicationCommandOptionType.Boolean,
+      },
+      { 
         name: 'gorfil',
         description: 'Adds a gorfil reaction whenever someone sends this emoji.',
         type: ApplicationCommandOptionType.Boolean,

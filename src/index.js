@@ -34,6 +34,7 @@ async function fetchCurrentConfig() {
     const data = await fsPromises.readFile(configPath, 'utf8')
     const readableData = JSON.parse(data)
     frenchSnake = readableData['french-react']
+    englishTea = readableData['tea-react']
     gorfilReact = readableData['gorfil-react']
     crazyReact = readableData['crazy']
     crazyOdds = readableData['crazy-odds']
@@ -118,7 +119,7 @@ client.on('interactionCreate', async (interaction) => {
         const embed = new EmbedBuilder()
         .setColor('009dff')
         .setTitle("Sarge's latest version")
-        .setDescription(`I am currently in **v.1.5.4 (DEV)**.\nLast update: **ONGOING**`)
+        .setDescription(`I am currently in **v.1.6**.\nLast update: November 5th, 2024`)
         .addFields(
           {name : "What's new?", value: '[Changelog](https://github.com/Hyrull/Immersive-Quotes/blob/main/changelog.txt)'}
         )
@@ -131,17 +132,19 @@ client.on('interactionCreate', async (interaction) => {
         let frenchSnakeCurrentStatus = ''
         let gorfilReactCurrentStatus = ''
         let crazyReactCurrentStatus = ''
+        let englishTeaCurrentStatus = ''
         if (frenchSnake) {frenchSnakeCurrentStatus = 'Enabled'} else {frenchSnakeCurrentStatus = 'Disabled'}
         if (gorfilReact) {gorfilReactCurrentStatus = 'Enabled'} else {gorfilReactCurrentStatus = 'Disabled'}
         if (crazyReact) {crazyReactCurrentStatus = 'Enabled'} else {crazyReactCurrentStatus = 'Disabled'}
-        console.log(crazyOdds)
-
+        if (englishTea) {englishTeaCurrentStatus = 'Enabled'} else {englishTeaCurrentStatus = 'Disabled'}
+        
         const embed = new EmbedBuilder()
         .setColor('009dff')
         .setTitle('Current features status')
         .setDescription(`Here's the current status for the react features.`)
         .addFields(
           {name : 'French snake reaction', value: frenchSnakeCurrentStatus},
+          {name : 'English tea reaction', value: englishTeaCurrentStatus},
           {name : 'Gorfil react status', value: gorfilReactCurrentStatus},
           {name : 'Crazy react status', value: `${crazyReactCurrentStatus} - ${crazyOdds}%`}
         )
@@ -243,10 +246,11 @@ client.on('interactionCreate', async (interaction) => {
 
       if (interaction.commandName === "toggle") {
         const frenchSnakeOption = interaction.options.get('french-snake')?.value
+        const englishTeaOption = interaction.options.get('english-tea')?.value
         const gorfilOption = interaction.options.get('gorfil')?.value
         const crazyOption = interaction.options.get('crazy')?.value
         const crazyOddsSet = interaction.options.get('crazy-odds')?.value
-        const logMessage = await toggleFeatures(frenchSnakeOption, gorfilOption, crazyOption, crazyOddsSet, customModerators, interaction, configPath)
+        const logMessage = await toggleFeatures(frenchSnakeOption, englishTeaOption, gorfilOption, crazyOption, crazyOddsSet, customModerators, interaction, configPath)
         await addToLogs(logMessage)
         setTimeout(fetchCurrentConfig, 3000);
       }

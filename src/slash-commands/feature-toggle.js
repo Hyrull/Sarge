@@ -1,6 +1,6 @@
 const fsPromises = require('fs').promises
 
-const toggleFeatures = async (frenchSnakeOption, gorfilOption, crazyOption, crazyOddsSet, modList, interaction, configPath) => {
+const toggleFeatures = async (frenchSnakeOption, englishTeaOption, gorfilOption, crazyOption, crazyOddsSet, modList, interaction, configPath) => {
   const replies = []
   const logLine = []
 
@@ -17,6 +17,20 @@ const toggleFeatures = async (frenchSnakeOption, gorfilOption, crazyOption, craz
       await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
       replies.push(`Feature "french snake" set to ${frenchSnake}.`)  
       logLine.push(`User ${interaction.user.globalName}[${interaction.user.id}] set "French snake" to ${frenchSnake}.`)    
+    } catch (err) {
+       console.log('Error: Could not write to config file', err)
+    }
+  }
+
+  if (englishTeaOption !== undefined) {
+    try {
+      const data = await fsPromises.readFile(configPath, 'utf8')
+      const config = JSON.parse(data)
+      englishTea = englishTeaOption
+      config['tea-react'] = englishTeaOption
+      await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
+      replies.push(`Feature "english tea" set to ${englishTea}.`)  
+      logLine.push(`User ${interaction.user.globalName}[${interaction.user.id}] set "English tea" to ${englishTea}.`)    
     } catch (err) {
        console.log('Error: Could not write to config file', err)
     }
