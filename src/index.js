@@ -28,6 +28,7 @@ let gorfilReact = true
 let crazyReact = true
 let crazyOdds = 10
 const configPath = './config.json'
+const easterEggsPath = './data/eastereggs.json'
 
 async function fetchCurrentConfig() {
   try {
@@ -199,6 +200,25 @@ client.on('interactionCreate', async (interaction) => {
         const member = interaction.member
         const lv20Role = '518961929583198209'
         const modLogsChannelId = '518821248768278528'
+        let easterEggTriggered = false
+
+
+        // Reading ID to see if there's an easter egg associated with it
+        try {
+          const easterEggsData = await fsPromises.readFile(easterEggsPath, 'utf8')
+          const easterEggs = JSON.parse(easterEggsData)
+          const easterEgg = easterEggs.find(egg => egg.id === member.id)
+      
+          if (easterEgg) {
+            await interaction.reply(easterEgg.message)
+            easterEggTriggered = true
+          }
+        } catch (err) {
+          console.error('Error reading Easter eggs file:', err)
+        }
+        if (easterEggTriggered) return
+
+        // Default behavior
 
         const data = await fsPromises.readFile(configPath, 'utf8')
         const config = JSON.parse(data)
