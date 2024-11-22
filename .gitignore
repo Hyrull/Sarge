@@ -5,3 +5,4 @@ logs
 quotes
 
 data/eastereggs.json
+src/secret.js
