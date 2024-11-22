@@ -4,6 +4,7 @@ const fsPromises = require('fs').promises
 
 const { youtubeSearchCommand } = require('./slash-commands/youtube')
 const { toggleFeatures } = require('./slash-commands/feature-toggle')
+const { secretRuleCheck } = require('./secret')
 
 const greetingsVideo = './data/greetings.mp4'
 
@@ -127,6 +128,11 @@ client.on('interactionCreate', async (interaction) => {
         .setFooter({ text: 'Sarge is developed by Hyrul', iconURL: 'https://imgur.com/15fnxws.png'})
 
       await interaction.reply({ embeds: [embed] })
+      }
+
+      if(interaction.commandName === "secret-test") {
+        secretRuleCheck(interaction)
+        // command is in secret.js, which isn't public. Sorry, no cheating by checking the code!
       }
 
       if(interaction.commandName === "status") {
