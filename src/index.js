@@ -30,6 +30,8 @@ let crazyReact = true
 let crazyOdds = 10
 const configPath = './config.json'
 const easterEggsPath = './data/eastereggs.json'
+const startTime = Date.now()
+console.log(`Bot started at: ${new Date(startTime).toISOString()}`)
 
 async function fetchCurrentConfig() {
   try {
@@ -121,7 +123,7 @@ client.on('interactionCreate', async (interaction) => {
         const embed = new EmbedBuilder()
         .setColor('009dff')
         .setTitle("Sarge's latest version")
-        .setDescription(`I am currently in **v.1.6.1**.\nLast update: November 20th, 2024`)
+        .setDescription(`I am currently in **v.1.6.2**.\nLast update: November 25th, 2024`)
         .addFields(
           {name : "What's new?", value: '[Changelog](https://github.com/Hyrull/Immersive-Quotes/blob/main/changelog.txt)'}
         )
@@ -191,11 +193,26 @@ client.on('interactionCreate', async (interaction) => {
       }
 
       if(interaction.commandName === 'ping') {
-        const commandTime = interaction.createdTimestamp
         await interaction.reply({ content: `*Pong! Calculating...*`, ephemeral: true })
+        const ping = interaction.client.ws.ping;
+        
+        // Uptime
         const nowTime = Date.now()
-        const latency = nowTime - commandTime
-        await interaction.editReply({ content: `*Pong! Latency: ${latency}ms*`, ephemeral: true }) 
+        const uptimeMs = nowTime - startTime
+        const formatUptime = (ms) => {
+          const seconds = Math.floor(ms / 1000) % 60
+          const minutes = Math.floor(ms / (1000 * 60)) % 60
+          const hours = Math.floor(ms / (1000 * 60 *60)) % 60
+          const days = Math.floor(ms / (1000 * 60 *60 * 60)) % 60
+          
+          return `${days} day${days !== 1 ? 's' : ''}, ` +
+          `${hours} hour${hours !== 1 ? 's' : ''}, ` +
+          `${minutes} minute${minutes !== 1 ? 's' : ''}, ` +
+          `${seconds} second${seconds !== 1 ? 's' : ''}`;
+        }
+        
+        const uptimeFormatted = formatUptime(uptimeMs)
+        await interaction.editReply({ content: `*Pong! Latency: **${ping}**ms*\nUptime: ${uptimeFormatted}`, ephemeral: true }) 
       }
 
       if(interaction.commandName === "greetings") {

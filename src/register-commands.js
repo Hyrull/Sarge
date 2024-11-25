@@ -8,7 +8,7 @@ const globalCommands = [
   },
   {
     name: 'ping',
-    description: 'Simple ping test command.'
+    description: "Displays the bot's ping and uptime."
   }
 ]
 

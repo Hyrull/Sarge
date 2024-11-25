@@ -1,3 +1,7 @@
+V1.6.2 - November 25th, 2024
+- Added /event, to add or remove the 'EventPing' role from oneself.
+- /ping now displays uptime.
+
 V1.6.1 - November 20th, 2024
 - Now replies custom messages to a selection of users if they use /nsfw
 
