@@ -89,13 +89,13 @@ const guildCommands = [
   },
   {
     name: 'event',
-    description: "Grants you the 'EventPing' rule to be notified for future events.",
+    description: "Manage the 'EventPing' rule to be notified for future events.",
     options: [
       {
-        name: 'remove',
-        description: 'Add this to have the role removed from yourself.',
+        name: 'set',
+        description: 'Set it to true or false.',
         type: ApplicationCommandOptionType.Boolean,
-        required: false
+        required: true
       }
     ]
   },
