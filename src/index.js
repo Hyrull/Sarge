@@ -202,8 +202,8 @@ client.on('interactionCreate', async (interaction) => {
         const formatUptime = (ms) => {
           const seconds = Math.floor(ms / 1000) % 60
           const minutes = Math.floor(ms / (1000 * 60)) % 60
-          const hours = Math.floor(ms / (1000 * 60 * 60)) % 60
-          const days = Math.floor(ms / (1000 * 60 *60 * 24)) % 60
+          const hours = Math.floor(ms / (1000 * 60 * 60)) % 24
+          const days = Math.floor(ms / (1000 * 60 *60 * 24))
           
           return `${days} day${days !== 1 ? 's' : ''}, ` +
           `${hours} hour${hours !== 1 ? 's' : ''}, ` +
