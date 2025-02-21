@@ -132,10 +132,10 @@ client.on('interactionCreate', async (interaction) => {
       await interaction.reply({ embeds: [embed] })
       }
 
-      if(interaction.commandName === "secret-test") {
-        secretRuleCheck(interaction)
-        // command is in secret.js, which isn't public. Sorry, no cheating by checking the code!
-      }
+      // if(interaction.commandName === "secret-test") {
+      //   secretRuleCheck(interaction)
+      //   // command is in secret.js, which isn't public. Sorry, no cheating by checking the code!
+      // }
 
       if(interaction.commandName === "status") {
         let frenchSnakeCurrentStatus = ''

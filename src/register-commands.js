@@ -45,18 +45,6 @@ const guildCommands = [
     ]
   },
   {
-    name: 'secret-test',
-    description: 'Check if your input message passes the secret rule.',
-    options: [
-      {
-        name: 'input',
-        description: "The message you'd like to try.",
-        type: ApplicationCommandOptionType.String,
-        required: true
-      }
-    ]
-  },
-  {
     name: 'status',
     description: 'Shows what features are currently enabled.'
   },
