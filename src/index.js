@@ -4,7 +4,7 @@ const fsPromises = require('fs').promises
 
 const { youtubeSearchCommand } = require('./slash-commands/youtube')
 const { toggleFeatures } = require('./slash-commands/feature-toggle')
-const { secretRuleCheck } = require('./secret')
+// const { secretRuleCheck } = require('./secret')
 
 const greetingsVideo = './data/greetings.mp4'
 
