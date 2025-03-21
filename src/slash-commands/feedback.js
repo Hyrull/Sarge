@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js')
 
 const feedbackNotice = async (client, interaction, adminId, timeAndDate) => {
   const admin = await client.users.fetch(adminId)
-  const feedback = interaction.options.get('query')?.value
+  const feedback = interaction.options.get('feedback')?.value
   const displayName = interaction.member.user.globalName
   const realName = interaction.member.user.username
 

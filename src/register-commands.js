@@ -74,7 +74,7 @@ const guildCommands = [
       ])
     ),
 
-    
+
   // USER COMMANDS
 
   new SlashCommandBuilder()
@@ -99,7 +99,7 @@ const guildCommands = [
 
   new SlashCommandBuilder()
     .setName('youtube')
-    .setDescription("Quick-search for a YouTube video. Input a search and I'll send the first result's link.")
+    .setDescription("Quick search for a YouTube video. Input a query and I'll send the first result's link.")
     .addStringOption(option => option
       .setName('query')
       .setDescription('What are you searching for?')
@@ -108,7 +108,7 @@ const guildCommands = [
 
   new SlashCommandBuilder()
     .setName('event')
-    .setDescription("Manage the 'EventPing' rule to be notified for future events.")
+    .setDescription("Adds or remove the 'EventPing' role to be notified for future events.")
     .addBooleanOption(option => option
       .setName('set')
       .setDescription('Set it to true or false.')
@@ -117,9 +117,9 @@ const guildCommands = [
 
   new SlashCommandBuilder()
     .setName('feedback')
-    .setDescription("Provide any feedback for Sarge. Only the bot admin will see privately.")
+    .setDescription("Send feedback for Sarge! Only the bot admin will see it.")
     .addStringOption(option => option
-      .setName('query')
+      .setName('feedback')
       .setDescription("What do you want to say?")
       .setRequired(true)
     )
