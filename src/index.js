@@ -6,6 +6,11 @@ const { youtubeSearchCommand } = require('./slash-commands/youtube')
 const { toggleFeatures } = require('./slash-commands/feature-toggle')
 // const { secretRuleCheck } = require('./secret')
 const { discordStatus } = require('./slash-commands/discordStatus')
+const { featuresCommand } = require('./slash-commands/features')
+const { quotesCommand } = require('./slash-commands/quotes')
+const { pingCommand } = require('./slash-commands/ping')
+const { eventCommad } = require('./slash-commands/event')
+const { feedbackNotice } = require('./slash-commands/feedback')
 
 const greetingsVideo = './data/greetings.mp4'
 
@@ -139,27 +144,7 @@ client.on('interactionCreate', async (interaction) => {
       // }
 
       if(interaction.commandName === "features") {
-        let frenchSnakeCurrentStatus = ''
-        let gorfilReactCurrentStatus = ''
-        let crazyReactCurrentStatus = ''
-        let englishTeaCurrentStatus = ''
-        if (frenchSnake) {frenchSnakeCurrentStatus = 'Enabled'} else {frenchSnakeCurrentStatus = 'Disabled'}
-        if (gorfilReact) {gorfilReactCurrentStatus = 'Enabled'} else {gorfilReactCurrentStatus = 'Disabled'}
-        if (crazyReact) {crazyReactCurrentStatus = 'Enabled'} else {crazyReactCurrentStatus = 'Disabled'}
-        if (englishTea) {englishTeaCurrentStatus = 'Enabled'} else {englishTeaCurrentStatus = 'Disabled'}
-        
-        const embed = new EmbedBuilder()
-        .setColor('009dff')
-        .setTitle('Current features status')
-        .setDescription(`Here's the current status for the react features.`)
-        .addFields(
-          {name : 'French snake reaction', value: frenchSnakeCurrentStatus},
-          {name : 'English tea reaction', value: englishTeaCurrentStatus},
-          {name : 'Gorfil react status', value: gorfilReactCurrentStatus},
-          {name : 'Crazy react status', value: `${crazyReactCurrentStatus} - ${crazyOdds}%`}
-        )
-
-      await interaction.reply({ embeds: [embed] })
+        featuresCommand(interaction, frenchSnake, englishTea, gorfilReact, crazyReact, crazyOdds)
       }
 
 
@@ -186,38 +171,11 @@ client.on('interactionCreate', async (interaction) => {
       }
 
       if(interaction.commandName === "quotes") {
-        const embed = new EmbedBuilder()
-        .setColor('009dff')
-        .setTitle('Quotes thread')
-        .setDescription(`You can access the quotes by looking at the threads list in [immersive-chat](https://discord.com/channels/512393440726745120/512402168217731072), or by clicking the link below.`)
-        .addFields(
-          {name : 'Direct link', value: '[Quotes Thread](https://discord.com/channels/512393440726745120/1224432486134714389)'}
-        )
-
-      await interaction.reply({ embeds: [embed] })
+        quotesCommand(interaction)
       }
 
       if(interaction.commandName === 'ping') {
-        await interaction.reply({ content: `*Pong! Calculating...*`, ephemeral: true })
-        const ping = interaction.client.ws.ping;
-        
-        // Uptime
-        const nowTime = Date.now()
-        const uptimeMs = nowTime - startTime
-        const formatUptime = (ms) => {
-          const seconds = Math.floor(ms / 1000) % 60
-          const minutes = Math.floor(ms / (1000 * 60)) % 60
-          const hours = Math.floor(ms / (1000 * 60 * 60)) % 24
-          const days = Math.floor(ms / (1000 * 60 *60 * 24))
-          
-          return `${days} day${days !== 1 ? 's' : ''}, ` +
-          `${hours} hour${hours !== 1 ? 's' : ''}, ` +
-          `${minutes} minute${minutes !== 1 ? 's' : ''}, ` +
-          `${seconds} second${seconds !== 1 ? 's' : ''}`;
-        }
-        
-        const uptimeFormatted = formatUptime(uptimeMs)
-        await interaction.editReply({ content: `*Pong! Latency: **${ping}**ms*\nUptime: ${uptimeFormatted}`, ephemeral: true }) 
+        pingCommand(interaction, startTime)
       }
 
       if(interaction.commandName === "greetings") {
@@ -225,28 +183,7 @@ client.on('interactionCreate', async (interaction) => {
       }
 
       if(interaction.commandName === "event") {
-        const roleId = '1095842303429587014'
-        const member = interaction.member
-        const hasRole = member.roles.cache.has(roleId)
-        const removeOption = interaction.options.getBoolean('set') || false
-
-        await interaction.reply({ content: `*Processing...*`, ephemeral: true })
-
-        if (!removeOption) {   
-          if (hasRole) {
-            await member.roles.remove(roleId)
-            interaction.editReply({ content: `The 'EventPing' role has been successfully removed.`})
-          } else {
-            interaction.editReply({ content: `You don't have the 'EventPing' role.`})
-          }
-        } else {
-          if (hasRole) {
-            interaction.editReply({ content: `You already have the 'EventPing' role!`})
-          } else {
-            await member.roles.add(roleId)
-            interaction.editReply({ content: `'EventPing' role successfully added!`})
-          }
-        }
+        eventCommad(interaction)
       }
       
 
@@ -330,22 +267,8 @@ client.on('interactionCreate', async (interaction) => {
       }
 
       if (interaction.commandName === 'feedback') {
-        const admin = await client.users.fetch(adminId)
         const timeAndDate = getTimeAndDate()
-        const feedback = interaction.options.get('query')?.value
-        const displayName = interaction.member.user.globalName
-        const realName = interaction.member.user.username
-
-        const embed = new EmbedBuilder()
-        .setColor('009dff')
-        .setTitle(`${displayName} (${realName}):`)
-        .setDescription(feedback)
-        .addFields(
-          {name : 'Sent:', value: timeAndDate}
-        )
-
-        await admin.send({ content: '## There is feedback!\n', embeds: [embed] })
-        await interaction.reply({ content: 'Your feedback has successfully been sent.', ephemeral: true })
+        feedbackNotice(client, interaction, adminId, timeAndDate)
       }
     }
   }
