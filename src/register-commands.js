@@ -39,11 +39,16 @@ const guildCommands = [
       .setDescription('Set the odds of the "crazy" reply feature.')
     ),
 
+    new SlashCommandBuilder()
+    .setName('discord-status')
+    .setDescription('[MOD] Updates the bot status with the provided message.')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
+
   // USER COMMANDS
 
   new SlashCommandBuilder()
-    .setName('status')
-    .setDescription('Shows what features are currently enabled.'),
+    .setName('features')
+    .setDescription('Shows which features are currently enabled.'),
 
   new SlashCommandBuilder()
     .setName('nsfw')
@@ -96,9 +101,10 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
     console.log('Registering global slash commands...')
     await rest.put(
       Routes.applicationCommands(process.env.BOT_ID),
-      { body: globalCommands}
+      { body: globalCommands }
     )
 
+    ////////////////////////
 
     console.log('Registering guild slash commands...');
 
