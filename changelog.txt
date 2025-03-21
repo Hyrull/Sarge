@@ -1,3 +1,8 @@
+V.1.7 - March 20th, 2025
+- /status is now /features
+- Mod commands are now only visible by moderators
+- Added a mod command for them to update the bot's discord status and presence.
+
 V.1.6.3 - November 28th, 2024
 - Fixed /ping calculating days as sixty hours long
 
