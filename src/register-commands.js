@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { REST, Routes, SlashCommandBuilder } = require('discord.js');
+const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 const globalCommands = [
   new SlashCommandBuilder()
@@ -11,9 +11,13 @@ const globalCommands = [
 ]
 
 const guildCommands = [
+
+  // MODERATOR COMMANDS
+  
   new SlashCommandBuilder()
     .setName('toggle')
-    .setDescription('Toggles features on or off.')
+    .setDescription('[MOD] Toggles features on or off.')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
     .addBooleanOption(option => option
       .setName('french-snake')
       .setDescription('Adds a snake 🐍 reaction whenever someone says "French".')
@@ -34,6 +38,8 @@ const guildCommands = [
       .setName('crazy-odds')
       .setDescription('Set the odds of the "crazy" reply feature.')
     ),
+
+  // USER COMMANDS
 
   new SlashCommandBuilder()
     .setName('status')
