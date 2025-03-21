@@ -5,6 +5,7 @@ const fsPromises = require('fs').promises
 const { youtubeSearchCommand } = require('./slash-commands/youtube')
 const { toggleFeatures } = require('./slash-commands/feature-toggle')
 // const { secretRuleCheck } = require('./secret')
+const { discordStatus } = require('./slash-commands/discordStatus')
 
 const greetingsVideo = './data/greetings.mp4'
 
@@ -123,7 +124,7 @@ client.on('interactionCreate', async (interaction) => {
         const embed = new EmbedBuilder()
         .setColor('009dff')
         .setTitle("Sarge's latest version")
-        .setDescription(`I am currently in **v.1.6.4**.\nLast update: December 12th, 2024`)
+        .setDescription(`I am currently in **v.1.6.4**.\nLast update: Hyrul is working on it right now!`)
         .addFields(
           {name : "What's new?", value: '[Changelog](https://github.com/Hyrull/Immersive-Quotes/blob/main/changelog.txt)'}
         )
@@ -137,7 +138,7 @@ client.on('interactionCreate', async (interaction) => {
       //   // command is in secret.js, which isn't public. Sorry, no cheating by checking the code!
       // }
 
-      if(interaction.commandName === "status") {
+      if(interaction.commandName === "features") {
         let frenchSnakeCurrentStatus = ''
         let gorfilReactCurrentStatus = ''
         let crazyReactCurrentStatus = ''
@@ -178,6 +179,10 @@ client.on('interactionCreate', async (interaction) => {
         } catch (err) {
           console.error('Error:', err)
         }
+      }
+
+      if (interaction.commandName === "discord-status") {
+        discordStatus(interaction, client)
       }
 
       if(interaction.commandName === "quotes") {
@@ -398,3 +403,5 @@ client.on('messageCreate', async (message) => {
 })
 
 setup()
+
+module.exports = { client }

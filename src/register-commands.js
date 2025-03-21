@@ -42,8 +42,39 @@ const guildCommands = [
     new SlashCommandBuilder()
     .setName('discord-status')
     .setDescription('[MOD] Updates the bot status with the provided message.')
-    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
 
+    .addStringOption(option => 
+      option.setName('activity-type')
+      .setDescription('What should the activity type be?')
+      .setRequired(true)
+        .addChoices(
+        { name: 'Playing', value: 'Playing' },
+        { name: 'Listening to', value: 'Listening' },
+        { name: 'Watching', value: 'Watching' },
+        { name: 'Custom', value: 'Custom' }
+      )
+    )
+
+    .addStringOption(option => 
+      option.setName('status')
+      .setDescription("What's the new status?")
+      .setRequired(true)
+    )
+
+    .addStringOption(option =>
+      option.setName('presence')
+      .setDescription('What should the presence be?')
+      .setRequired(true)
+      .addChoices([
+        { name: 'Online', value: 'online' },
+        { name: 'Do Not Disturb', value: 'dnd' },
+        { name: 'Idle', value: 'idle' },
+        { name: 'Invisible', value: 'invisible' }
+      ])
+    ),
+
+    
   // USER COMMANDS
 
   new SlashCommandBuilder()
