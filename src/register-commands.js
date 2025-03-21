@@ -1,104 +1,86 @@
 require('dotenv').config();
-const { REST, Routes, ApplicationCommandOptionType } = require('discord.js');
+const { REST, Routes, SlashCommandBuilder } = require('discord.js');
 
 const globalCommands = [
-  {
-    name: 'version',
-    description: 'Gives the bot current version and a link to the changelog'
-  },
-  {
-    name: 'ping',
-    description: "Displays the bot's ping and uptime."
-  }
+  new SlashCommandBuilder()
+    .setName('version')
+    .setDescription('Gives the bot current version and a link to the changelog'),
+  new SlashCommandBuilder()
+    .setName('ping')
+    .setDescription("Displays the bot's ping and uptime.")
 ]
 
 const guildCommands = [
-  {
-    name: 'toggle',
-    description: 'Toggles features on or off.',
-    options: [
-      { 
-        name: 'french-snake',
-        description: 'Adds a snake 🐍 reaction whenever someone says "French".',
-        type: ApplicationCommandOptionType.Boolean,
-      },
-      { 
-        name: 'english-tea',
-        description: 'Adds a teapot 🫖 reaction whenever someone says "English" or "British".',
-        type: ApplicationCommandOptionType.Boolean,
-      },
-      { 
-        name: 'gorfil',
-        description: 'Adds a gorfil reaction whenever someone sends this emoji.',
-        type: ApplicationCommandOptionType.Boolean,
-      },
-      { 
-        name: 'crazy',
-        description: 'Has a chance to reply a certain quote when someone says "crazy".',
-        type: ApplicationCommandOptionType.Boolean,
-      },
-      { 
-        name: 'crazy-odds',
-        description: 'Set the odds of the "crazy" reply feature.',
-        type: ApplicationCommandOptionType.Number,
-      }
-    ]
-  },
-  {
-    name: 'status',
-    description: 'Shows what features are currently enabled.'
-  },
-  {
-    name: 'nsfw',
-    description: 'Tried to grant you access to the nsfw channel.'
-  },
-  { 
-    name: 'french-snake-count',
-    description: 'Shows how many times I reacted a snake to "french".'
-  },
-  { name: 'quotes',
-    description: 'Sends the link to the "quotes" thread.'
-  },
-  {
-    name: 'greetings',
-    description: 'Sends a link to a "greetings!" video.'
-  },
-  {
-    name: 'youtube',
-    description: "Quick-search for a YouTube video. Input a search and I'll send the first result's link.",
-    options: [
-      {
-        name: 'query',
-        description: 'What are you searching for?',
-        type: ApplicationCommandOptionType.String,
-        required: true
-      }
-    ]
-  },
-  {
-    name: 'event',
-    description: "Manage the 'EventPing' rule to be notified for future events.",
-    options: [
-      {
-        name: 'set',
-        description: 'Set it to true or false.',
-        type: ApplicationCommandOptionType.Boolean,
-        required: true
-      }
-    ]
-  },
-  {
-    name: 'feedback',
-    description: "Provide any feedback for Sarge. Only you and the bot admin will see it.",
-    options: [
-      {
-        name: 'query',
-        description: "What do you want to say?",
-        type: ApplicationCommandOptionType.String,
-        required: true
-      }
-    ]
-  }
+  new SlashCommandBuilder()
+    .setName('toggle')
+    .setDescription('Toggles features on or off.')
+    .addBooleanOption(option => option
+      .setName('french-snake')
+      .setDescription('Adds a snake 🐍 reaction whenever someone says "French".')
+    )
+    .addBooleanOption(option => option
+      .setName('english-tea')
+      .setDescription('Adds a teapot 🫖 reaction whenever someone says "English" or "British".')
+    )
+    .addBooleanOption(option => option
+      .setName('gorfil')
+      .setDescription('Adds a gorfil reaction whenever someone sends this emoji.')
+    )
+    .addBooleanOption(option => option
+      .setName('crazy')
+      .setDescription('Has a chance to reply a certain quote when someone says "crazy".')
+    )
+    .addNumberOption(option => option
+      .setName('crazy-odds')
+      .setDescription('Set the odds of the "crazy" reply feature.')
+    ),
+
+  new SlashCommandBuilder()
+    .setName('status')
+    .setDescription('Shows what features are currently enabled.'),
+
+  new SlashCommandBuilder()
+    .setName('nsfw')
+    .setDescription('Tries to grant you access to the nsfw channel.'),
+
+  new SlashCommandBuilder()
+    .setName('french-snake-count')
+    .setDescription('Shows how many times I reacted a snake to "french".'),
+
+  new SlashCommandBuilder()
+    .setName('quotes')
+    .setDescription('Sends the link to the "quotes" thread.'),
+
+  new SlashCommandBuilder()
+    .setName('greetings')
+    .setDescription('Sends a link to a "greetings!" video.'),
+
+  new SlashCommandBuilder()
+    .setName('youtube')
+    .setDescription("Quick-search for a YouTube video. Input a search and I'll send the first result's link.")
+    .addStringOption(option => option
+      .setName('query')
+      .setDescription('What are you searching for?')
+      .setRequired(true)
+    ),
+
+  new SlashCommandBuilder()
+    .setName('event')
+    .setDescription("Manage the 'EventPing' rule to be notified for future events.")
+    .addBooleanOption(option => option
+      .setName('set')
+      .setDescription('Set it to true or false.')
+      .setRequired(true)
+    ),
+
+  new SlashCommandBuilder()
+    .setName('feedback')
+    .setDescription("Provide any feedback for Sarge. Only the bot admin will see privately.")
+    .addStringOption(option => option
+      .setName('query')
+      .setDescription("What do you want to say?")
+      .setRequired(true)
+    )
 ]
 
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
