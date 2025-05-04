@@ -11,6 +11,7 @@ const { quotesCommand } = require('./slash-commands/quotes')
 const { pingCommand } = require('./slash-commands/ping')
 const { eventCommad } = require('./slash-commands/event')
 const { feedbackNotice } = require('./slash-commands/feedback')
+const { gptSearch } = require('./slash-commands/gpt-search')
 
 const greetingsVideo = './data/greetings.mp4'
 
@@ -181,18 +182,35 @@ client.on('interactionCreate', async (interaction) => {
       if(interaction.commandName === "greetings") {
         interaction.reply({files: [greetingsVideo]})
       }
-
+      
       if(interaction.commandName === "event") {
         eventCommad(interaction)
       }
       
+      if(interaction.commandName === "youtube") {
+        const logMessage = await youtubeSearchCommand(interaction)
+        addToLogs(logMessage)
+      }
+      
+      if(interaction.commandName === "question") {
+        const lv40Role = '518962130372919317'
 
+        // Since this command uses OpenAI tokens thus actual money, I'm locking it behind a level 40 role.
+        if (interaction.member.roles.cache.has(lv40Role)) {
+          await interaction.deferReply({ ephemeral: false })
+          const answer = await gptSearch(interaction)
+          await interaction.editReply({ content: answer })
+        } else {
+          await interaction.reply({ content: 'You need to be level 40 or more to use this command.', ephemeral: true })
+        }
+      }
+      
       if(interaction.commandName === "nsfw") {
         const member = interaction.member
         const lv20Role = '518961929583198209'
         const modLogsChannelId = '518821248768278528'
         let easterEggTriggered = false
-
+        
 
         // Reading ID to see if there's an easter egg associated with it
         try {
@@ -250,10 +268,7 @@ client.on('interactionCreate', async (interaction) => {
         }
       }
 
-      if(interaction.commandName === "youtube") {
-        const logMessage = await youtubeSearchCommand(interaction)
-        addToLogs(logMessage)
-      }
+
 
       if (interaction.commandName === "toggle") {
         const frenchSnakeOption = interaction.options.get('french-snake')?.value
