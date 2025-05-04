@@ -1,3 +1,6 @@
+V1.8 - May 3rd, 2025
+- Added /question (requires lv40+)
+
 V.1.7 - March 20th, 2025
 - /status is now /features
 - Mod commands are now only visible by moderators
