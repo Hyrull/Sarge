@@ -17,7 +17,7 @@ const guildCommands = [
   new SlashCommandBuilder()
     .setName('toggle')
     .setDescription('[MOD] Toggles features on or off.')
-    // .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
     .addBooleanOption(option => option
       .setName('french-snake')
       .setDescription('Adds a snake 🐍 reaction whenever someone says "French".')
@@ -77,7 +77,7 @@ const guildCommands = [
     new SlashCommandBuilder()
     .setName('question')
     .setDescription('[MOD] Asks a question!')
-    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers) // TEMP FOR WIP
+    // .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
     .addStringOption(option => option
       .setName('question')
       .setDescription('What is the question?')
