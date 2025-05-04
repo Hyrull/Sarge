@@ -1,10 +1,12 @@
+const { MessageFlags } = require("discord.js");
+
 const eventCommad = async (interaction) => {
   const roleId = '1095842303429587014'
   const member = interaction.member
   const hasRole = member.roles.cache.has(roleId)
   const removeOption = interaction.options.getBoolean('set') || false
 
-  await interaction.reply({ content: `*Processing...*`, ephemeral: true })
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
   if (!removeOption) {   
     if (hasRole) {

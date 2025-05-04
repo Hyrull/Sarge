@@ -1,6 +1,8 @@
+const { MessageFlags } = require("discord.js");
+
 const pingCommand = async (interaction, startTime) => {
-  await interaction.reply({ content: `*Pong! Calculating...*`, ephemeral: true })
-  const ping = interaction.client.ws.ping;
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
+  const ping = interaction.client.ws.ping
   
   // Uptime
   const nowTime = Date.now()
@@ -18,7 +20,7 @@ const pingCommand = async (interaction, startTime) => {
   }
   
   const uptimeFormatted = formatUptime(uptimeMs)
-  await interaction.editReply({ content: `*Pong! Latency: **${ping}**ms*\nUptime: ${uptimeFormatted}`, ephemeral: true }) 
+  await interaction.editReply({ content: `*Pong! Latency: **${ping}**ms*\nUptime: ${uptimeFormatted}`, flags: MessageFlags.Ephemeral }) 
 }
 
 module.exports = { pingCommand }

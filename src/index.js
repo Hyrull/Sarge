@@ -1,5 +1,5 @@
 require('dotenv').config()
-const { Client, IntentsBitField, EmbedBuilder } = require('discord.js')
+const { Client, IntentsBitField, EmbedBuilder, MessageFlags } = require('discord.js')
 const fsPromises = require('fs').promises
 
 const { youtubeSearchCommand } = require('./slash-commands/youtube')
@@ -188,7 +188,8 @@ client.on('interactionCreate', async (interaction) => {
       }
       
       if(interaction.commandName === "youtube") {
-        const logMessage = await youtubeSearchCommand(interaction)
+        await interaction.deferReply();
+        const logMessage = await youtubeSearchCommand(interaction);
         addToLogs(logMessage)
       }
       
@@ -197,11 +198,11 @@ client.on('interactionCreate', async (interaction) => {
 
         // Since this command uses OpenAI tokens thus actual money, I'm locking it behind a level 40 role.
         if (interaction.member.roles.cache.has(lv40Role)) {
-          await interaction.deferReply({ ephemeral: false })
+          await interaction.deferReply()
           const answer = await gptSearch(interaction)
           await interaction.editReply({ content: answer })
         } else {
-          await interaction.reply({ content: 'You need to be level 40 or more to use this command.', ephemeral: true })
+          await interaction.reply({ content: 'You need to be level 40 or more to use this command.', flags: MessageFlags.Ephemeral })
         }
       }
       

@@ -1,6 +1,8 @@
-const { EmbedBuilder } = require('discord.js')
+const { EmbedBuilder, MessageFlags } = require('discord.js')
 
 const feedbackNotice = async (client, interaction, adminId, timeAndDate) => {
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
+
   const admin = await client.users.fetch(adminId)
   const feedback = interaction.options.get('feedback')?.value
   const displayName = interaction.member.user.globalName
@@ -15,7 +17,7 @@ const feedbackNotice = async (client, interaction, adminId, timeAndDate) => {
   )
 
   await admin.send({ content: '## There is feedback!\n', embeds: [embed] })
-  await interaction.reply({ content: 'Your feedback has successfully been sent.', ephemeral: true })
+  await interaction.editReply({ content: 'Your feedback has successfully been sent.', flags: MessageFlags.Ephemeral })
 }
 
 module.exports = { feedbackNotice }
