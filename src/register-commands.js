@@ -76,7 +76,7 @@ const guildCommands = [
 
     new SlashCommandBuilder()
     .setName('question')
-    .setDescription('[MOD] Asks a question!')
+    .setDescription('(Lv.40+) Asks a question!')
     // .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
     .addStringOption(option => option
       .setName('question')
