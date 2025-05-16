@@ -112,7 +112,11 @@ async function fetchCustomModerators() {
 async function setup() {
     await fetchCustomModerators()
     await fetchCurrentConfig()
-    client.login(process.env.TOKEN)
+    try {
+      client.login(process.env.TOKEN)
+    } catch (err) {
+      console.error('Error: failed to login to Discord - invalid Token?.')
+    }
 }
 
 client.on('ready', (c) => {
