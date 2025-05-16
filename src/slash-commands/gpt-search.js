@@ -39,7 +39,7 @@ const gptSearch = async (interaction) => {
         },
         {
           role: 'user',
-          content: `A user asked: "${query}". Answer it in a short and informative way using this data:\n\n${textContent}`,
+          content: `A user asked: "${query}". Address in an informative way, short enough to be fitting a Discord chat, using this data:\n\n${textContent}`,
         },
       ],
       temperature: 0.7,
@@ -50,7 +50,7 @@ const gptSearch = async (interaction) => {
       // gpt-4-turbo	~$0.01	/ 1k tokens
     })
     const summary = response.choices[0].message.content
-    return `You asked - "**${query}**". \n\nHere's my answer: ${summary}\n\n[**Source** - "${firstResult.title}](<${url}>)`
+    return `You asked - "**${query}**". \n\nHere's my answer: ${summary}\n\n**Source** - ["${firstResult.title}"](<${url}>)`
   } catch (err) {
     console.error(err)
     return "There was an error summarizing the text."
