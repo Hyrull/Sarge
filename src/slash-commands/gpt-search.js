@@ -17,40 +17,62 @@ const gptSearch = async (interaction) => {
       },
     })
 
+    // Declaring it this way because i'll need the .title later on
     const firstResult = serpRes.data.organic_results?.[0]
+    const secondResult = serpRes.data.organic_results?.[1]
+    const thirdResult = serpRes.data.organic_results?.[2]
+
     if (!firstResult) return "No results found."
-    const url = firstResult.link
+    const firstUrl = firstResult.link
+    const secondUrl = secondResult.link
+    const thirdUrl = thirdResult.link
 
 
-    // Step 2 : Scraping the first result's page
-    const page = await axios.get(url, { timeout: 10000 })
-    const $ = cheerio.load(page.data)
-    const paragraphs = $("p").map((i, el) => $(el).text()).get()
-    const textContent = paragraphs.join(" ").slice(0, 3000) // Limit for token size 'cause I ain't gonna pay that much for a discord bot
+    // Step 2 : Scraping the result's page
+    async function fetchPageContent(url) {
+      try {
+        // If it's youtube, it's irrelevant
+        if (url.includes("youtube.com"))  return "[Video content]"
+        // Reddit blocks the requests unless it's a .json request
+        if (url.includes("reddit.com") && !url.endsWith(".json")) url += ".json"
 
+
+        const page = await axios.get(url, { timeout: 10000, headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36','Accept-Language': 'en-US,en;q=0.9',} })
+        const $ = cheerio.load(page.data)
+        const paragraphs = $("p").map((i, el) => $(el).text()).get()
+        console.log(`Fetched content from ${url}`)
+        return paragraphs.join(" ").slice(0, 3000) // Limit for token size 'cause I ain't gonna pay that much for a discord bot
+      } catch (error) {
+        console.error(`Error fetching ${url}:`, error.message)
+        return "[Content unavilable due to an error while fetching the page.]"
+      }
+    }
+    const firstPageContent = await fetchPageContent(firstUrl)
+    const secondPageContent = await fetchPageContent(secondUrl)
+    const thirdPageContent = await fetchPageContent(thirdUrl) 
 
   // Step 3 : Using ChatGPT to summarize it and make it shorter but still informative
     const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo', // could use gpt4 if i think it's good later on, but for now that'll do
+      model: 'gpt-4o-mini', // Could switch to 4.5 if we want better quality later on
       messages: [
         {
           role: "system",
-          content: "You are a helpful assistant that summarizes articles for a Discord chat.",
+          content: "You are Sarge, a helpful mouse assistant that summarizes articles for a Discord chat. You will be answering questions based on your own knowledge, and the provided search result content. Keep your answers concise and informative, suitable for a Discord chat. If you recognize the question as being a joke or meme, Discord the search result data answer in a humorous way.",
         },
         {
           role: 'user',
-          content: `A user asked: "${query}". Address in an informative way, short enough to be fitting a Discord chat, using this data:\n\n${textContent}`,
+          content: `A user asked: "${query}". Here is data:\n\nSearch result 1:${firstPageContent}\n\nSearch result 2:${secondPageContent}\n\nSearch result 3:${thirdPageContent}`,
         },
       ],
       temperature: 0.7,
-      max_tokens: 1000,
+      max_tokens: 1500,
 
       // Hey, future me. As of May 2025, here's the token prices if you wanna change it.
       // gpt-3.5-turbo	~$0.0015 / 1k tokens
       // gpt-4-turbo	~$0.01	/ 1k tokens
     })
     const summary = response.choices[0].message.content
-    return `You asked - "**${query}**". \n\nHere's my answer: ${summary}\n\n**Source** - ["${firstResult.title}"](<${url}>)`
+    return `You asked - "**${query}**". \n\nHere's my answer: ${summary}\n\n**Sources:**\n["${firstResult.title}"](<${firstUrl}>)\n["${secondResult.title}"](<${secondUrl}>)\n["${thirdResult.title}"](<${thirdUrl}>)`
   } catch (err) {
     console.error(err)
     return "There was an error summarizing the text."
