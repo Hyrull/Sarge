@@ -1,3 +1,7 @@
+V1.8.1 - May 28th, 2025
+- /question now has more context and uses more data to answer
+- /youtube now has a "removal" feature for when the returned link isn't the right one
+
 V1.8 - May 3rd, 2025
 - Added /question (requires lv40+)
 
