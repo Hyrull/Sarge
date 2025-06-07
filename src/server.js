@@ -15,6 +15,10 @@ app.post('/interactions', (req, res) => {
   res.status(200).json({ type: 1 }); // Placeholder response for now
 });
 
+app.get('/health', (req, res) => {
+  res.json({ status: "ok" });
+})
+
 app.listen(port, () => {
   console.log(`Local server listening at http://localhost:${port}`);
 });
