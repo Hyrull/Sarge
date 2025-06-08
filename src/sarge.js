@@ -1,5 +1,6 @@
 require('dotenv').config()
 const { Client, IntentsBitField, EmbedBuilder, MessageFlags } = require('discord.js')
+const http = require('http')
 const fsPromises = require('fs').promises
 
 const { youtubeSearchCommand } = require('./slash-commands/youtube')
@@ -12,7 +13,6 @@ const { pingCommand } = require('./slash-commands/ping')
 const { eventCommad } = require('./slash-commands/event')
 const { feedbackNotice } = require('./slash-commands/feedback')
 const { gptSearch } = require('./slash-commands/gpt-search')
-const http = require('http');
 
 const greetingsVideo = './data/greetings.mp4'
 
@@ -349,8 +349,10 @@ client.on('messageCreate', async (message) => {
 setup()
 
 http.createServer((req, res) => {
-  res.writeHead(200)
-  res.end('Bot is running')
-}).listen(8300, '0.0.0.0')
+  res.writeHead(200);
+  res.end('Sarge is running!');
+}).listen(8300, '0.0.0.0', () => {
+  console.log('Health check server running on port 8300');
+});
 
 module.exports = { client }
