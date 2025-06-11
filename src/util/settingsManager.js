@@ -1,4 +1,4 @@
-const GuildSettings = require('./model')
+const GuildSettings = require('../model')
 
 const settingsCache = new Map()
 

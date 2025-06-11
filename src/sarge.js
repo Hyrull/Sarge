@@ -3,7 +3,7 @@ const { Client, IntentsBitField, EmbedBuilder, MessageFlags } = require('discord
 const http = require('http')
 const fsPromises = require('fs').promises
 const mongoose = require('mongoose')
-const { getSettings, updateSettingsInCache } = require('./settingsManager')
+const { getSettings, updateSettingsInCache } = require('./util/settingsManager')
 
 const { youtubeSearchCommand } = require('./slash-commands/youtube')
 const { toggleFeatures } = require('./slash-commands/feature-toggle')
@@ -47,16 +47,6 @@ function getTimeAndDate() {
   const date = now.toISOString().slice(0, 10)
   const time = now.toLocaleTimeString()
   return `${date} @ ${time}`
-}
-
-function addToLogs(data) {
-  const timeAndDate = getTimeAndDate()
-  const logMessage = `${timeAndDate} | ${data}`
-  fsPromises.appendFile('./logs/logs.txt', logMessage + '\n', (err) => {
-    if (err) {
-      console.error('Error logging:', err)
-    }
-  })
 }
 
 async function incrementCount(message, count) {
@@ -116,9 +106,9 @@ client.on('interactionCreate', async (interaction) => {
         const embed = new EmbedBuilder()
         .setColor('009dff')
         .setTitle("Sarge's latest version")
-        .setDescription(`I am currently in **v.1.8.1**.\nLast update: May 28th, 2025`)
+        .setDescription(`I am currently in **v.1.8.2**.\nLast update: June 11th, 2025`)
         .addFields(
-          {name : "What's new?", value: '[Changelog](https://github.com/Hyrull/Immersive-Quotes/blob/main/changelog.txt)'}
+          {name : "What's new?", value: '[Changelog](https://github.com/Hyrull/Sarge/blob/main/changelog.txt)'}
         )
         .setFooter({ text: 'Sarge is developed by Hyrul', iconURL: 'https://imgur.com/15fnxws.png'})
 
@@ -171,8 +161,7 @@ client.on('interactionCreate', async (interaction) => {
       
       if(interaction.commandName === "youtube") {
         await interaction.deferReply()
-        const logMessage = await youtubeSearchCommand(interaction)
-        addToLogs(logMessage)
+        await youtubeSearchCommand(interaction)
       }
       
       if(interaction.commandName === "question") {
@@ -259,7 +248,6 @@ client.on('interactionCreate', async (interaction) => {
         const crazyOption = interaction.options.get('crazy')?.value
         const crazyOddsSet = interaction.options.get('crazy-odds')?.value
         const logMessage = await toggleFeatures(frenchSnakeOption, englishTeaOption, gorfilOption, crazyOption, crazyOddsSet, customModerators, interaction, configPath)
-        await addToLogs(logMessage)
         setTimeout(fetchCurrentConfig, 3000)
       }
 
@@ -318,7 +306,6 @@ client.on('messageCreate', async (message) => {
   if (lowerCaseContent.startsWith('$youtube')) {
     const query = lowerCaseContent.slice('$youtube '.length)
     const logMessage = await youtubeSearchCommand(query, true, message)
-    addToLogs(logMessage)
   }
 })
 
