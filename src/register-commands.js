@@ -39,7 +39,7 @@ const guildCommands = [
       .setDescription('Set the odds of the "crazy" reply feature.')
     ),
 
-    new SlashCommandBuilder()
+  new SlashCommandBuilder()
     .setName('discord-status')
     .setDescription('[MOD] Updates the bot status with the provided message.')
     .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
@@ -74,40 +74,28 @@ const guildCommands = [
       ])
     ),
 
-    new SlashCommandBuilder()
-    .setName('question')
-    .setDescription('(Lv.40+) Asks a question!')
-    // .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
-    .addStringOption(option => option
-      .setName('question')
-      .setDescription('What is the question?')
-      .setRequired(true)
-    ),
-
-
-
   // USER COMMANDS
-
+    
   new SlashCommandBuilder()
     .setName('features')
     .setDescription('Shows which features are currently enabled.'),
-
+    
   new SlashCommandBuilder()
     .setName('nsfw')
     .setDescription('Tries to grant you access to the nsfw channel.'),
-
+    
   new SlashCommandBuilder()
     .setName('french-snake-count')
     .setDescription('Shows how many times I reacted a snake to "french".'),
-
+    
   new SlashCommandBuilder()
     .setName('quotes')
     .setDescription('Sends the link to the "quotes" thread.'),
-
+    
   new SlashCommandBuilder()
     .setName('greetings')
     .setDescription('Sends a link to a "greetings!" video.'),
-
+    
   new SlashCommandBuilder()
     .setName('youtube')
     .setDescription("Quick search for a YouTube video. Input a query and I'll send the first result's link.")
@@ -116,7 +104,7 @@ const guildCommands = [
       .setDescription('What are you searching for?')
       .setRequired(true)
     ),
-
+    
   new SlashCommandBuilder()
     .setName('event')
     .setDescription("Adds or remove the 'EventPing' role to be notified for future events.")
@@ -125,7 +113,7 @@ const guildCommands = [
       .setDescription('Set it to true or false.')
       .setRequired(true)
     ),
-
+    
   new SlashCommandBuilder()
     .setName('feedback')
     .setDescription("Send feedback for Sarge! Only the bot admin will see it.")
@@ -133,26 +121,36 @@ const guildCommands = [
       .setName('feedback')
       .setDescription("What do you want to say?")
       .setRequired(true)
+    ),
+
+  new SlashCommandBuilder()
+    .setName('question')
+    .setDescription('(Lv.40+) Answers any question based on personal research and summarized by GPT4.5.')
+    // .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
+    .addStringOption(option => option
+      .setName('question')
+      .setDescription('What is the question?')
+      .setRequired(true)
     )
-]
-
-const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
-
-(async () => {
-  try {
-    console.log('Registering global slash commands...')
-    await rest.put(
-      Routes.applicationCommands(process.env.BOT_ID),
-      { body: globalCommands }
-    )
-
-    ////////////////////////
-
-    console.log('Registering guild slash commands...');
-
-    await rest.put(
-      Routes.applicationGuildCommands(
-        process.env.BOT_ID,
+  ]
+  
+  const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+  
+  (async () => {
+    try {
+      console.log('Registering global slash commands...')
+      await rest.put(
+        Routes.applicationCommands(process.env.BOT_ID),
+        { body: globalCommands }
+      )
+      
+      ////////////////////////
+      
+      console.log('Registering guild slash commands...');
+      
+      await rest.put(
+        Routes.applicationGuildCommands(
+          process.env.BOT_ID,
         process.env.GUILD_ID
       ),
       { body: guildCommands }
