@@ -15,6 +15,7 @@ const { pingCommand } = require('./slash-commands/ping')
 const { eventCommad } = require('./slash-commands/event')
 const { feedbackNotice } = require('./slash-commands/feedback')
 const { gptSearch } = require('./slash-commands/gpt-search')
+const incrementCount = require('./util/incrementCount')
 
 const greetingsVideo = './data/greetings.mp4'
 
@@ -49,33 +50,6 @@ function getTimeAndDate() {
   return `${date} @ ${time}`
 }
 
-async function incrementCount(message, count) {
-  try {
-    const data = await fsPromises.readFile(configPath, 'utf8')
-    const config = JSON.parse(data)
-    config[`${count}`] += 1
-    await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
-
-    if (config['frenchSnake-count'] % 100 === 0) {
-      message.reply(`This is my ${config['frenchSnake-count']}th fr*nch :snake: reaction! :mouse:`)
-    }
-  } catch (err) {
-    console.error('Error:', err)
-  }
-}
-
-async function incrementNsfwBans() {
-  try {
-    const data = await fsPromises.readFile(configPath, 'utf8')
-    const config = JSON.parse(data)
-    config['nsfw-bans'] += 1
-    await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
-  } catch (err) {
-    console.error('Error:', err)
-  }
-}
-
-
 // start
 async function setup() {
   // Let's login to MongoDB
@@ -101,6 +75,8 @@ client.on('ready', (c) => {
 // Custom slash commands
 client.on('interactionCreate', async (interaction) => {
     if (interaction.isCommand()) {
+      const settings = await getSettings(interaction.guild.id)
+      
       if(interaction.commandName === "version") {
 
         const embed = new EmbedBuilder()
@@ -200,33 +176,30 @@ client.on('interactionCreate', async (interaction) => {
         if (easterEggTriggered) return
 
         // Default behavior
-        const data = await fsPromises.readFile(configPath, 'utf8')
-        const config = JSON.parse(data)
-        let count = config['nsfw-bans']
 
         if (interaction.member.roles.cache.has(lv20Role)) {
           interaction.reply("You are above level 20, so I'm saving you. Lucky you...")
         } else {
           await interaction.guild.members.ban(member, { reason: 'Fell for the /nsfw command during the purge event'})
           console.log(`Banned ${member} due to NSFW command usage.`)
-          count+++
-          incrementNsfwBans()
+          incrementCount(message.guild.id, 'nsfwBans')
 
-          switch (count) {
+
+          switch (settings.nsfwBans) {
             case 1: {
-              await interaction.reply(`${member} is the ${count}st person to fall!! HURRAY!`)
+              await interaction.reply(`${member} is the ${settings.nsfwBans}st person to fall!! HURRAY!`)
               break
             }
             case 2: {
-              await interaction.reply(`${member} is the ${count}nd person to fall...`)
+              await interaction.reply(`${member} is the ${settings.nsfwBans}nd person to fall...`)
               break
             }
             case 3: {
-              await interaction.reply(`${member} is the ${count}rd person to fall...`)
+              await interaction.reply(`${member} is the ${settings.nsfwBans}rd person to fall...`)
               break
             }
             default: {
-              await interaction.reply(`${member} is the ${count}th person to fall...`)
+              await interaction.reply(`${member} is the ${settings.nsfwBans}th person to fall...`)
             }
           }
 
@@ -247,7 +220,7 @@ client.on('interactionCreate', async (interaction) => {
         const gorfilOption = interaction.options.get('gorfil')?.value
         const crazyOption = interaction.options.get('crazy')?.value
         const crazyOddsSet = interaction.options.get('crazy-odds')?.value
-        const logMessage = await toggleFeatures(frenchSnakeOption, englishTeaOption, gorfilOption, crazyOption, crazyOddsSet, customModerators, interaction, configPath)
+        await toggleFeatures(frenchSnakeOption, englishTeaOption, gorfilOption, crazyOption, crazyOddsSet, customModerators, interaction, configPath)
         setTimeout(fetchCurrentConfig, 3000)
       }
 
@@ -273,6 +246,7 @@ client.on('messageCreate', async (message) => {
 
   if (lowerCaseContent.includes('french') && settings.frenchSnake) {
     message.react('🐍')
+    incrementCount(message.guild.id, 'frenchSnakeCount')
   }
   
   if (englishKeywords.some(word => lowerCaseContent.includes(word)) && settings.englishTea) {
@@ -305,7 +279,7 @@ client.on('messageCreate', async (message) => {
   // YouTube Search (legacy)
   if (lowerCaseContent.startsWith('$youtube')) {
     const query = lowerCaseContent.slice('$youtube '.length)
-    const logMessage = await youtubeSearchCommand(query, true, message)
+    await youtubeSearchCommand(query, true, message)
   }
 })
 
