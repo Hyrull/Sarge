@@ -2,6 +2,8 @@ require('dotenv').config()
 const { Client, IntentsBitField, EmbedBuilder, MessageFlags } = require('discord.js')
 const http = require('http')
 const fsPromises = require('fs').promises
+const mongoose = require('mongoose')
+const { getSettings, updateSettingsInCache } = require('./settingsManager')
 
 const { youtubeSearchCommand } = require('./slash-commands/youtube')
 const { toggleFeatures } = require('./slash-commands/feature-toggle')
@@ -28,8 +30,6 @@ const client = new Client ({
 
 //////////////////////////////////////////////////////////////////////////////////
 
-let adminId = ''
-let customModerators = []
 let frenchSnake = true
 let englishTea = true
 const englishKeywords = ['british', 'english']
@@ -41,20 +41,6 @@ const easterEggsPath = './data/eastereggs.json'
 const startTime = Date.now()
 console.log(`Bot started at: ${new Date(startTime).toISOString()}`)
 
-async function fetchCurrentConfig() {
-  try {
-    const data = await fsPromises.readFile(configPath, 'utf8')
-    const readableData = JSON.parse(data)
-    frenchSnake = readableData['french-react']
-    englishTea = readableData['tea-react']
-    gorfilReact = readableData['gorfil-react']
-    crazyReact = readableData['crazy']
-    crazyOdds = readableData['crazy-odds']
-
-  } catch(err) {
-    console.error('Error: failed to read config file.')
-  }
-}
 
 function getTimeAndDate() {
   const now = new Date()
@@ -100,19 +86,14 @@ async function incrementNsfwBans() {
 }
 
 
-// Modlist fetch
-async function fetchCustomModerators() {
-  const fileContent = await fsPromises.readFile(configPath, 'utf8')
-  const configData = JSON.parse(fileContent)
-  customModerators = configData.moderators
-  adminId = configData.admin
-  console.log('Custom moderators ID:', customModerators)
-}
-
 // start
 async function setup() {
-    await fetchCustomModerators()
-    await fetchCurrentConfig()
+  // Let's login to MongoDB
+  await mongoose.connect(process.env.MONGODB_LOGIN)
+  .then(() => console.log('Connected to MongoDB!'))
+  .catch((err) => console.log('Connection to MongoDB failed! Error: ', err))
+  
+  // Now let's login to Discord
     try {
       client.login(process.env.TOKEN)
     } catch (err) {
@@ -156,14 +137,10 @@ client.on('interactionCreate', async (interaction) => {
 
       if(interaction.commandName === "french-snake-count") {
         try {
-          const data = await fsPromises.readFile(configPath, 'utf8')
-          const config = JSON.parse(data)
-          const count = config['frenchSnake-count']
-
           const embed = new EmbedBuilder()
             .setColor('009dff')
             .setTitle('French snake count')
-            .setDescription(`I have reacted a snake to "french" **${count}** times!`)
+            .setDescription(`I have reacted a snake to "french" **${settings.frenchSnakeCount}** times!`)
             // .setFooter({ text: 'Sarge developed by Hyrul', iconURL: 'https://imgur.com/15fnxws.png'})
 
           await interaction.reply({ embeds: [embed] })
@@ -193,8 +170,8 @@ client.on('interactionCreate', async (interaction) => {
       }
       
       if(interaction.commandName === "youtube") {
-        await interaction.deferReply();
-        const logMessage = await youtubeSearchCommand(interaction);
+        await interaction.deferReply()
+        const logMessage = await youtubeSearchCommand(interaction)
         addToLogs(logMessage)
       }
       
@@ -234,7 +211,6 @@ client.on('interactionCreate', async (interaction) => {
         if (easterEggTriggered) return
 
         // Default behavior
-
         const data = await fsPromises.readFile(configPath, 'utf8')
         const config = JSON.parse(data)
         let count = config['nsfw-bans']
@@ -265,11 +241,11 @@ client.on('interactionCreate', async (interaction) => {
             }
           }
 
-          const modLogsChannel = interaction.client.channels.cache.get(modLogsChannelId);
+          const modLogsChannel = interaction.client.channels.cache.get(modLogsChannelId)
           if (modLogsChannel) {
-            await modLogsChannel.send(`${member} has been banned for /nsfw usage.`);
+            await modLogsChannel.send(`${member} has been banned for /nsfw usage.`)
           } else {
-             console.log(`Channel with ID '${modLogsChannelId}' not found.`);
+             console.log(`Channel with ID '${modLogsChannelId}' not found.`)
           }
         }
       }
@@ -284,7 +260,7 @@ client.on('interactionCreate', async (interaction) => {
         const crazyOddsSet = interaction.options.get('crazy-odds')?.value
         const logMessage = await toggleFeatures(frenchSnakeOption, englishTeaOption, gorfilOption, crazyOption, crazyOddsSet, customModerators, interaction, configPath)
         await addToLogs(logMessage)
-        setTimeout(fetchCurrentConfig, 3000);
+        setTimeout(fetchCurrentConfig, 3000)
       }
 
       if (interaction.commandName === 'feedback') {
@@ -299,24 +275,24 @@ client.on('interactionCreate', async (interaction) => {
 
 // Misc. funny joke stuff here.
 client.on('messageCreate', async (message) => {
-  if(message.author.bot) return;
+  if(message.author.bot) return
   const lowerCaseContent = message.content.toLowerCase()
-    
+  const settings = await getSettings(message.guild.id)
+
   if (lowerCaseContent.includes('<:gorfil:1209654573871013888>') && gorfilReact) {
     message.react(message.guild.emojis.cache.get('1209654573871013888'))
   }
 
-  if (lowerCaseContent.includes('french') && frenchSnake) {
+  if (lowerCaseContent.includes('french') && settings.frenchSnake) {
     message.react('🐍')
-    incrementCount(message, 'frenchSnake-count')
   }
   
-  if (englishKeywords.some(word => lowerCaseContent.includes(word)) && englishTea) {
+  if (englishKeywords.some(word => lowerCaseContent.includes(word)) && settings.englishTea) {
     message.react('🫖')
     // incrementCount(message, 'englishTea-count')
   }
   
-  if (lowerCaseContent.includes('fr3nch') && frenchSnake) {
+  if (lowerCaseContent.includes('fr3nch') && settings.frenchSnake) {
     message.react('👀')
   }
 
@@ -325,12 +301,12 @@ client.on('messageCreate', async (message) => {
     message.react('🩵')
   }
 
-  if (lowerCaseContent.includes('crazy') && crazyReact) {
+  if (lowerCaseContent.includes('crazy') && settings.crazy) {
     const randomNumber = Math.floor(Math.random() * 100)
-    if (crazyOdds >= randomNumber) {
+    if (settings.crazyOdds >= randomNumber) {
       message.reply('Crazy? I was crazy once. They put me in a room. A rubber room. A rubber room with rats. And rats make me crazy.')
     } else {
-      console.log(`Dodged crazy! RNG was ${randomNumber}`)
+      console.log(`Dodged crazy! RNG: ${randomNumber}/${settings.crazyOdds}`)
     }
   }
 
@@ -349,10 +325,10 @@ client.on('messageCreate', async (message) => {
 setup()
 
 http.createServer((req, res) => {
-  res.writeHead(200);
-  res.end('Sarge is running!');
+  res.writeHead(200)
+  res.end('Sarge is running!')
 }).listen(8300, '0.0.0.0', () => {
-  console.log('Health check server running on port 8300');
-});
+  console.log('Health check server listening on port 8300')
+})
 
 module.exports = { client }
