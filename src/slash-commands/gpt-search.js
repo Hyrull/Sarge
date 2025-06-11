@@ -6,7 +6,7 @@ const gptSearch = async (interaction) => {
   const query = interaction.options.get('question').value
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
-  // Gonna sum up the first result only
+  // Gonna sum up the three firsts result only
   // Step 1: I'll search through google (API : serpapi)
   try {
     const serpRes = await axios.get("https://serpapi.com/search", {
@@ -72,7 +72,7 @@ const gptSearch = async (interaction) => {
       // gpt-4-turbo	~$0.01	/ 1k tokens
     })
     const summary = response.choices[0].message.content
-    return `You asked - "**${query}**". \n\nHere's my answer: ${summary}\n\n**Sources:**\n["${firstResult.title}"](<${firstUrl}>)\n["${secondResult.title}"](<${secondUrl}>)\n["${thirdResult.title}"](<${thirdUrl}>)`
+    return `You asked - "**${query}**". \n\nHere's my answer: ${summary}\n\n**Sources:**\n["${firstResult.title}"](<${firstUrl}>), ["${secondResult.title}"](<${secondUrl}>) and ["${thirdResult.title}"](<${thirdUrl}>)\n*-# I am a simple mouse. I might be wrong, so take this answer with a grain of cheese.*`
   } catch (err) {
     console.error(err)
     return "There was an error summarizing the text."
