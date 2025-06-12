@@ -161,7 +161,7 @@ client.on('interactionCreate', async (interaction) => {
 
       if (interaction.commandName === 'feedback') {
         const timeAndDate = getTimeAndDate()
-        feedbackNotice(client, interaction, adminId, timeAndDate)
+        feedbackNotice(client, interaction, timeAndDate)
       }
     }
   }
