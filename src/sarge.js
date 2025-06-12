@@ -3,7 +3,7 @@ const { Client, IntentsBitField, EmbedBuilder, MessageFlags } = require('discord
 const http = require('http')
 const fsPromises = require('fs').promises
 const mongoose = require('mongoose')
-const { getSettings, updateSettingsInCache } = require('./util/settingsManager')
+const { getSettings, updateSettingsInCache } = require('./utils/settingsManager')
 
 const { youtubeSearchCommand } = require('./slash-commands/youtube')
 const { toggleFeatures } = require('./slash-commands/feature-toggle')
@@ -15,7 +15,8 @@ const { pingCommand } = require('./slash-commands/ping')
 const { eventCommad } = require('./slash-commands/event')
 const { feedbackNotice } = require('./slash-commands/feedback')
 const { gptSearch } = require('./slash-commands/gpt-search')
-const incrementCount = require('./util/incrementCount')
+const incrementCount = require('./utils/incrementCount')
+const { default: messageCreateListener } = require('./listeners/messageCreate')
 
 const greetingsVideo = './data/greetings.mp4'
 
@@ -31,7 +32,6 @@ const client = new Client ({
 
 //////////////////////////////////////////////////////////////////////////////////
 
-const englishKeywords = ['british', 'english']
 const easterEggsPath = './data/eastereggs.json'
 const startTime = Date.now()
 console.log(`Bot started at: ${new Date(startTime).toISOString()}`)
@@ -174,7 +174,7 @@ client.on('interactionCreate', async (interaction) => {
         if (interaction.member.roles.cache.has(lv20Role)) {
           interaction.reply("You are above level 20, so I'm saving you. Lucky you...")
         } else {
-          await interaction.guild.members.ban(member, { reason: 'Fell for the /nsfw command during the purge event'})
+          await interaction.guild.members.ban(member, { reason: 'Fell for the /nsfw command'})
           console.log(`Banned ${member} due to NSFW command usage.`)
           incrementCount(message.guild.id, 'nsfwBans')
 
@@ -222,54 +222,8 @@ client.on('interactionCreate', async (interaction) => {
 
 
 
-// Misc. funny joke stuff here.
-client.on('messageCreate', async (message) => {
-  if(message.author.bot) return
-  const lowerCaseContent = message.content.toLowerCase()
-  const settings = await getSettings(message.guild.id)
-
-  if (lowerCaseContent.includes('<:gorfil:1209654573871013888>') && settings.gorfil) {
-    message.react(message.guild.emojis.cache.get('1209654573871013888'))
-  }
-
-  if (lowerCaseContent.includes('french') && settings.frenchSnake) {
-    message.react('🐍')
-    incrementCount(message.guild.id, 'frenchSnakeCount')
-  }
-  
-  if (englishKeywords.some(word => lowerCaseContent.includes(word)) && settings.englishTea) {
-    message.react('🫖')
-    // incrementCount(message, 'englishTea-count')
-  }
-  
-  if (lowerCaseContent.includes('fr3nch') && settings.frenchSnake) {
-    message.react('👀')
-  }
-
-  if (lowerCaseContent.includes('good bot') 
-    || lowerCaseContent.includes('gud bot')) {
-    message.react('🩵')
-  }
-
-  if (lowerCaseContent.includes('crazy') && settings.crazy) {
-    const randomNumber = Math.floor(Math.random() * 100)
-    if (settings.crazyOdds >= randomNumber) {
-      message.reply('Crazy? I was crazy once. They put me in a room. A rubber room. A rubber room with rats. And rats make me crazy.')
-    } else {
-      console.log(`Dodged crazy! RNG: ${randomNumber}/${settings.crazyOdds}`)
-    }
-  }
-
-  if (lowerCaseContent.startsWith('$greetings')) {
-    message.reply('https://cdn.discordapp.com/attachments/523257630332813324/1288019769299173407/greetings.mp4?ex=66f3a963&is=66f257e3&hm=ecb7688f9c6b6b045b920ee206d7eadf846b9bb04856dd57f8e6f4bfe5214ed4&')
-  }
-
-  // YouTube Search (legacy)
-  if (lowerCaseContent.startsWith('$youtube')) {
-    const query = lowerCaseContent.slice('$youtube '.length)
-    await youtubeSearchCommand(query, true, message)
-  }
-})
+// Mainly funny joke stuff there.
+client.on('messageCreate', (msg) => messageCreateListener(msg, client))
 
 setup()
 
