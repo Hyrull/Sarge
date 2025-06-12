@@ -10,7 +10,10 @@ async function incrementCount(guildId, field) {
 
   if (updated) {
     updateSettingsInCache(guildId, { [field]: updated[field] })
+    return updated[field]
   }
+
+  return null
 }
 
 module.exports = incrementCount
