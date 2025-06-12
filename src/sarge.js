@@ -31,13 +31,7 @@ const client = new Client ({
 
 //////////////////////////////////////////////////////////////////////////////////
 
-let frenchSnake = true
-let englishTea = true
 const englishKeywords = ['british', 'english']
-let gorfilReact = true
-let crazyReact = true
-let crazyOdds = 10
-const configPath = './config.json'
 const easterEggsPath = './data/eastereggs.json'
 const startTime = Date.now()
 console.log(`Bot started at: ${new Date(startTime).toISOString()}`)
@@ -97,7 +91,7 @@ client.on('interactionCreate', async (interaction) => {
       // }
 
       if(interaction.commandName === "features") {
-        featuresCommand(interaction, frenchSnake, englishTea, gorfilReact, crazyReact, crazyOdds)
+        featuresCommand(interaction, settings)
       }
 
 
@@ -215,13 +209,7 @@ client.on('interactionCreate', async (interaction) => {
 
 
       if (interaction.commandName === "toggle") {
-        const frenchSnakeOption = interaction.options.get('french-snake')?.value
-        const englishTeaOption = interaction.options.get('english-tea')?.value
-        const gorfilOption = interaction.options.get('gorfil')?.value
-        const crazyOption = interaction.options.get('crazy')?.value
-        const crazyOddsSet = interaction.options.get('crazy-odds')?.value
-        await toggleFeatures(frenchSnakeOption, englishTeaOption, gorfilOption, crazyOption, crazyOddsSet, customModerators, interaction, configPath)
-        setTimeout(fetchCurrentConfig, 3000)
+        await toggleFeatures(interaction.options, interaction)
       }
 
       if (interaction.commandName === 'feedback') {
@@ -240,7 +228,7 @@ client.on('messageCreate', async (message) => {
   const lowerCaseContent = message.content.toLowerCase()
   const settings = await getSettings(message.guild.id)
 
-  if (lowerCaseContent.includes('<:gorfil:1209654573871013888>') && gorfilReact) {
+  if (lowerCaseContent.includes('<:gorfil:1209654573871013888>') && settings.gorfil) {
     message.react(message.guild.emojis.cache.get('1209654573871013888'))
   }
 

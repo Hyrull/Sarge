@@ -1,90 +1,34 @@
-const fsPromises = require('fs').promises
+const { updateSettingsInCache } = require('../util/settingsManager')
 
-const toggleFeatures = async (frenchSnakeOption, englishTeaOption, gorfilOption, crazyOption, crazyOddsSet, modList, interaction, configPath) => {
+const toggleFeatures = async (options, interaction) => {
   const replies = []
   const logLine = []
+  const settingsMap = {
+    frenchSnake: 'french-snake',
+    englishTea: 'english-tea',
+    gorfil: 'gorfil',
+    crazy: 'crazy',
+    crazyOdds: 'crazy-odds'
+  }
 
-  if (!modList.includes(interaction.user.id)) {
-    interaction.reply('This feature can only be used by a bot moderator.')
-    return }
-
-  if (frenchSnakeOption !== undefined) {
-    try {
-      const data = await fsPromises.readFile(configPath, 'utf8')
-      const config = JSON.parse(data)
-      frenchSnake = frenchSnakeOption
-      config['french-react'] = frenchSnakeOption
-      await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
-      replies.push(`Feature "french snake" set to ${frenchSnake}.`)  
-      logLine.push(`User ${interaction.user.globalName}[${interaction.user.id}] set "French snake" to ${frenchSnake}.`)    
-    } catch (err) {
-       console.log('Error: Could not write to config file', err)
+    for (const [key, optionName] of Object.entries(settingsMap)) {
+    const value = options.get(optionName)?.value
+    if (value !== undefined) {
+      await updateSettingsInCache(interaction.guildId, { [key]: value })
+      replies.push(`Feature "${key}" set to ${value}.`)
+      logLine.push(`User ${interaction.user.globalName}[${interaction.user.id}] set "${key}" to ${value}.`)
     }
   }
 
-  if (englishTeaOption !== undefined) {
-    try {
-      const data = await fsPromises.readFile(configPath, 'utf8')
-      const config = JSON.parse(data)
-      englishTea = englishTeaOption
-      config['tea-react'] = englishTeaOption
-      await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
-      replies.push(`Feature "english tea" set to ${englishTea}.`)  
-      logLine.push(`User ${interaction.user.globalName}[${interaction.user.id}] set "English tea" to ${englishTea}.`)    
-    } catch (err) {
-       console.log('Error: Could not write to config file', err)
-    }
-  }
-
-  if (gorfilOption !== undefined) {
-    try {
-      const data = await fsPromises.readFile(configPath, 'utf8')
-      const config = JSON.parse(data)
-      gorfilReact = gorfilOption
-      config['gorfil-react'] = gorfilOption
-      await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
-      } catch (err) {
-        console.log('Error: Could not write to config file', err)
-      }
-    replies.push(`Feature "gorfil react" set to ${gorfilOption}.`)
-    logLine.push(`User ${interaction.user.globalName}[${interaction.user.id}] set "Gorfil reactions" to ${gorfilReact}.`)
-  }
-
-  if (crazyOption !== undefined) {
-    try {
-      const data = await fsPromises.readFile(configPath, 'utf8')
-      const config = JSON.parse(data)
-      crazyReact = crazyOption
-      config['crazy'] = crazyOption
-      await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
-      } catch (err) {
-        console.log('Error: Could not write to config file', err)
-      }
-    replies.push(`Feature "crazy react" set to ${crazyOption}.`)
-    logLine.push(`User ${interaction.user.globalName}[${interaction.user.id}] set "Crazy React" to ${crazyReact}.`)
-  }
-
-  if (crazyOddsSet !== undefined) {
-    try {
-      const data = await fsPromises.readFile(configPath, 'utf8')
-      const config = JSON.parse(data)
-      crazyOdds = crazyOddsSet
-      config['crazy-odds'] = crazyOddsSet
-      await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
-      } catch (err) {
-        console.log('Error: Could not write to config file', err)
-      }
-    replies.push(`Feature "crazy react" set to ${crazyOddsSet}% chance of happening.`)
-    logLine.push(`User ${interaction.user.globalName}[${interaction.user.id}] set "Crazy Odds" to ${crazyOddsSet}.`)
-  }
-
-  if (replies.length === 0) {
-    interaction.reply('Please select a feature to toggle on or off.')
-    return('Toggle called, but no option selected.')
+    if (replies.length === 0) {
+      // Should never happen since Discord would prevent the command from being sent if it's empty
+    await interaction.reply('Please select a feature to toggle on or off.')
+    return 'Toggle called, but no option selected.'
   } else {
-    interaction.reply(replies.join('\n'))
-    return (logLine.join(' '))
+    await interaction.reply(replies.join('\n'))
+    return logLine.join(' ')
   }
+
 }
 
 module.exports = { toggleFeatures }

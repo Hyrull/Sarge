@@ -1,5 +1,4 @@
 const GuildSettings = require('../model')
-
 const settingsCache = new Map()
 
 async function getSettings(guildId) {
@@ -19,19 +18,31 @@ async function getSettings(guildId) {
     await settings.save()
   }
 
-  // Convert to plain object for caching
-  settingsCache.set(guildId, settings);
-  return settings
+  const plainSettings = settings.toObject()
+  settingsCache.set(guildId, plainSettings)
+  return plainSettings
 }
 
 function clearSettings(guildId) {
   settingsCache.delete(guildId)
 }
 
-function updateSettingsInCache(guildId, updatedData) {
-  const current = settingsCache.get(guildId)
-  if (current) {
-    settingsCache.set(guildId, { ...current.toObject(), ...updatedData })
+async function updateSettingsInCache(guildId, updatedData) {
+  try {
+    const updated = await GuildSettings.findOneAndUpdate(
+      { guildId },
+      updatedData,
+      { new: true }
+    )
+
+    if (updated) {
+      settingsCache.set(guildId, updated.toObject())
+      console.log(`Updated ${guildId}:`, updatedData)
+    } else {
+      console.warn(`No settings found for guild ${guildId} to update.`)
+    }
+  } catch (err) {
+    console.error(`Failed to update settings for ${guildId}:`, err)
   }
 }
 
