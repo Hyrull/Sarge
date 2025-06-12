@@ -1,4 +1,4 @@
-const { updateSettingsInCache } = require('../util/settingsManager')
+const { updateSettingsInCache } = require('../utils/settingsManager')
 
 const toggleFeatures = async (options, interaction) => {
   const replies = []
