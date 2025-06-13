@@ -1,5 +1,6 @@
-import incrementCount from '../utils/incrementCount.js';
-import { getSettings } from '../utils/settingsManager.js';
+import incrementCount from '../utils/incrementCount.js'
+import { getSettings } from '../utils/settingsManager.js'
+import { youtubeSearchCommand } from '../slash-commands/youtube.js'
 
 async function messageCreateListener(message, client) {
   if(message.author.bot) return
