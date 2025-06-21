@@ -51,6 +51,28 @@ const gptSearch = async (interaction) => {
     const secondPageContent = await fetchPageContent(secondUrl)
     const thirdPageContent = await fetchPageContent(thirdUrl) 
 
+
+    ////////////////
+
+    ////// THIS IS A TESTING CODE FOR SELF-HOSTED GEMMA3
+    // It works, but it's not as good as GPT-4o-mini - much slower (because it's self-hosted) and the quality is not as convincing.
+    // For the sake of things though, I'll keep the code here because this lil' feature could be useful for a different context or project.
+
+    ////////////////
+
+    // Step 3 : Using self-hosted Gemma3 to summarize it and make it shorter but still informative
+    // const jsonPayload = { 
+    //   "model": "ai/gemma3:latest", 
+    //   "messages": [ 
+    //     { "role": "system", "content": "You are Sarge, a helpful mouse assistant that summarizes articles for a Discord chat. You will be answering questions based on your own knowledge, and the provided search result content. Keep your answers concise and informative, suitable for a Discord chat. If you recognize the question as being a joke or meme, Discord the search result data answer in a humorous way." }, 
+    //     { "role": "user", "content": `A user asked: "${query}". Here is data:\n\nSearch result 1:${firstPageContent}\n\nSearch result 2:${secondPageContent}\n\nSearch result 3:${thirdPageContent}` } 
+    //   ] }
+
+    // const response = await fetch('http://localhost:12434/engines/llama.cpp/v1/chat/completions', 
+    //   { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(jsonPayload) }) 
+
+    ///////////////
+
   // Step 3 : Using ChatGPT to summarize it and make it shorter but still informative
     const response = await openai.chat.completions.create({
       model: 'gpt-4o-mini', // Could switch to 4.5 if we want better quality later on
@@ -71,7 +93,7 @@ const gptSearch = async (interaction) => {
       // gpt-3.5-turbo	~$0.0015 / 1k tokens
       // gpt-4-turbo	~$0.01	/ 1k tokens
     })
-    const summary = response.choices[0].message.content
+    const summary = response.choices[0].message.content 
     return `You asked - "**${query}**". \n\nHere's my answer: ${summary}\n\n**Sources:**\n["${firstResult.title}"](<${firstUrl}>), ["${secondResult.title}"](<${secondUrl}>) and ["${thirdResult.title}"](<${thirdUrl}>)\n*-# I am a simple mouse. I might be wrong, so take this answer with a grain of cheese.*`
   } catch (err) {
     console.error(err)
