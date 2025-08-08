@@ -1,6 +1,7 @@
 import incrementCount from '../utils/incrementCount.js'
 import { getSettings } from '../utils/settingsManager.js'
 import { youtubeSearchCommand } from '../slash-commands/youtube.js'
+import fetchAndAnnounceGiveaways from '../utils/giveawayFetcher.js'
 
 async function messageCreateListener(message, client) {
   if(message.author.bot) return
@@ -29,6 +30,11 @@ async function messageCreateListener(message, client) {
   if (lowerCaseContent.includes('good bot') 
     || lowerCaseContent.includes('gud bot')) {
     message.react('🩵')
+  }
+
+  if (lowerCaseContent.includes('$giveaways')) {
+    console.log('Manual giveaway check triggered.')
+    fetchAndAnnounceGiveaways(message)
   }
 
   if (lowerCaseContent.includes('crazy') && settings.crazy) {

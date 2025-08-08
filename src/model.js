@@ -7,6 +7,7 @@ const settingsSchema = new mongoose.Schema({
   gorfil: { type: Boolean, default: true },
   crazy: { type: Boolean, default: true },
   crazyOdds: { type: Number, default: 10 }, // Default to 10% chance
+  announcedGiveaways: { type: [Number], default: [] }, // Announced giveaways IDs
 
   // These ones should be in their own collection, but it's easier to keep them here for now
   frenchSnakeCount: { type: Number, default: 0 },
