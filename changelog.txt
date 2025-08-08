@@ -1,3 +1,6 @@
+V1.9 - August 7th, 2025
+- Now announces in a channel whenever there's a new free video game to redeem (hourly checks)
+
 V1.8.2 - June 11th, 2025
 - Refactored lots of things internally - no feature change
 

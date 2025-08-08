@@ -16,6 +16,7 @@ const { feedbackNotice } = require('./slash-commands/feedback')
 const { gptSearch } = require('./slash-commands/gpt-search')
 const { default: messageCreateListener } = require('./listeners/messageCreate')
 const { checkEasterEggs, handleNsfwBan } = require('./slash-commands/nsfw')
+const fetchAndAnnounceGiveaways = require('./utils/giveawayFetcher')
 
 const greetingsVideo = './data/greetings.mp4'
 
@@ -55,6 +56,11 @@ async function setup() {
     } catch (err) {
       console.error('Error: failed to login to Discord - invalid Token?.')
     }
+
+    // Announce giveaways every hour
+    setInterval(() => {
+      fetchAndAnnounceGiveaways(client)
+    }, 60 * 60 * 1000) // 1 hour 
 }
 
 client.on('ready', (c) => {
@@ -74,7 +80,7 @@ client.on('interactionCreate', async (interaction) => {
         const embed = new EmbedBuilder()
         .setColor('009dff')
         .setTitle("Sarge's latest version")
-        .setDescription(`I am currently in **v.1.8.2**.\nLast update: June 11th, 2025`)
+        .setDescription(`I am currently in **v.1.9**.\nLast update: August 7th, 2025`)
         .addFields(
           {name : "What's new?", value: '[Changelog](https://github.com/Hyrull/Sarge/blob/main/changelog.txt)'}
         )
