@@ -35,13 +35,15 @@ const movieSearchCommand = async (interaction) => {
         console.log(`Found movie: ${movie.title} (${movie.id})`)
         const sentMessage = await interaction.editReply({ embeds: [embed] })
 
-        // Adding the reaction for removal, in case of error
-        try {
-          await sentMessage.react('🚫')
-        } catch (err) {
-          console.error('Failed to add reaction:', err)
+        // Adding the reaction for removal, in case of error - only in guild, not DMs
+        if (sentMessage.guild ){
+          try {
+            await sentMessage.react('🚫')
+          } catch (err) {
+            console.error('Failed to add reaction:', err)
+          }
         }
-
+          
         // Defining a filter for the reaction collector
         const filter = (reaction, reactingUser) => {
           return reaction.emoji.name === '🚫' && interaction.user.id === reactingUser.id

@@ -16,7 +16,13 @@ async function handleSearchReply(content, user, sendReply) {
   }
   // If the answer is not empty, we edit the reply with the first result
   const sentMessage = await sendReply(answer.results[0].link)
-  await sentMessage.react('🚫')
+
+  if (sentMessage.guild) {
+    try {
+      await sentMessage.react('🚫');
+    } catch (err) {
+      console.error('Failed to add reaction:', err);
+    }
 
   // Defining a filter for the reaction collector
   const filter = (reaction, reactingUser) => {
@@ -41,10 +47,9 @@ async function handleSearchReply(content, user, sendReply) {
       }
     }
   })
-  //log
-  return (`${user.displayName || user.globalName}[${user.id}] searched for '${content}'. Returned the following link: ${answer.results[0].link} ("${answer.results[0].title}" by ${answer.results[0].channelTitle})`)
 }
-
+console.log(`${user.displayName || user.globalName} searched for '${content}'. Returned: "${answer.results[0].title}" by ${answer.results[0].channelTitle}`)
+}
 
 const youtubeSearchCommand = async (interaction, legacy, message) => {
   if (legacy) {

@@ -6,11 +6,12 @@ const feedbackNotice = async (client, interaction, timeAndDate) => {
 
   const admin = await client.users.fetch(adminId)
   const feedback = interaction.options.get('feedback')?.value
-  const displayName = interaction.member.user.globalName
-  const realName = interaction.member.user.username
+  const user = interaction.member?.user || interaction.user
+  const displayName = user.globalName || user.username || 'Unknown'
+  const realName = user.username || 'Unknown'
 
   const embed = new EmbedBuilder()
-  .setColor('009dff')
+  .setColor('#009dff')
   .setTitle(`${displayName} (${realName}):`)
   .setDescription(feedback)
   .addFields(
