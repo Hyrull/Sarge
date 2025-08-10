@@ -131,7 +131,16 @@ const guildCommands = [
       .setName('question')
       .setDescription('What is the question?')
       .setRequired(true)
-    )
+    ),
+
+  new SlashCommandBuilder()
+    .setName('movie')
+    .setDescription("Quick search for a movie on TheMovieDB. Input a query and I'll send the first result's link.")
+    .addStringOption(option => option
+      .setName('title')
+      .setDescription(`What's the movie called?`)
+      .setRequired(true)
+    ),
   ]
   
   const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);

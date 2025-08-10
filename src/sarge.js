@@ -17,6 +17,7 @@ const { gptSearch } = require('./slash-commands/gpt-search')
 const { default: messageCreateListener } = require('./listeners/messageCreate')
 const { checkEasterEggs, handleNsfwBan } = require('./slash-commands/nsfw')
 const fetchAndAnnounceGiveaways = require('./utils/giveawayFetcher')
+const { movieSearchCommand } = require('./slash-commands/movie-search')
 
 const greetingsVideo = './data/greetings.mp4'
 
@@ -168,6 +169,10 @@ client.on('interactionCreate', async (interaction) => {
       if (interaction.commandName === 'feedback') {
         const timeAndDate = getTimeAndDate()
         feedbackNotice(client, interaction, timeAndDate)
+      }
+
+      if (interaction.commandName === "movie") {
+        await movieSearchCommand(interaction)
       }
     }
   }
