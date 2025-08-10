@@ -22,7 +22,7 @@ const movieSearchCommand = async (interaction) => {
         .setColor('#009dff')
         .setTitle(`${movie.title} (${movie.release_date?.split('-')[0] || 'N/A'})`)
         .setDescription(movie.overview || 'No overview available.')
-        .setThumbnail(`https://image.tmdb.org/t/p/w500${movie.poster_path}`)
+        .setImage(`https://image.tmdb.org/t/p/w500${movie.poster_path}`)
         .addFields(
           {
             name: 'Release Date',
