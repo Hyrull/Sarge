@@ -1,5 +1,6 @@
 const axios = require('axios')
 const mongoose = require('mongoose')
+const { EmbedBuilder } = require('discord.js')
 
 // Define cache schema for MongoDB
 const GuildSettings = require('../model')
@@ -31,8 +32,36 @@ async function fetchAndAnnounceGiveaways(client) {
     // Announce new giveaways
     for (const game of newGiveaways) {
       // Create and send Discord announcement
+      const embed = new EmbedBuilder()
+        .setColor('#009dff')
+        .setTitle(`**${game.title}** (*${game.type}*)`)
+        .setDescription(`${game.description}` || 'No description available.')
+        .setImage(`${game.image}`)
+        .addFields(
+          { 
+            name: 'Redemption', 
+            value: `[Redeem here](${game.open_giveaway})`,
+            inline: false
+          },
+          {
+            name: 'Platforms',
+            value: `${game.platforms}` || 'Unknown',
+            inline: true
+          },
+          {
+            name: 'Price Worth',
+            value: `${game.worth}` || 'Unknown',
+            inline: true
+          },
+          {
+            name: 'Ends on:',
+            value: `${new Date(game.end_date).toLocaleDateString()}` || 'Unknown',
+            inline: true
+          }
+        )
       const announcement = {
-        content: `## There is a new freebie! 🐭\n**${game.title}**\nType: ${game.type}\nWorth: ${game.worth}\n[Redeem here](${game.open_giveaway_url})\nEnds on: ${new Date(game.end_date).toLocaleDateString()}`,
+        content: `## Freebie alert! 🐭`,
+        embeds: [embed]
       }
 
       client.channels.cache.get(discordChannel).send(announcement)
