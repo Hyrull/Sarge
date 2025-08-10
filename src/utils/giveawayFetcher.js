@@ -26,7 +26,6 @@ async function fetchAndAnnounceGiveaways(client) {
     const newGiveaways = giveaways.filter(game => !cache.announcedGiveaways.includes(game.id))
 
     if (newGiveaways.length === 0) {
-      console.log('No new giveaways to announce.')
       return 'No new giveaways to announce'
     }
     // Announce new giveaways
