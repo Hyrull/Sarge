@@ -4,7 +4,7 @@ const movieSearchCommand = async (interaction) => {
   await interaction.deferReply()
   const query = interaction.options.get('title').value
   if (!query) {
-    await interaction.reply('Please provide a movie title to search for.')
+    await interaction.editReply('Please provide a movie title to search for.')
     return
   }
 
@@ -33,7 +33,41 @@ const movieSearchCommand = async (interaction) => {
         .setFooter({ text: `TMDB ID: ${movie.id}` })
 
         console.log(`Found movie: ${movie.title} (${movie.id})`)
-        await interaction.editReply({ embeds: [embed] })
+        const sentMessage = await interaction.editReply({ embeds: [embed] })
+
+        // Adding the reaction for removal, in case of error
+        try {
+          await sentMessage.react('🚫')
+        } catch (err) {
+          console.error('Failed to add reaction:', err)
+        }
+
+        // Defining a filter for the reaction collector
+        const filter = (reaction, reactingUser) => {
+          return reaction.emoji.name === '🚫' && interaction.user.id === reactingUser.id
+        }
+
+        // Creating a collector for the reaction, to edit if the user added the reaction
+        const collector = sentMessage.createReactionCollector({ filter, max: 1, time: 20000 }) // 20s
+        collector.on('collect', async () => {
+          const edited = `~~${movie.title}~~\nOops, wrong movie! 🐭`
+          await sentMessage.edit({
+            content: edited,
+            embeds: []
+          })
+        })
+
+        // Removing the reaction so we know it's too late for removal
+        collector.on('end', async () => {
+          const botReaction = sentMessage.reactions.cache.get('🚫')
+          if (botReaction) {
+            try {
+              await botReaction.users.remove(sentMessage.client.user.id)
+            } catch (err) {
+              console.error('Failed to remove 🚫 reaction:', err)
+            }
+          }
+        })
       } else {
         await interaction.editReply({ content: 'No movie found with that title.', ephemeral: true })
       }
