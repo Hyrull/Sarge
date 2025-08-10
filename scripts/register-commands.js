@@ -7,7 +7,44 @@ const globalCommands = [
     .setDescription('Gives the bot current version and a link to the changelog'),
   new SlashCommandBuilder()
     .setName('ping')
-    .setDescription("Displays the bot's ping and uptime.")
+    .setDescription("Displays the bot's ping and uptime."),
+
+  new SlashCommandBuilder()
+    .setName('youtube')
+    .setDescription("Quick search for a YouTube video. Input a query and I'll send the first result's link.")
+    .addStringOption(option => option
+      .setName('query')
+      .setDescription('What are you searching for?')
+      .setRequired(true)
+    ),
+
+  new SlashCommandBuilder()
+    .setName('feedback')
+    .setDescription("Send feedback for Sarge! Only the bot admin will see it.")
+    .addStringOption(option => option
+      .setName('feedback')
+      .setDescription("What do you want to say?")
+      .setRequired(true)
+    ),
+
+  new SlashCommandBuilder()
+    .setName('movie')
+    .setDescription("Quick search for a movie on TheMovieDB. Input a query and I'll send the first result's link.")
+    .addStringOption(option => option
+      .setName('title')
+      .setDescription(`What's the movie called?`)
+      .setRequired(true)
+    ),
+
+  new SlashCommandBuilder()
+    .setName('question')
+    .setDescription('(Lv.40+) Answers any question based on personal research and summarized by GPT4.5.')
+    // .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
+    .addStringOption(option => option
+      .setName('question')
+      .setDescription('What is the question?')
+      .setRequired(true)
+    ),
 ]
 
 const guildCommands = [
@@ -97,48 +134,11 @@ const guildCommands = [
     .setDescription('Sends a link to a "greetings!" video.'),
     
   new SlashCommandBuilder()
-    .setName('youtube')
-    .setDescription("Quick search for a YouTube video. Input a query and I'll send the first result's link.")
-    .addStringOption(option => option
-      .setName('query')
-      .setDescription('What are you searching for?')
-      .setRequired(true)
-    ),
-    
-  new SlashCommandBuilder()
     .setName('event')
     .setDescription("Adds or remove the 'EventPing' role to be notified for future events.")
     .addBooleanOption(option => option
       .setName('set')
       .setDescription('Set it to true or false.')
-      .setRequired(true)
-    ),
-    
-  new SlashCommandBuilder()
-    .setName('feedback')
-    .setDescription("Send feedback for Sarge! Only the bot admin will see it.")
-    .addStringOption(option => option
-      .setName('feedback')
-      .setDescription("What do you want to say?")
-      .setRequired(true)
-    ),
-
-  new SlashCommandBuilder()
-    .setName('question')
-    .setDescription('(Lv.40+) Answers any question based on personal research and summarized by GPT4.5.')
-    // .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
-    .addStringOption(option => option
-      .setName('question')
-      .setDescription('What is the question?')
-      .setRequired(true)
-    ),
-
-  new SlashCommandBuilder()
-    .setName('movie')
-    .setDescription("Quick search for a movie on TheMovieDB. Input a query and I'll send the first result's link.")
-    .addStringOption(option => option
-      .setName('title')
-      .setDescription(`What's the movie called?`)
       .setRequired(true)
     ),
   ]

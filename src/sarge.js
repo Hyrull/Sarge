@@ -74,18 +74,20 @@ client.on('ready', (c) => {
 // Custom slash commands
 client.on('interactionCreate', async (interaction) => {
     if (interaction.isCommand()) {
-      const settings = await getSettings(interaction.guild.id)
+        if (interaction.guild) {
+        settings = await getSettings(interaction.guild.id);
+        }
       
       if(interaction.commandName === "version") {
 
         const embed = new EmbedBuilder()
-        .setColor('009dff')
+        .setColor('#009dff')
         .setTitle("Sarge's latest version")
-        .setDescription(`I am currently in **v.1.9**.\nLast update: August 7th, 2025`)
+        .setDescription(`I am currently in **v.1.9.1**.\nLast update: August 9th, 2025`)
         .addFields(
           {name : "What's new?", value: '[Changelog](https://github.com/Hyrull/Sarge/blob/main/changelog.txt)'}
         )
-        .setFooter({ text: 'Sarge is developed by Hyrul', iconURL: 'https://imgur.com/15fnxws.png'})
+        .setFooter({ text: 'Sarge is developed by Hyrul', iconURL: 'https://i.imgur.com/15fnxws.png'})
 
       await interaction.reply({ embeds: [embed] })
       }
@@ -142,13 +144,20 @@ client.on('interactionCreate', async (interaction) => {
       if(interaction.commandName === "question") {
         const lv40Role = '518962130372919317'
 
-        // Since this command uses OpenAI tokens thus actual money, I'm locking it behind a level 40 role.
-        if (interaction.member.roles.cache.has(lv40Role)) {
+        // Fetching VIP list from .env
+        const vipList = process.env.SARGE_VIPS ? process.env.SARGE_VIPS.split(',').map(id => id.trim()) : [];
+        // If we're on the guild - check if they're Lv.40. If it's in DMs, check if they're a VIP.
+        const hasAccess = interaction.guild
+          ? interaction.member.roles.cache.has(lv40Role) || vipList.includes(interaction.user.id)
+          : vipList.includes(interaction.user.id); // In DMs, only VIPs get access
+
+
+        if (hasAccess) {
           await interaction.deferReply()
           const answer = await gptSearch(interaction)
           await interaction.editReply({ content: answer })
         } else {
-          await interaction.reply({ content: 'You need to be level 40 or more to use this command.', flags: MessageFlags.Ephemeral })
+          await interaction.reply({ content: `You don't have access to this command.`, flags: MessageFlags.Ephemeral })
         }
       }
       

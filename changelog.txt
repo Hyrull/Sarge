@@ -1,3 +1,7 @@
+V1.9.1 - August 9th, 2025
+- Added /movies to search about a movie on TheMovieDB
+- Made some commands work in DM too (global)
+
 V1.9 - August 7th, 2025
 - Now announces in a channel whenever there's a new free video game to redeem (hourly checks)
 
