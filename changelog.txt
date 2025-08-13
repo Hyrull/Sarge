@@ -1,3 +1,6 @@
+V1.9.3 - August 12th, 2025
+- Giveaway now only announced Steam & Epic Games Store free games, not the rest
+
 V1.9.2 - August 10th, 2025
 - Revamped the giveaway announcement visual
 

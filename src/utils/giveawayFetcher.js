@@ -1,5 +1,4 @@
 const axios = require('axios')
-const mongoose = require('mongoose')
 const { EmbedBuilder } = require('discord.js')
 
 // Define cache schema for MongoDB
@@ -31,6 +30,16 @@ async function fetchAndAnnounceGiveaways(client) {
     }
     // Announce new giveaways
     for (const game of newGiveaways) {
+
+
+      // Skipping non-Steam/EGS games, but registering them in cache anyway
+      if (!game.platforms.includes('Steam') && !game.platforms.includes('Epic Games Store')) {
+        console.log(`Skipping non-Steam/Epic giveaway: ${game.title} (${game.id})`)
+        cache.announcedGiveaways.push(game.id)
+        await cache.save()
+        continue
+      }
+
       // Create and send Discord announcement
       const embed = new EmbedBuilder()
         .setColor('#009dff')
