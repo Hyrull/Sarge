@@ -17,15 +17,20 @@ const gptSearch = async (interaction) => {
       },
     })
 
+    // Filter out any results from *.fandom.com
+    const filteredResults = (serpRes.data.organic_results || []).filter(
+      r => !/^https?:\/\/[^\/]*\.fandom\.com/.test(r.link)
+    )
+
     // Declaring it this way because i'll need the .title later on
-    const firstResult = serpRes.data.organic_results?.[0]
-    const secondResult = serpRes.data.organic_results?.[1]
-    const thirdResult = serpRes.data.organic_results?.[2]
+    const firstResult = filteredResults[0]
+    const secondResult = filteredResults[1]
+    const thirdResult = filteredResults[2]
 
     if (!firstResult) return "No results found."
     const firstUrl = firstResult.link
-    const secondUrl = secondResult.link
-    const thirdUrl = thirdResult.link
+    const secondUrl = secondResult ? secondResult.link : null
+    const thirdUrl = thirdResult ? thirdResult.link : null
 
 
     // Step 2 : Scraping the result's page
@@ -48,8 +53,8 @@ const gptSearch = async (interaction) => {
       }
     }
     const firstPageContent = await fetchPageContent(firstUrl)
-    const secondPageContent = await fetchPageContent(secondUrl)
-    const thirdPageContent = await fetchPageContent(thirdUrl) 
+    const secondPageContent = secondUrl ? await fetchPageContent(secondUrl) : ""
+    const thirdPageContent = thirdUrl ? await fetchPageContent(thirdUrl) : ""
 
 
     ////////////////
@@ -94,7 +99,14 @@ const gptSearch = async (interaction) => {
       // gpt-4-turbo	~$0.01	/ 1k tokens
     })
     const summary = response.choices[0].message.content 
-    return `You asked - "**${query}**". \n\nHere's my answer: ${summary}\n\n**Sources:**\n["${firstResult.title}"](<${firstUrl}>), ["${secondResult.title}"](<${secondUrl}>) and ["${thirdResult.title}"](<${thirdUrl}>)\n*-# I am a simple mouse. I might be wrong, so take this answer with a grain of cheese.*`
+
+    const sources = [
+      firstResult.title ? `["${firstResult.title}"](<${firstUrl}>)` : "",
+      secondResult && secondResult.title ? `["${secondResult.title}"](<${secondUrl}>)` : "",
+      thirdResult && thirdResult.title ? `["${thirdResult.title}"](<${thirdUrl}>)` : ""
+    ].filter(Boolean).join(", ")
+
+    return `You asked - "**${query}**". \n\nHere's my answer: ${summary}\n\n**Sources:**\n${sources}\n*-# I am a simple mouse. I might be wrong, so take this answer with a grain of cheese.*`
   } catch (err) {
     console.error(err)
     return "There was an error summarizing the text."
