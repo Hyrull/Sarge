@@ -1,3 +1,7 @@
+V1.9.4 - August 27th, 2025
+- /question now won't take *.fandom.com links as proper sources
+- Fixed /question crashing when zero search results are found
+
 V1.9.3 - August 12th, 2025
 - Giveaway now only announces Steam & Epic Games Store free games, not the rest
 
