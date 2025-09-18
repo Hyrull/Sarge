@@ -64,7 +64,7 @@ async function setup() {
     }, 60 * 60 * 1000) // 1 hour 
 }
 
-client.on('ready', (c) => {
+client.on('clientReady', (c) => {
   console.log(`${c.user.tag} is up! ID: ${c.user.id}`)
 })
 
