@@ -1,3 +1,6 @@
+V1.9.5 - November 23rd, 2025
+- Fixed crash occuring when the free game API was down/not responding
+
 V1.9.4 - August 27th, 2025
 - /question now won't take *.fandom.com links as proper sources
 - Fixed /question crashing when zero search results are found
