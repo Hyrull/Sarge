@@ -9,30 +9,54 @@ const movieSearchCommand = async (interaction) => {
   }
 
   try {
-    const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}`, {
+    // Just getting the ID of the first result
+    const searchResponse = await fetch(`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}`, {
       headers: {
         'Authorization': `Bearer ${process.env.TMDB_API_KEY}`,
       }
     })
-    const data = await response.json()
-    const movie = data.results[0]
+    const searchData = await searchResponse.json()
+    const firstResultId = searchData.results[0].id
 
-    if (movie) {
+    // Now fetching the full info. We need to do this way, because the search result's response doesn't include any runtime, let alone credits
+    if (firstResultId) {
+      const fullMovieInfo = await fetch(`https://api.themoviedb.org/3/movie/${firstResultId}?append_to_response=credits`, {
+          headers: { 'Authorization': `Bearer ${process.env.TMDB_API_KEY}` }
+      })
+      const movie = await fullMovieInfo.json()
+
+      const director = movie.credits.crew.find(person => person.job === 'Director')
+      const directorName = director ? director.name : "Unknown"
+
+      const finalDescription = movie.tagline ? `***${movie.tagline}***\n\n${movie.overview}\n` : movie.overview
+
       const embed = new EmbedBuilder()
         .setColor('#009dff')
         .setTitle(`${movie.title} (${movie.release_date?.split('-')[0] || 'N/A'})`)
-        .setDescription(movie.overview || 'No overview available.')
+        .setDescription(finalDescription || 'No overview available.')
         .setImage(`https://image.tmdb.org/t/p/w500${movie.poster_path}`)
         .addFields(
           {
             name: 'Release Date',
             value: movie.release_date || 'Unknown',
             inline: true
+          },
+          {
+            name: 'Director',
+            value: directorName || 'Unknown',
+            inline: true
+          },
+          {
+            name: 'Length',
+            value: movie.runtime 
+                    ? `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m` 
+                    : 'Unknown',
+            inline: true
           }
         )
         .setFooter({ text: `TMDB ID: ${movie.id}` })
 
-        console.log(`Found movie: ${movie.title} (${movie.id})`)
+        console.log(`${interaction.user.username} looked up a movie: ${movie.title} (${movie.id})`)
         const sentMessage = await interaction.editReply({ embeds: [embed] })
 
         // Adding the reaction for removal, in case of error - only in guild, not DMs

@@ -1,3 +1,6 @@
+V1.9.6 - December 16th, 2025
+- /movie now also displays the tagline, director and length of the movie
+
 V1.9.5 - November 23rd, 2025
 - Fixed crash occuring when the free game API was down/not responding
 
