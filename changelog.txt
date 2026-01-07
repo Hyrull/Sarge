@@ -1,3 +1,6 @@
+V1.9.7 - January 6th, 2026
+- Added /game to search about a movie on IGDB 
+
 V1.9.6 - December 16th, 2025
 - /movie now also displays the tagline, director and length of the movie
 

@@ -18,6 +18,7 @@ const { default: messageCreateListener } = require('./listeners/messageCreate')
 const { checkEasterEggs, handleNsfwBan } = require('./slash-commands/nsfw')
 const fetchAndAnnounceGiveaways = require('./utils/giveawayFetcher')
 const { movieSearchCommand } = require('./slash-commands/movie-search')
+const { gameSearch } = require('./slash-commands/gameSearch') 
 
 const greetingsVideo = './data/greetings.mp4'
 
@@ -83,7 +84,7 @@ client.on('interactionCreate', async (interaction) => {
         const embed = new EmbedBuilder()
         .setColor('#009dff')
         .setTitle("Sarge's latest version")
-        .setDescription(`I am currently in **v.1.9.6**.\nLast update: December 16, 2025`)
+        .setDescription(`I am currently in **v.1.9.7**.\nLast update: January 6th, 2026`)
         .addFields(
           {name : "What's new?", value: '[Changelog](https://github.com/Hyrull/Sarge/blob/main/changelog.txt)'}
         )
@@ -182,6 +183,10 @@ client.on('interactionCreate', async (interaction) => {
 
       if (interaction.commandName === "movie") {
         await movieSearchCommand(interaction)
+      }
+
+      if (interaction.commandName === "game") {
+        await gameSearch(interaction)
       }
     }
   }
