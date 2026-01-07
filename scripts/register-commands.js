@@ -45,6 +45,15 @@ const globalCommands = [
       .setDescription('What is the question?')
       .setRequired(true)
     ),
+
+  new SlashCommandBuilder()
+    .setName('game')
+    .setDescription("Quick search for a game on IGDB. Input a query and I'll send the first result's info.")
+    .addStringOption(option => option
+      .setName('title')
+      .setDescription(`What's the game called?`)
+      .setRequired(true)
+    )
 ]
 
 const guildCommands = [
@@ -142,16 +151,6 @@ const guildCommands = [
       .setRequired(true)
     ),
   ]
-
-  
-  new SlashCommandBuilder()
-  .setName('game')
-  .setDescription("Quick search for a game on IMDB. Input a query and I'll send the first result's info.")
-  .addStringOption(option => option
-    .setName('title')
-    .setDescription(`What's the game called?`)
-    .setRequired(true)
-  )
   
   const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
   
