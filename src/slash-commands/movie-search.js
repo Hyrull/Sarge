@@ -56,7 +56,7 @@ const movieSearchCommand = async (interaction) => {
         )
         .setFooter({ text: `TMDB ID: ${movie.id}` })
 
-        console.log(`${interaction.user.username} looked up a movie: ${movie.title} (${movie.id})`)
+        console.log(`[Movie] ${interaction.user.username} looked up a movie: ${movie.title} (${movie.id})`)
         const sentMessage = await interaction.editReply({ embeds: [embed] })
 
         // Adding the reaction for removal, in case of error - only in guild, not DMs

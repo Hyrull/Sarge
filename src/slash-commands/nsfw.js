@@ -36,7 +36,7 @@ async function handleNsfwBan(member, interaction) {
     interaction.reply("You are above level 20, so I'm saving you. Lucky you...")
   } else {
     await interaction.guild.members.ban(member, { reason: 'Fell for the /nsfw command'})
-    console.log(`Banned ${member} due to NSFW command usage.`)
+    console.log(`[NSFW] Banned ${member} due to NSFW command usage.`)
     const nsfwBans = await incrementCount(interaction.guild.id, 'nsfwBans')
 
     switch (nsfwBans) {
@@ -61,7 +61,7 @@ async function handleNsfwBan(member, interaction) {
     if (modLogsChannel) {
       await modLogsChannel.send(`${member} has been banned for /nsfw usage.`)
     } else {
-        console.log(`Channel with ID '${modLogsChannelId}' not found.`)
+        console.error(`Channel with ID '${modLogsChannelId}' not found.`)
     }
   }
 }

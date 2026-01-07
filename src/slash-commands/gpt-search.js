@@ -45,10 +45,10 @@ const gptSearch = async (interaction) => {
         const page = await axios.get(url, { timeout: 10000, headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36','Accept-Language': 'en-US,en;q=0.9',} })
         const $ = cheerio.load(page.data)
         const paragraphs = $("p").map((i, el) => $(el).text()).get()
-        console.log(`Fetched content from ${url}`)
+        console.log(`[QUESTION] Fetched content from ${url}`)
         return paragraphs.join(" ").slice(0, 3000) // Limit for token size 'cause I ain't gonna pay that much for a discord bot
       } catch (error) {
-        console.error(`Error fetching ${url}:`, error.message)
+        console.error(`[QUESTION] Error fetching ${url}:`, error.message)
         return "[Content unavilable due to an error while fetching the page.]"
       }
     }
@@ -106,6 +106,7 @@ const gptSearch = async (interaction) => {
       thirdResult && thirdResult.title ? `["${thirdResult.title}"](<${thirdUrl}>)` : ""
     ].filter(Boolean).join(", ")
 
+    console.log(`[QUESTION] Answering ${interaction.user.username}'s question: ${query}`)
     return `You asked - "**${query}**". \n\nHere's my answer: ${summary}\n\n**Sources:**\n${sources}\n*-# I am a simple mouse. I might be wrong, so take this answer with a grain of cheese.*`
   } catch (err) {
     console.error(err)

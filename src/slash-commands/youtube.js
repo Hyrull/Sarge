@@ -48,7 +48,7 @@ async function handleSearchReply(content, user, sendReply) {
     }
   })
 }
-console.log(`${user.displayName || user.globalName} searched for '${content}'. Returned: "${answer.results[0].title}" by ${answer.results[0].channelTitle}`)
+console.log(`[YouTube] ${user.displayName || user.globalName} searched for '${content}'. Returned: "${answer.results[0].title}" by ${answer.results[0].channelTitle}`)
 }
 
 const youtubeSearchCommand = async (interaction, legacy, message) => {
