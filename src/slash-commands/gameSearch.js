@@ -32,8 +32,8 @@ async function gameSearch(interaction) {
     game_engines.name, 
     platforms.abbreviation, 
     involved_companies.company.name, 
-    involved_companies.developer;
-    limit 1;`
+    involved_companies.developer,
+    websites.category, websites.url;`
     
   try {
     const response = await axios.post("https://api.igdb.com/v4/games", query, {
@@ -46,6 +46,7 @@ async function gameSearch(interaction) {
     })
 
     const gameData = response.data[0]
+
     if (!gameData) {
       await interaction.editReply({ content: 'No game found with that name.', ephemeral: true })
     }
@@ -68,8 +69,7 @@ const coverUrl = gameData.cover?.image_id
     const platforms = gameData.platforms?.map(p => p.abbreviation).join(', ') || 'Unknown'
     const genres = gameData.genres?.map(g => g.name).join(', ') || 'Unknown'
     const engine = gameData.game_engines?.[0]?.name || 'Unknown'
-
-    console.log(coverUrl)
+    const steamLink = gameData.websites?.find(w => w.url.includes('steampowered.com'))?.url
 
     const embed = new EmbedBuilder()
       .setColor('#911910')
@@ -96,7 +96,8 @@ const coverUrl = gameData.cover?.image_id
           name: 'Genres',
           value: genres || 'Unknown',
           inline: true
-        },{
+        },
+        {
           name: 'Engine',
           value: engine || 'Unknown',
           inline: true
@@ -104,12 +105,21 @@ const coverUrl = gameData.cover?.image_id
       )
       .setFooter({ text: `IGDB ID: ${gameData.id}` })
 
-    console.log(`${interaction.user.username} looked up a game: ${gameData.name} (${gameData.id})`)
+    // just a conditional field. steam link IF there's one
+    if (steamLink) {
+      embed.addFields({ 
+          name: 'Steam Page', 
+          value: `[Link to Store](${steamLink})`,
+          inline: true 
+      })
+    }
+
+    console.log(`[GAME] ${interaction.user.username} looked up a game: ${gameData.name} (${gameData.id})`)
 
     ///////////////////
     // This is the part where we make the "not this one" reaction available
 
-    const sentMessage = await interaction.editReply({ embeds: [embed], ephemeral: true })
+    const sentMessage = await interaction.editReply({ embeds: [embed] })
 
     if (sentMessage.guild) {
       try {
