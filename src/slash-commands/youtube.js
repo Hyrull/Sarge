@@ -1,65 +1,62 @@
-const search = require ('youtube-search');
-let opts = {
-  maxResults: 5,
+const search = require('youtube-search')
+const { EmbedBuilder } = require('discord.js')
+const { startPagination } = require('../utils/paginationManager')
+
+const opts = {
+  maxResults: 10,
   key: process.env.YT_SEARCH_API,
   type: 'video'
 }
 
+const youtubeSearchCommand = async (source, isLegacy, message) => {
+  let query
+  let targetInterface; // This will be the object we pass to paginationManager. it's to trick discord for the buttons to work even if it's not an INTERACTION reply
 
-// General method to handle the search reply. Called for legacy and slash versions
-async function handleSearchReply(content, user, sendReply) {
-  // Getting the answer from the search
-  const answer = await search(content, opts)
-  if (!answer || !answer.results || answer.results.length === 0) {
-    await sendReply('No search results found.')
-    return null
-  }
-  // If the answer is not empty, we edit the reply with the first result
-  const sentMessage = await sendReply(answer.results[0].link)
+  if (isLegacy) {
+    // --- LEGACY STUFF  ---
+    query = source?.trim?.()
+    if (!query) return message.reply('Please input a search.')
+    
+    // Send a placeholder message we can edit later
+    const sentMessage = await message.reply('🐭 Searching YouTube...')
 
-  if (sentMessage.guild) {
-    try {
-      await sentMessage.react('🚫');
-    } catch (err) {
-      console.error('Failed to add reaction:', err);
-    }
-
-  // Defining a filter for the reaction collector
-  const filter = (reaction, reactingUser) => {
-      return reaction.emoji.name === '🚫' && user.id === reactingUser.id
-    }
-
-  // Creating a collector for the reaction, to edit if the user added the reaction
-  const collector = sentMessage.createReactionCollector({ filter, max: 1, time: 20000 }) // 20s
-  collector.on('collect', async () => {
-    const edited = `~~<${answer.results[0].link}>~~\nOops, wrong link! 🐭`
-    await sentMessage.edit(edited)
-  })
-
-  // Removing the reaction so we know it's too late for removal
-  collector.on('end', async () => {
-    const botReaction = sentMessage.reactions.cache.get('🚫')
-    if (botReaction) {
-      try {
-        await botReaction.users.remove(sentMessage.client.user.id)
-      } catch (err) {
-        console.error('Failed to remove 🚫 reaction:', err)
+    // Create a Fake Interaction Object that maps 'editReply' to 'msg.edit'
+    targetInterface = {
+      user: message.author,
+      editReply: async (payload) => {
+        return await sentMessage.edit(payload)
       }
     }
-  })
-}
-console.log(`[YouTube] ${user.displayName || user.globalName} searched for '${content}'. Returned: "${answer.results[0].title}" by ${answer.results[0].channelTitle}`)
-}
-
-const youtubeSearchCommand = async (interaction, legacy, message) => {
-  if (legacy) {
-    const query = interaction?.trim?.()
-    if (!query) return message.reply('Please input a search.')
-    return await handleSearchReply(query, message.author, (reply) => message.reply(reply))
   } else {
-    const query = interaction.options.get('query')?.value
-    if (!query) return await interaction.editReply('Please input a search.')
-    return await handleSearchReply(query, interaction.user, (reply) => interaction.editReply(reply))
+    // --- SLASH MODE ---
+    query = source.options.getString('query')
+    if (!query) return source.editReply('Please input a search.')
+    
+    // Slash commands are already deferred in sarge.js, so we use them directly
+    targetInterface = source
+  }
+
+  // 2. EXECUTE SEARCH
+  try {
+    const answer = await search(query, opts)
+
+    if (!answer || !answer.results || answer.results.length === 0) {
+      await targetInterface.editReply({ content: 'No search results found.' })
+      return
+    }
+
+    // 3. DEFINE RENDERER
+    const renderVideoPage = async (video, current, total) => {
+      return `**Result ${current}/${total}**\n${video.link}`
+    }
+
+    // START PAGINATION
+    console.log(`[YouTube] ${targetInterface.user.username} searched for '${query}'`)
+    await startPagination(targetInterface, answer.results, renderVideoPage)
+
+  } catch (err) {
+    console.error('[YouTube Search Error]', err);
+    await targetInterface.editReply('Something went wrong with the YouTube search.')
   }
 }
 

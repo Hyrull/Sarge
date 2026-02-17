@@ -4,7 +4,7 @@
  * @param {Function} renderPage - Async function(item, index, total) -> returns EmbedBuilder
  */
 
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder } = require('discord.js')
 
 async function startPagination(interaction, items, renderPage) {
   if (!items || items.length === 0) return
@@ -18,7 +18,7 @@ async function startPagination(interaction, items, renderPage) {
     row.addComponents(
       new ButtonBuilder()
         .setCustomId('prev')
-        .setLabel('◀') // You can use emoji too: .setEmoji('⬅️')
+        .setLabel('◀')
         .setStyle(ButtonStyle.Primary)
         .setDisabled(currentIndex === 0) // Grayed out if on first page
     )
@@ -42,24 +42,32 @@ async function startPagination(interaction, items, renderPage) {
 
     return [row]
   }
-  
-  // Render the first page
-  const initialEmbed = await renderPage(items[index], index + 1, items.length)
-  const initialComponents = getButtons(index, items.length);
 
-  const message = await interaction.editReply({ embeds: [initialEmbed], components: initialComponents })
+  // --- SMART PAYLOAD GENERATOR ---
+  const getPayload = async (idx) => {
+    const content = await renderPage(items[idx], idx + 1, items.length)
+    const components = getButtons(idx, items.length)
 
-  const collector = message.createMessageComponentCollector({ 
+    // Check: Is it an Embed? Or just a String (Link)?
+    if (content instanceof EmbedBuilder) {
+      return { embeds: [content], content: null, components }
+    } else {
+        // It's a string (YouTube Link), so we send it as 'content' and clear any embeds
+      return { content: content, embeds: [], components }
+    }
+  }
+
+  await interaction.editReply(await getPayload(index))
+
+ const collector = interaction.channel.createMessageComponentCollector({
     componentType: ComponentType.Button, 
-    time: 30 * 1000, //30s
-    filter: (i) => i.user.id === interaction.user.id
+    time: 120000,
+    // Added safety check: ensure the click is on the *current* message
+    filter: (i) => i.user.id === interaction.user.id && i.message.interaction.id === interaction.id
   })
 
   collector.on('collect', async (i) => {
-    // Reset timer
     collector.resetTimer()
-
-    // if we don't defer the update then discord thinks we crashed. we're letting them know we're cooking
     await i.deferUpdate()
 
     if (i.customId === 'prev') {
@@ -70,22 +78,14 @@ async function startPagination(interaction, items, renderPage) {
       return collector.stop('cancelled')
     }
 
-    // Render Update
-    const newEmbed = await renderPage(items[index], index + 1, items.length)
-    const newComponents = getButtons(index, items.length)
-
-    await interaction.editReply({ 
-      embeds: [newEmbed], 
-      components: newComponents 
-    })
+    await interaction.editReply(await getPayload(index)) 
   })
 
   collector.on('end', async (_, reason) => {
     if (reason === 'cancelled') {
       await interaction.editReply({ content: '*Search closed!* 🐭 ', embeds: [], components: [] })
     } else {
-      // done we remove it all
-        await interaction.editReply({ components: [] })
+      await interaction.editReply({ components: [] })
     }
   })
 }

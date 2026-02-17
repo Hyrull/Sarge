@@ -1,5 +1,15 @@
+V1.10 - February 17th, 2026
+- Can now react a snake to "american" like it can on "french"
+-- Mods can toggle it off, like all features, via /toggle
+-- Added /american-snake-count to see how many times it reacted to it
+
+- Changed the global search system for search commands! (/game, /movie, /youtube)
+-- Users can now navigate through the search results if the first one wasn't the right one.
+-- Cancellation still applies
+-- Now uses Discord buttons feature instead of reaction collection
+
 V1.9.7 - January 6th, 2026
-- Added /game to search about a movie on IGDB 
+- Added /game to search about a game on IGDB 
 
 V1.9.6 - December 16th, 2025
 - /movie now also displays the tagline, director and length of the movie
