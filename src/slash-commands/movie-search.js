@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require('discord.js')
+const { startPagination } = require('../utils/paginationManager')
 
 const movieSearchCommand = async (interaction) => {
   await interaction.deferReply()
@@ -16,18 +17,24 @@ const movieSearchCommand = async (interaction) => {
       }
     })
     const searchData = await searchResponse.json()
-    const firstResultId = searchData.results[0].id
 
-    // Now fetching the full info. We need to do this way, because the search result's response doesn't include any runtime, let alone credits
-    if (firstResultId) {
-      const fullMovieInfo = await fetch(`https://api.themoviedb.org/3/movie/${firstResultId}?append_to_response=credits`, {
-          headers: { 'Authorization': `Bearer ${process.env.TMDB_API_KEY}` }
+    if (!searchData || searchData.results.length === 0) {
+      await interaction.editReply({ content: 'No movie found with that title.', ephemeral: true })
+    }
+
+    const renderMoviePage = async (movieResult, current, total) => {
+      const id = movieResult.id
+      
+      // Now fetching the full info. We need to do this way, because the search result's response doesn't include any runtime, let alone credits
+      const fullMovieInfo = await fetch(`https://api.themoviedb.org/3/movie/${id}?append_to_response=credits`, {
+        headers: { 'Authorization': `Bearer ${process.env.TMDB_API_KEY}` }
       })
-      const movie = await fullMovieInfo.json()
 
+      const movie = await fullMovieInfo.json()
+      
       const director = movie.credits.crew.find(person => person.job === 'Director')
       const directorName = director ? director.name : "Unknown"
-
+      
       const finalDescription = movie.tagline ? `***${movie.tagline}***\n\n${movie.overview}\n` : movie.overview
 
       const embed = new EmbedBuilder()
@@ -56,48 +63,13 @@ const movieSearchCommand = async (interaction) => {
         )
         .setFooter({ text: `TMDB ID: ${movie.id}` })
 
-        console.log(`[Movie] ${interaction.user.username} looked up a movie: ${movie.title} (${movie.id})`)
-        const sentMessage = await interaction.editReply({ embeds: [embed] })
+        return embed
+    }
 
-        // Adding the reaction for removal, in case of error - only in guild, not DMs
-        if (sentMessage.guild ){
-          try {
-            await sentMessage.react('🚫')
-          } catch (err) {
-            console.error('Failed to add reaction:', err)
-          }
-        }
-          
-        // Defining a filter for the reaction collector
-        const filter = (reaction, reactingUser) => {
-          return reaction.emoji.name === '🚫' && interaction.user.id === reactingUser.id
-        }
+    await startPagination(interaction, searchData.results, renderMoviePage)
 
-        // Creating a collector for the reaction, to edit if the user added the reaction
-        const collector = sentMessage.createReactionCollector({ filter, max: 1, time: 20000 }) // 20s
-        collector.on('collect', async () => {
-          const edited = `~~${movie.title}~~\nOops, wrong movie! 🐭`
-          await sentMessage.edit({
-            content: edited,
-            embeds: []
-          })
-        })
-
-        // Removing the reaction so we know it's too late for removal
-        collector.on('end', async () => {
-          const botReaction = sentMessage.reactions.cache.get('🚫')
-          if (botReaction) {
-            try {
-              await botReaction.users.remove(sentMessage.client.user.id)
-            } catch (err) {
-              console.error('Failed to remove 🚫 reaction:', err)
-            }
-          }
-        })
-      } else {
-        await interaction.editReply({ content: 'No movie found with that title.', ephemeral: true })
-      }
   } catch (error) {
+    await interaction.editReply({ content: 'Something went wrong while fetching the movie.' })
     console.error('Error fetching movie data:', error)
   }
 }
