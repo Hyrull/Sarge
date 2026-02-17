@@ -1,5 +1,6 @@
 const axios = require('axios')
 const { EmbedBuilder } = require('discord.js')
+const { startPagination } = require('../utils/paginationManager')
 
 // yes theorically it's a twitch developer portal app token, but it's used for igdb's api so let's not get confused here and let's call a cat a cat
 async function getIgdbToken() {
@@ -45,114 +46,64 @@ async function gameSearch(interaction) {
       },
     })
 
-    const gameData = response.data[0]
+    const games = response.data
 
-    if (!gameData) {
+    if (!games || games.length === 0) {
       await interaction.editReply({ content: 'No game found with that name.', ephemeral: true })
+      return
     }
 
-    let formattedDate = 'Unknown'
-    if (gameData.first_release_date) {
-      const date = new Date(gameData.first_release_date * 1000)
+    // This function runs every time the user clicks "Next" or "Previous"
+    const renderGamePage = async (gameData, current, total) => {
+        let formattedDate = 'Unknown'
+        if (gameData.first_release_date) {
+            const date = new Date(gameData.first_release_date * 1000)
       formattedDate = date.toLocaleDateString('en-US', { 
         year: 'numeric', 
         month: 'long', 
         day: 'numeric' 
       })
-    }
-
-const coverUrl = gameData.cover?.image_id
-  ? `https://images.igdb.com/igdb/image/upload/t_cover_big/${gameData.cover.image_id}.png`
-  : null;
-
-    const devs = gameData.involved_companies?.find(c => c.developer)?.company?.name || 'Unknown'
-    const platforms = gameData.platforms?.map(p => p.abbreviation).join(', ') || 'Unknown'
-    const genres = gameData.genres?.map(g => g.name).join(', ') || 'Unknown'
-    const engine = gameData.game_engines?.[0]?.name || 'Unknown'
-    const steamLink = gameData.websites?.find(w => w.url.includes('steampowered.com'))?.url
-
-    const embed = new EmbedBuilder()
-      .setColor('#911910')
-      .setTitle(`${gameData.name}`)
-      .setDescription(gameData.summary || 'No overview available.')
-      .setImage(coverUrl)
-      .addFields(
-        {
-          name: 'Developers',
-          value: devs || 'Unknown',
-          inline: true
-        },
-        {
-          name: 'Release Date',
-          value: formattedDate || 'Unknown',
-          inline: true
-        },
-        {
-          name: 'Platforms',
-          value: platforms || 'Unknown',
-          inline: true
-        },
-        {
-          name: 'Genres',
-          value: genres || 'Unknown',
-          inline: true
-        },
-        {
-          name: 'Engine',
-          value: engine || 'Unknown',
-          inline: true
         }
-      )
-      .setFooter({ text: `IGDB ID: ${gameData.id}` })
+
+        const coverUrl = gameData.cover?.image_id
+            ? `https://images.igdb.com/igdb/image/upload/t_cover_big/${gameData.cover.image_id}.png`
+            : null;
+
+        const devs = gameData.involved_companies?.find(c => c.developer)?.company?.name || 'Unknown'
+        const platforms = gameData.platforms?.map(p => p.abbreviation).join(', ') || 'Unknown'
+        const genres = gameData.genres?.map(g => g.name).join(', ') || 'Unknown'
+        const engine = gameData.game_engines?.[0]?.name || 'Unknown'
+        const steamLink = gameData.websites?.find(w => w.url.includes('steampowered.com'))?.url
+
+        const embed = new EmbedBuilder()
+            .setColor('#911910')
+            .setTitle(gameData.name)
+            .setDescription(gameData.summary || 'No overview available.')
+            .setImage(coverUrl)
+            .addFields(
+                { name: 'Developers', value: devs, inline: true },
+                { name: 'Release Date', value: formattedDate, inline: true },
+                { name: 'Platforms', value: platforms, inline: true },
+                { name: 'Genres', value: genres, inline: true },
+                { name: 'Engine', value: engine, inline: true }
+            )
+            .setFooter({ text: `Result ${current}/${total} • IGDB ID: ${gameData.id}` })
 
     // just a conditional field. steam link IF there's one
-    if (steamLink) {
+        if (steamLink) {
       embed.addFields({ 
           name: 'Steam Page', 
           value: `[Link to Store](${steamLink})`,
           inline: true 
       })
-    }
-
-    console.log(`[GAME] ${interaction.user.username} looked up a game: ${gameData.name} (${gameData.id})`)
-
-    ///////////////////
-    // This is the part where we make the "not this one" reaction available
-
-    const sentMessage = await interaction.editReply({ embeds: [embed] })
-
-    if (sentMessage.guild) {
-      try {
-        await sentMessage.react('🚫')
-        
-        const filter = (reaction, reactingUser) => {
-          return reaction.emoji.name === '🚫' && interaction.user.id === reactingUser.id
         }
-
-        const collector = sentMessage.createReactionCollector({ filter, max: 1, time: 20000 })
-
-        collector.on('collect', async () => {
-          const edited = `~~${gameData.name}~~ -- Oops, wrong game! 🐭`
-          await sentMessage.edit({
-            content: edited,
-            embeds: []
-          })
-        })
-
-        collector.on('end', async () => {
-          const botReaction = sentMessage.reactions.cache.get('🚫')
-          if (botReaction) {
-            try {
-              await botReaction.users.remove(sentMessage.client.user.id)
-            } catch (err) {
-              console.error('Failed to remove 🚫 reaction:', err)
-            }
-          }
-        })
-      } catch (err) {
-        console.error('Failed to add reaction:', err)
-      }
+        
+        return embed;
     }
+
+    // --- PAGINATION RENDER TIME  ---
+    console.log(`[GAME] ${interaction.user.username} looked up: ${sanitizedQuery}`)
+    await startPagination(interaction, games, renderGamePage)
 
   } catch (err) {
     console.error(`[IGDB SEARCH ERROR]`, err.response?.data || err.message)
