@@ -5,6 +5,7 @@ const toggleFeatures = async (options, interaction) => {
   const logLine = []
   const settingsMap = {
     frenchSnake: 'french-snake',
+    americanSnake: 'american-snake',
     englishTea: 'english-tea',
     gorfil: 'gorfil',
     crazy: 'crazy',

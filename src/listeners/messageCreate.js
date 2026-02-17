@@ -15,6 +15,11 @@ async function messageCreateListener(message, client) {
     message.react('🐍')
     incrementCount(message.guild.id, 'frenchSnakeCount')
   }
+
+  if (lowerCaseContent.includes('american') && settings.americanSnake) {
+    message.react('🐍')
+    incrementCount(message.guild.id, 'americanSnakeCount')
+  }
   
   const englishKeywords = ['british', 'english']
   if (englishKeywords.some(word => lowerCaseContent.includes(word)) && settings.englishTea) {

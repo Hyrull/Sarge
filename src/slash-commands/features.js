@@ -8,6 +8,7 @@ const featuresCommand = async (interaction, settings) => {
   .addFields(
     {name : 'French snake reaction', value: settings.frenchSnake ? 'Enabled' : 'Disabled'},
     {name : 'English tea reaction', value: settings.englishTea ? 'Enabled' : 'Disabled'},
+    {name : 'American snake reaction', value: settings.americanSnake ? 'Enabled' : 'Disabled'},
     {name : 'Gorfil react status', value: settings.gorfil ? 'Enabled' : 'Disabled'},
     {name : 'Crazy react status', value: settings.crazy ? `Enabled - ${settings.crazyOdds}%` : 'Disabled'}
   )

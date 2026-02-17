@@ -69,6 +69,10 @@ const guildCommands = [
       .setDescription('Adds a snake 🐍 reaction whenever someone says "French".')
     )
     .addBooleanOption(option => option
+      .setName('american-snake')
+      .setDescription('Adds a snake 🐍 reaction whenever someone says "American".')
+    )
+    .addBooleanOption(option => option
       .setName('english-tea')
       .setDescription('Adds a teapot 🫖 reaction whenever someone says "English" or "British".')
     )
@@ -133,6 +137,10 @@ const guildCommands = [
   new SlashCommandBuilder()
     .setName('french-snake-count')
     .setDescription('Shows how many times I reacted a snake to "french".'),
+
+  new SlashCommandBuilder()
+    .setName('american-snake-count')
+    .setDescription('Shows how many times I reacted a snake to "american".'),
     
   new SlashCommandBuilder()
     .setName('quotes')

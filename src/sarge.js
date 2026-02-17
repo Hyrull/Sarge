@@ -98,18 +98,30 @@ client.on('interactionCreate', async (interaction) => {
       //   // command is in secret.js, which isn't public. Sorry, no cheating by checking the code!
       // }
 
-      if(interaction.commandName === "features") {
+      if (interaction.commandName === "features") {
         featuresCommand(interaction, settings)
       }
 
 
-      if(interaction.commandName === "french-snake-count") {
+      if (interaction.commandName === "french-snake-count") {
         try {
           const embed = new EmbedBuilder()
             .setColor('009dff')
             .setTitle('French snake count')
             .setDescription(`I have reacted a snake to "french" **${settings.frenchSnakeCount}** times!`)
-            // .setFooter({ text: 'Sarge developed by Hyrul', iconURL: 'https://imgur.com/15fnxws.png'})
+
+          await interaction.reply({ embeds: [embed] })
+        } catch (err) {
+          console.error('Error:', err)
+        }
+      }
+
+      if (interaction.commandName === "american-snake-count") {
+        try {
+          const embed = new EmbedBuilder()
+            .setColor('009dff')
+            .setTitle('American snake count')
+            .setDescription(`I have reacted a snake to "american" **${settings.americanSnakeCount}** times!`)
 
           await interaction.reply({ embeds: [embed] })
         } catch (err) {
