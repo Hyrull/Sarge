@@ -3,80 +3,91 @@
  * @param {Array} items - The array of items (e.g., search results) to paginate
  * @param {Function} renderPage - Async function(item, index, total) -> returns EmbedBuilder
  */
+
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
+
 async function startPagination(interaction, items, renderPage) {
-    if (!items || items.length === 0) return
+  if (!items || items.length === 0) return
 
-    let index = 0
-    
-    // Render the first page
-    const initialEmbed = await renderPage(items[index], index + 1, items.length)
-    const message = await interaction.editReply({ embeds: [initialEmbed] })
+  let index = 0
 
-    // Add initial reactions (if needed)
-    if (items.length > 1) await message.react('➡️')
-    await message.react('🚫')
+  const getButtons = (currentIndex, totalItems) => {
+    const row = new ActionRowBuilder()
 
-    // Setup Collector
-    const filter = (reaction, user) => {
-        return ['⬅️', '➡️', '🚫'].includes(reaction.emoji.name) && user.id === interaction.user.id
+    // Previous Button
+    row.addComponents(
+      new ButtonBuilder()
+        .setCustomId('prev')
+        .setLabel('◀') // You can use emoji too: .setEmoji('⬅️')
+        .setStyle(ButtonStyle.Primary)
+        .setDisabled(currentIndex === 0) // Grayed out if on first page
+    )
+
+    // Cancel Button
+    row.addComponents(
+      new ButtonBuilder()
+        .setCustomId('stop')
+        .setLabel('Cancel') // or .setEmoji('✖️')
+        .setStyle(ButtonStyle.Danger)
+    )
+
+    // Next Button
+    row.addComponents(
+      new ButtonBuilder()
+        .setCustomId('next')
+        .setLabel('▶') 
+        .setStyle(ButtonStyle.Primary)
+        .setDisabled(currentIndex === totalItems - 1) // Gray out if on last page
+    )
+
+    return [row]
+  }
+  
+  // Render the first page
+  const initialEmbed = await renderPage(items[index], index + 1, items.length)
+  const initialComponents = getButtons(index, items.length);
+
+  const message = await interaction.editReply({ embeds: [initialEmbed], components: initialComponents })
+
+  const collector = message.createMessageComponentCollector({ 
+    componentType: ComponentType.Button, 
+    time: 30 * 1000, //30s
+    filter: (i) => i.user.id === interaction.user.id
+  })
+
+  collector.on('collect', async (i) => {
+    // Reset timer
+    collector.resetTimer()
+
+    // if we don't defer the update then discord thinks we crashed. we're letting them know we're cooking
+    await i.deferUpdate()
+
+    if (i.customId === 'prev') {
+      if (index > 0) index--
+    } else if (i.customId === 'next') {
+      if (index < items.length - 1) index++
+    } else if (i.customId === 'stop') {
+      return collector.stop('cancelled')
     }
 
-    // 30s timeout, resets on activity
-    const collector = message.createReactionCollector({ filter, time: 30 * 1000 })
+    // Render Update
+    const newEmbed = await renderPage(items[index], index + 1, items.length)
+    const newComponents = getButtons(index, items.length)
 
-    collector.on('collect', async (reaction, user) => {
-        // Reset timer on interaction so the bot doesn't die while the user is reading
-        collector.resetTimer()
-
-        // Handle Navigation
-        if (reaction.emoji.name === '➡️') {
-            if (index < items.length - 1) index++
-        } else if (reaction.emoji.name === '⬅️') {
-            if (index > 0) index--
-        } else if (reaction.emoji.name === '🚫') {
-            collector.stop('cancelled')
-            return
-        }
-
-        // Render New Page
-        const newEmbed = await renderPage(items[index], index + 1, items.length)
-        await message.edit({ embeds: [newEmbed] })
-
-        // Manage Reactions
-        try {
-            // Remove the user's click
-            await reaction.users.remove(user.id)
-
-            // Add/Remove arrows based on position
-            // If we are at start, remove Back. If at end, remove Next.
-            if (index === 0) {
-                 message.reactions.cache.get('⬅️')?.remove().catch(() => {})
-            } else {
-                 message.react('⬅️').catch(() => {})
-            }
-
-            if (index === items.length - 1) {
-                 message.reactions.cache.get('➡️')?.remove().catch(() => {})
-            } else {
-                 message.react('➡️').catch(() => {})
-            }
-
-        } catch (err) {
-            // Fails in DMs or without permissions, ignoring.
-            // this is just here to prevent a bot crash.
-        }
+    await interaction.editReply({ 
+      embeds: [newEmbed], 
+      components: newComponents 
     })
+  })
 
-    collector.on('end', async (_, reason) => {
-        if (reason === 'cancelled') {
-            // User clicked Stop
-            await message.edit({ content: 'Stopping the search! 🐭', embeds: [] })
-            message.reactions.removeAll().catch(() => {})
-        } else {
-            // on timeout
-            message.reactions.removeAll().catch(() => {})
-        }
-    })
+  collector.on('end', async (_, reason) => {
+    if (reason === 'cancelled') {
+      await interaction.editReply({ content: '*Search closed!* 🐭 ', embeds: [], components: [] })
+    } else {
+      // done we remove it all
+        await interaction.editReply({ components: [] })
+    }
+  })
 }
 
 module.exports = { startPagination }
