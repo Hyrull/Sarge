@@ -47,7 +47,7 @@ const youtubeSearchCommand = async (source, isLegacy, message) => {
 
     // 3. DEFINE RENDERER
     const renderVideoPage = async (video, current, total) => {
-      return `**Result ${current}/${total}**\n${video.link}`
+      return `*Result n°${current}*\n${video.link}`
     }
 
     // START PAGINATION

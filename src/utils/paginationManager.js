@@ -57,13 +57,13 @@ async function startPagination(interaction, items, renderPage) {
     }
   }
 
-  await interaction.editReply(await getPayload(index))
+ const message = await interaction.editReply(await getPayload(index))
 
- const collector = interaction.channel.createMessageComponentCollector({
+ const collector = message.createMessageComponentCollector({
     componentType: ComponentType.Button, 
-    time: 120000,
-    // Added safety check: ensure the click is on the *current* message
-    filter: (i) => i.user.id === interaction.user.id && i.message.interaction.id === interaction.id
+    time: 30000,
+    // Filter: Check user ID
+    filter: (i) => i.user.id === interaction.user.id 
   })
 
   collector.on('collect', async (i) => {
