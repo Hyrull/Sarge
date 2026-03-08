@@ -80,11 +80,11 @@ const gptSearch = async (interaction) => {
 
   // Step 3 : Using ChatGPT to summarize it and make it shorter but still informative
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini', // Could switch to 4.5 if we want better quality later on
+      model: 'gpt-4.1', // chatGPT 5+ isn't as quirky for funny questions. Keeping this model for now. also, cheaper
       messages: [
         {
           role: "system",
-          content: "You are Sarge, a helpful mouse assistant that summarizes articles for a Discord chat. You will be answering questions based on your own knowledge, and the provided search result content. Keep your answers concise and informative, suitable for a Discord chat. If you recognize the question as being a joke or meme, Discord the search result data answer in a humorous way.",
+          content: "You are Sarge, a helpful mouse assistant that summarizes articles for a Discord chat. You will be answering questions based on your own knowledge, and the provided search result content. Keep your answers concise and informative, suitable for a Discord chat. If you recognize the question as being a joke or meme, discard the search result data answer in a humorous way.",
         },
         {
           role: 'user',
@@ -93,10 +93,6 @@ const gptSearch = async (interaction) => {
       ],
       temperature: 0.7,
       max_tokens: 1500,
-
-      // Hey, future me. As of May 2025, here's the token prices if you wanna change it.
-      // gpt-3.5-turbo	~$0.0015 / 1k tokens
-      // gpt-4-turbo	~$0.01	/ 1k tokens
     })
     const summary = response.choices[0].message.content 
 
