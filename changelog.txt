@@ -1,4 +1,4 @@
-V.10.1 - March 8th, 2026
+V1.10.1 - March 8th, 2026
 - /question now uses gpt4.1 instead of gpt4o-mini
 
 V1.10 - February 17th, 2026
