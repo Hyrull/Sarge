@@ -32,7 +32,10 @@ async function messageCreateListener(message, client) {
   }
 
   if (lowerCaseContent.includes('good bot') 
-    || lowerCaseContent.includes('gud bot')) {
+    || lowerCaseContent.includes('gud bot')
+    || lowerCaseContent.includes('ty sarge')
+    || lowerCaseContent.includes('thanks sarge')
+    || lowerCaseContent.includes('thank you sarge')) {
     message.react('🩵')
   }
 
