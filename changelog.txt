@@ -1,3 +1,6 @@
+V1.11 - March 30th, 2026
+- Added /roulette, which has a 5/6 chance to ban an active member, and 1/6 chance to time the user out for 24 hours.
+
 V1.10.2 - March 16th, 2026
 - Now also reacts a heart to users thanking Sarge
 

@@ -19,6 +19,7 @@ const { checkEasterEggs, handleNsfwBan } = require('./slash-commands/nsfw')
 const fetchAndAnnounceGiveaways = require('./utils/giveawayFetcher')
 const { movieSearchCommand } = require('./slash-commands/movie-search')
 const { gameSearch } = require('./slash-commands/gameSearch') 
+const { default: banRoulette } = require('./slash-commands/ban-roulette')
 
 const greetingsVideo = './data/greetings.mp4'
 
@@ -36,7 +37,6 @@ const client = new Client ({
 
 const startTime = Date.now()
 console.log(`Bot started at: ${new Date(startTime).toISOString()}`)
-
 
 function getTimeAndDate() {
   const now = new Date()
@@ -84,7 +84,7 @@ client.on('interactionCreate', async (interaction) => {
         const embed = new EmbedBuilder()
         .setColor('#009dff')
         .setTitle("Sarge's latest version")
-        .setDescription(`I am currently in **v1.10.2**.\nLast update: March 16th, 2026`)
+        .setDescription(`I am currently in **v1.11**.\nLast update: March 30th, 2026`)
         .addFields(
           {name : "What's new?", value: '[Changelog](https://github.com/Hyrull/Sarge/blob/main/changelog.txt)'}
         )
@@ -152,6 +152,10 @@ client.on('interactionCreate', async (interaction) => {
       if(interaction.commandName === "youtube") {
         await interaction.deferReply()
         await youtubeSearchCommand(interaction)
+      }
+
+      if(interaction.commandName === "roulette") {
+        await banRoulette(interaction)
       }
       
       if(interaction.commandName === "question") {

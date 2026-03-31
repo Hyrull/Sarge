@@ -149,6 +149,10 @@ const guildCommands = [
   new SlashCommandBuilder()
     .setName('greetings')
     .setDescription('Sends a link to a "greetings!" video.'),
+
+  new SlashCommandBuilder()
+    .setName('roulette')
+    .setDescription('!!WARNING!! 5/6 chance to ban a random whitename. 1/6 chance to time you out for 24 hours!'),
     
   new SlashCommandBuilder()
     .setName('event')
