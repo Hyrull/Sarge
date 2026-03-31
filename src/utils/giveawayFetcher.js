@@ -1,7 +1,7 @@
 const axios = require('axios')
 const { EmbedBuilder } = require('discord.js')
 
-const GuildSettings = require('../model')
+const GuildSettings = require('../models/settingsModel')
 const discordChannel = '518805681566908417'
 
 // Retry configuration

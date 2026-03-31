@@ -1,4 +1,4 @@
-const GuildSettings = require('../model')
+const GuildSettings = require('../models/settingsModel')
 const settingsCache = new Map()
 
 async function getSettings(guildId) {

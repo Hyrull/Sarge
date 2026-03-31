@@ -1,4 +1,4 @@
-const GuildSettings = require('../model');
+const GuildSettings = require('../models/settingsModel');
 const { updateSettingsInCache } = require('./settingsManager');
 
 async function incrementCount(guildId, field) {
