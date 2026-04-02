@@ -185,15 +185,13 @@ client.on('interactionCreate', async (interaction) => {
       }
 
       if(interaction.commandName === "roulette") {
-        if (interaction.user.id === '343693657381142538') {
-          const wantsStats = interaction.options.get('stats')
-          if (wantsStats) {
-            await banRouletteStats(interaction)
-          } else {
-            await banRoulette(interaction)
-          }
-          return
+        const wantsStats = interaction.options.get('stats')
+        if (wantsStats) {
+          await banRouletteStats(interaction)
+        } else {
+          await banRoulette(interaction)
         }
+        return
       }
 
       if(interaction.commandName === "question") {
