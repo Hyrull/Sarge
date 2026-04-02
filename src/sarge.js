@@ -21,6 +21,7 @@ const { movieSearchCommand } = require('./slash-commands/movie-search')
 const { gameSearch } = require('./slash-commands/gameSearch') 
 const { default: banRoulette } = require('./slash-commands/ban-roulette')
 const { default: RouletteStats } = require('./models/rouletteStats.js')
+const { default: banRouletteStats } = require('./slash-commands/ban-roulette-stats')
 const greetingsVideo = './data/greetings.mp4'
 
 const client = new Client ({
@@ -185,14 +186,16 @@ client.on('interactionCreate', async (interaction) => {
 
       if(interaction.commandName === "roulette") {
         if (interaction.user.id === '343693657381142538') {
-          await banRoulette(interaction)
+          const wantsStats = interaction.options.get('stats')
+          if (wantsStats) {
+            await banRouletteStats(interaction)
+          } else {
+            await banRoulette(interaction)
+          }
           return
         }
-        await interaction.deferReply()
-        await interaction.editReply(`Thank you for playing! This command is on maintenance.`)
-        return
       }
-      
+
       if(interaction.commandName === "question") {
         const lv40Role = '518962130372919317'
 
