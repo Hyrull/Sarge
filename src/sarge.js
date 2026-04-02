@@ -155,7 +155,13 @@ client.on('interactionCreate', async (interaction) => {
       }
 
       if(interaction.commandName === "roulette") {
-        await banRoulette(interaction)
+      //   if (interaction.user.id === '258437336847745026' || interaction.user.id === '102080304008695808') {
+      //     await banRoulette(interaction)
+      //     return
+      //   }
+        await interaction.deferReply()
+        await interaction.editReply(`Thank you for playing! This command is on maintenance.`)
+        return
       }
       
       if(interaction.commandName === "question") {
