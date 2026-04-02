@@ -6,7 +6,9 @@ const rouletteStatsSchema = new mongoose.Schema({
   currentStreak: { type: Number, default: 0 },
   totalKills: { type: Number, default: 0 },
   totalTimeouts: { type: Number, default: 0 },
-  graveyardRelease: { type: Date, default: null }
+  graveyardRelease: { type: Date, default: null },
+  punishmentLevel: { type: Number, default: 1 },
+  lastTimeoutDate: { type: Date, default: null }
 })
 
 // Separating per server

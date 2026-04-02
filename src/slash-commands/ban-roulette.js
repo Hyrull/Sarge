@@ -49,7 +49,7 @@ const banRoulette = async (interaction) => {
     
 
     // SPIN THE WHEEL as heimerdinger would say
-    if (Math.random() < (5/6)) {
+    if (Math.random() < (0.0000000001/6)) {
 
       // KILL
       const victim = possibleVictims.random()
@@ -67,7 +67,7 @@ const banRoulette = async (interaction) => {
           \n${shooterName} has now banned a total of **${userStats.totalKills}** whitenames, and is on a streak of **${userStats.currentStreak}**!
           `)
           if (modLogsChannel) {
-            await modLogsChannel.send(`${shooterName} got ${victimDisplay} banned following a /roulette shot.`)
+            await modLogsChannel.send(`**${shooterName}** got ${victimDisplay} banned following a /roulette shot.`)
           }
         } catch (err) {
           console.error(`[ROULETTE] Ban failed:\n`, err)
@@ -95,35 +95,57 @@ const banRoulette = async (interaction) => {
         
         ///////////////////////////////////////////////////////////////////////////////////////////
         try {
-          const graveyardRoleId = '900129282838384682'
-          const releaseTime = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
+        const now = new Date()
+        // Decay defaults to level 1 if it doesn't exist yet
+        userStats.punishmentLevel = userStats.punishmentLevel || 1
 
-          const brokenStreak = userStats.currentStreak
-          // await interaction.member.timeout(timeoutMs, 'Self-shot from the ban roulette!')
-          await interaction.member.roles.add(graveyardRoleId, 'Sent to the Maw (lost /roulette)')
-          userStats.totalTimeouts += 1
-          userStats.currentStreak = 0
-          userStats.graveyardRelease = releaseTime
-          await userStats.save()
+        if (userStats.lastTimeoutDate) {
+          const msPassed = now.getTime() - userStats.lastTimeoutDate.getTime()
+          const daysPassed = msPassed / (1000 * 60 * 60 * 24)
+          const decayAmount = Math.floor(daysPassed / 5)
           
-          console.log(`[ROULETTE] Timed out ${shooterName} due to a ban roulette fail.`)
-          await interaction.editReply(`## 💥 *Bang!*
-            \n**You shot yourself**. Enjoy your 15 minutes timeout in the Maw!
-            \n**${brokenStreak}**-kill streak lost!
-            `)
+          userStats.punishmentLevel = Math.max(1, userStats.punishmentLevel - decayAmount)
+        }
 
-            if (modLogsChannel) {
-              await modLogsChannel.send(`${shooterName} has been sent to The Maw due to a /roulette fail.`)
-            }
-          } catch (err) {
-            console.error(`[ROULETTE] Timeout failed:\n`, err)
-            
-            const brokenStreak = userStats.currentStreak
-            userStats.currentStreak = 0
-            await userStats.save()
-            
-            await interaction.editReply(`You were supposed to shoot yourself, but you were saved by an internal error or by my lack of permissions. Lucky you... But you still lost your streak of **${brokenStreak}**.`)
-          }
+        // Calculating the timeout length
+        const hoursToTimeout = 8 * userStats.punishmentLevel // 8 hours times the punishment level. 8 then 16 then 24 then...
+        const timeoutMs = hoursToTimeout * 60 * 60 * 1000
+        const releaseTime = new Date(now.getTime() + timeoutMs)
+        const brokenStreak = userStats.currentStreak
+        const graveyardRoleId = '900129282838384682'
+
+        // les modos vous m'le bannez
+        await interaction.member.roles.add(graveyardRoleId, `Sent to the Maw. Punishment Level: ${userStats.punishmentLevel}`)
+        
+        userStats.totalTimeouts += 1
+        userStats.currentStreak = 0
+        userStats.graveyardRelease = releaseTime
+        userStats.lastTimeoutDate = now
+        
+        // Save level for the display message, then increment for their NEXT failure
+        const displayLevel = userStats.punishmentLevel
+        userStats.punishmentLevel += 1
+        await userStats.save()
+
+        console.log(`[ROULETTE] Sent ${shooterName} to the Maw for ${hoursToTimeout} hours.`)
+        
+        await interaction.editReply(`## 💥 *Bang!*
+        \n**You shot yourself.** Welcome to the Maw.
+        \n⚖️ **Punishment Level:** ${displayLevel} (${hoursToTimeout} hour sentence)\n(Your punishment level decreases by 1 every 5 days you survive)
+        \n**${brokenStreak}**-kill streak lost!
+        `)
+
+        if (modLogsChannel) {
+          await modLogsChannel.send(`**${shooterName}** was sent to the Maw for ${hoursToTimeout} hours due to a /roulette fail.`).catch(console.error)
+        }
+
+      } catch (err) {
+        console.error(`[ROULETTE] Banishment failed:\n`, err)
+        const brokenStreak = userStats.currentStreak
+        userStats.currentStreak = 0
+        await userStats.save()
+        await interaction.editReply(`You were supposed to shoot yourself, but the Maw rejected you. Lucky you... But you still lost your streak of **${brokenStreak}**.`)
+      }
         }
       } catch (fatalError) {
         console.error(`[ROULETTE] Fatal execution error:\n`, fatalError)
