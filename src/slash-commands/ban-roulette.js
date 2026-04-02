@@ -77,36 +77,43 @@ const banRoulette = async (interaction) => {
 
         // LOST!
 
-        if (!interaction.member.roles.cache.has(lv5Role)) {
-          if (Math.random() < (1/2)) {
-            // REALLY REALLY LOST
-            await interaction.user.send({content: `Oops! Looks like you lost the Special Sarge Roulette coin flip... When you loose the roulette as a member below the level 5, you have 50% chance of getting timed out like everyone, and 50% of getting banned. Unlucky!`}).catch(() => {})
-            await interaction.member.ban({ reason: `Victim of ${interaction.user.username}'s roulette.` })
-            if (modLogsChannel) {
-              await modLogsChannel.send(`${shooterName} got banned for loosing both the roulette and the coinflip..`).catch(console.error)
-            }
-            await interaction.editReply(`${shooterName} lost the roulette, but also the whitename coinflip... And got sacrified to the **God of Cheese**. 🧀`)
-            return
-          }
-        }
+
+        ///////////// This part was enabled as part of the 2026 April's Fools event /////////////
+
+        // if (!interaction.member.roles.cache.has(lv5Role)) {
+        //   if (Math.random() < (1/2)) {
+        //     // REALLY REALLY LOST
+        //     await interaction.user.send({content: `Oops! Looks like you lost the Special Sarge Roulette coin flip... When you loose the roulette as a member below the level 5, you have 50% chance of getting timed out like everyone, and 50% of getting banned. Unlucky!`}).catch(() => {})
+        //     await interaction.member.ban({ reason: `Victim of ${interaction.user.username}'s roulette.` })
+        //     if (modLogsChannel) {
+        //       await modLogsChannel.send(`${shooterName} got banned for loosing both the roulette and the coinflip..`).catch(console.error)
+        //     }
+        //     await interaction.editReply(`${shooterName} lost the roulette, but also the whitename coinflip... And got sacrified to the **God of Cheese**. 🧀`)
+        //     return
+        //   }
+        // }
         
+        ///////////////////////////////////////////////////////////////////////////////////////////
         try {
-          // const timeoutMs = 24 * 60 * 60 * 1000 // 24 hours
-          const timeoutMs = 0.25 * 60 * 60 * 1000 // 15 minutes
+          const graveyardRoleId = '900129282838384682'
+          const releaseTime = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
+
           const brokenStreak = userStats.currentStreak
-          await interaction.member.timeout(timeoutMs, 'Self-shot from the ban roulette!')
+          // await interaction.member.timeout(timeoutMs, 'Self-shot from the ban roulette!')
+          await interaction.member.roles.add(graveyardRoleId, 'Sent to the Maw (lost /roulette)')
           userStats.totalTimeouts += 1
           userStats.currentStreak = 0
+          userStats.graveyardRelease = releaseTime
           await userStats.save()
           
           console.log(`[ROULETTE] Timed out ${shooterName} due to a ban roulette fail.`)
           await interaction.editReply(`## 💥 *Bang!*
-            \n**You shot yourself**. Enjoy your 15 minutes timeout!
+            \n**You shot yourself**. Enjoy your 15 minutes timeout in the Maw!
             \n**${brokenStreak}**-kill streak lost!
             `)
 
             if (modLogsChannel) {
-              await modLogsChannel.send(`${shooterName} has been timed out for 24 hours due to a /roulette fail.`)
+              await modLogsChannel.send(`${shooterName} has been sent to The Maw due to a /roulette fail.`)
             }
           } catch (err) {
             console.error(`[ROULETTE] Timeout failed:\n`, err)

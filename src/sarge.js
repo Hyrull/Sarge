@@ -20,7 +20,7 @@ const fetchAndAnnounceGiveaways = require('./utils/giveawayFetcher')
 const { movieSearchCommand } = require('./slash-commands/movie-search')
 const { gameSearch } = require('./slash-commands/gameSearch') 
 const { default: banRoulette } = require('./slash-commands/ban-roulette')
-
+const { default: RouletteStats } = require('./models/rouletteStats.js')
 const greetingsVideo = './data/greetings.mp4'
 
 const client = new Client ({
@@ -68,6 +68,35 @@ async function setup() {
 client.on('clientReady', (c) => {
   console.log(`${c.user.tag} is up! ID: ${c.user.id}`)
 })
+
+
+//////////////////////    CRON JOBS     /////////////////////////////////
+
+// Free someone from /roulette timeout
+setInterval(async () => {
+  try {
+    const now = new Date()
+    // Find everyone whose release time has passed
+    const ghosts = await RouletteStats.find({ graveyardRelease: { $lte: now } })
+
+    for (const ghost of ghosts) {
+      const guild = client.guilds.cache.get(ghost.guildId)
+      if (!guild) continue
+
+      const member = await guild.members.fetch(ghost.userId).catch(() => null)
+      if (member) {
+        await member.roles.remove('900129282838384682').catch(console.error)
+      }
+
+      // Clear their release time so we don't fetch them again
+      ghost.graveyardRelease = null;
+      await ghost.save()
+    }
+  } catch (err) {
+    console.error('[GRAVEYARD CRON] Failed to process resurrections:', err)
+  }
+}, 60 * 1000)
+
 
 
 /////////////////////////////////////////////////////////////////////
@@ -155,10 +184,10 @@ client.on('interactionCreate', async (interaction) => {
       }
 
       if(interaction.commandName === "roulette") {
-      //   if (interaction.user.id === '258437336847745026' || interaction.user.id === '102080304008695808') {
-      //     await banRoulette(interaction)
-      //     return
-      //   }
+        if (interaction.user.id === '343693657381142538') {
+          await banRoulette(interaction)
+          return
+        }
         await interaction.deferReply()
         await interaction.editReply(`Thank you for playing! This command is on maintenance.`)
         return
