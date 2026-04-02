@@ -30,7 +30,7 @@ const banRouletteStats = async (interaction) => {
     const nextMawLength = 8 * displayLevel
 
     const statsEmbed = new EmbedBuilder()
-      .setColor('#8d8d8dff')
+      .setColor('#8d8d8d')
       .setTitle(`${userName}'s Roulette Record:`)
       // .setThumbnail(avatarUrl)
       .addFields(
