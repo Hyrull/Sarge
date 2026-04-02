@@ -28,20 +28,31 @@ const banRouletteStats = async (interaction) => {
     }
 
     const nextMawLength = 8 * displayLevel
+    const embedFields = [
+      { name: 'Kills', value: `${userStats.totalKills}`, inline: true },
+      { name: 'Current Streak', value: `${userStats.currentStreak}`, inline: true },
+      { name: '\u200B', value: '\u200B', inline: true }, // Empty spacer column for layout
+      { name: 'Maw Visits', value: `${userStats.totalTimeouts}`, inline: true },
+      { name: 'Current Punishment Level', value: `Level ${displayLevel}`, inline: true },
+      { name: '\u200B', value: '\u200B', inline: true }, // Empty spacer column for layout
+      { name: 'Next Sentence Length', value: `${nextMawLength} hours`, inline: false }
+    ]
+
+    if (userStats.graveyardRelease && userStats.graveyardRelease.getTime() > Date.now()) {
+      // Convert JS Date (milliseconds) to Discord UNIX timestamp (seconds)
+      const unixTimestamp = Math.floor(userStats.graveyardRelease.getTime() / 1000)
+      embedFields.push({ 
+        name: 'Time Left in the Maw', 
+        value: `<t:${unixTimestamp}:R>`, // (discord's @time format)
+        inline: false 
+      })
+    }
 
     const statsEmbed = new EmbedBuilder()
       .setColor('#8d8d8d')
       .setTitle(`${userName}'s Roulette Record:`)
       // .setThumbnail(avatarUrl)
-      .addFields(
-        { name: 'Kills', value: `${userStats.totalKills}`, inline: true },
-        { name: 'Current Streak', value: `${userStats.currentStreak}`, inline: true },
-        { name: '\u200B', value: '\u200B', inline: true }, // Empty spacer column for layout
-        { name: 'Maw Visits', value: `${userStats.totalTimeouts}`, inline: true },
-        { name: 'Current Punishment Level', value: `Level ${displayLevel}`, inline: true },
-        { name: '\u200B', value: '\u200B', inline: true }, // Empty spacer column for layout
-        { name: 'Next Sentence Length', value: `${nextMawLength} hours`, inline: false }
-      )
+      .addFields(embedFields)
       .setFooter({ text: 'The Maw hungers...' })
 
     return await interaction.editReply({ embeds: [statsEmbed] })
