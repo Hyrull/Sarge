@@ -5,9 +5,14 @@ let lastUsedTime = 0
 const COOLDOWN_DURATION = 30 * 1000 // 30 seconds
 
 const banRoulette = async (interaction) => {
+  const graveyardRoleId = '900129282838384682'
+  
+  if (interaction.member.roles.cache.has(graveyardRoleId)) {
+    return interaction.reply({content: "Did you try to play from the Maw? How bold of you...", ephemeral: true})
+  }
   
   try {
-
+    
     // COOLDOWN CHECK
     const now = Date.now()
     if (now - lastUsedTime < COOLDOWN_DURATION) {
@@ -18,7 +23,7 @@ const banRoulette = async (interaction) => {
       })
     }
     lastUsedTime = now
-
+    
     // SETUP
     await interaction.deferReply()
     const lv5Role = '559076061519020042'
@@ -49,7 +54,7 @@ const banRoulette = async (interaction) => {
     
 
     // SPIN THE WHEEL as heimerdinger would say
-    if (Math.random() < (0.0000000001/6)) {
+    if (Math.random() < (5/6)) {
 
       // KILL
       const victim = possibleVictims.random()
@@ -112,7 +117,7 @@ const banRoulette = async (interaction) => {
         const timeoutMs = hoursToTimeout * 60 * 60 * 1000
         const releaseTime = new Date(now.getTime() + timeoutMs)
         const brokenStreak = userStats.currentStreak
-        const graveyardRoleId = '900129282838384682'
+        
 
         // les modos vous m'le bannez
         await interaction.member.roles.add(graveyardRoleId, `Sent to the Maw. Punishment Level: ${userStats.punishmentLevel}`)
