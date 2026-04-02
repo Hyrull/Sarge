@@ -1,3 +1,9 @@
+V1.12 - April 1st, 2026
+- /roulette now will send users to "the Maw" instead of a simple timeout
+- Added "stats" as an option to /roulette for users to see their standing and stats
+- /roulette now has an incremental "Maw" duration instead of 24 hours. Default: 8 hours.
+-- This length gets multiplied by their "punishment level" (starts at 1, is incremented each time they lose, is decreased every 5 days without losing)
+
 V1.11 - March 30th, 2026
 - Added /roulette, which has a 5/6 chance to ban an active member, and 1/6 chance to time the user out for 24 hours.
 
