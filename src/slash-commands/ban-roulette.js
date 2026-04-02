@@ -69,7 +69,7 @@ const banRoulette = async (interaction) => {
         await userStats.save()
         
         await interaction.editReply(`## 🤠 BANG! \n**${victimDisplay}** caught **${shooterName}**'s bullet and was banned.
-          \n${shooterName} has now banned a total of **${userStats.totalKills}** whitenames, and is on a streak of **${userStats.currentStreak}**!
+          \n**${shooterName}** has now banned a total of **${userStats.totalKills}** whitenames, and is on a streak of **${userStats.currentStreak}**!
           `)
           if (modLogsChannel) {
             await modLogsChannel.send(`**${shooterName}** got ${victimDisplay} banned following a /roulette shot.`)
