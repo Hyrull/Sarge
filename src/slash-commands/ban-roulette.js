@@ -51,6 +51,7 @@ const banRoulette = async (interaction) => {
     if (possibleVictims.size === 0) {
       return interaction.editReply("No eligible victims found. No one under lv.5 left!")
     }
+    console.log(`[ROULETTE] Possible Victims Left: ${possibleVictims.size}`)
     
 
     // SPIN THE WHEEL as heimerdinger would say

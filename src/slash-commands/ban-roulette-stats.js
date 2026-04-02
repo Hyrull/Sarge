@@ -44,7 +44,7 @@ const banRouletteStats = async (interaction) => {
       )
       .setFooter({ text: 'The Maw hungers...' })
 
-    await interaction.editReply({ embeds: [statsEmbed] })
+    return await interaction.editReply({ embeds: [statsEmbed] })
 
   } catch (err) {
     console.error(`[ROULETTE STATS] Fatal error:\n`, err)

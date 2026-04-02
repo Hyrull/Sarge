@@ -185,8 +185,8 @@ client.on('interactionCreate', async (interaction) => {
       }
 
       if(interaction.commandName === "roulette") {
-        const wantsStats = interaction.options.get('stats')
-        if (wantsStats === true) {
+        const wantsStats = interaction.options.getBoolean('stats')
+        if (wantsStats) {
           await banRouletteStats(interaction)
         } else {
           await banRoulette(interaction)
