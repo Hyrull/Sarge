@@ -38,7 +38,7 @@ const banRouletteStats = async (interaction) => {
         { name: 'Current Streak', value: `${userStats.currentStreak}`, inline: true },
         { name: '\u200B', value: '\u200B', inline: true }, // Empty spacer column for layout
         { name: 'Maw Visits', value: `${userStats.totalTimeouts}`, inline: true },
-        { name: 'Current Heat', value: `Level ${displayLevel}`, inline: true },
+        { name: 'Current Punishment Level', value: `Level ${displayLevel}`, inline: true },
         { name: '\u200B', value: '\u200B', inline: true }, // Empty spacer column for layout
         { name: 'Next Sentence Length', value: `${nextMawLength} hours`, inline: false }
       )
