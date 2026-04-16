@@ -18,13 +18,22 @@ const banRouletteStats = async (interaction) => {
 
     // setting it to one if there's none
     let displayLevel = userStats.punishmentLevel || 1
+    // var name isn't too good but i had no better idea to name. this is the time left before the decay decreases the level again
+    let nextDecayDate = null
+    let decayAmount = null
+    const FIVE_DAYS_MS = 1000 * 60 * 60 * 24 * 5
+
 
     // we recalculate the timeout here. i don't want a cron job that actually refreshes it - waste of resources. we just refresh it on call
     if (userStats.lastTimeoutDate) {
       const msPassed = Date.now() - userStats.lastTimeoutDate.getTime()
-      const decayAmount = Math.floor(msPassed / (1000 * 60 * 60 * 24 * 5)) // 5 days
       
+      decayAmount = Math.floor(msPassed / FIVE_DAYS_MS)
       displayLevel = Math.max(1, displayLevel - decayAmount)
+    }
+
+    if (displayLevel > 1) {
+      nextDecayDate = new Date(userStats.lastTimeoutDate.getTime() + ((decayAmount + 1) * FIVE_DAYS_MS))
     }
 
     const nextMawLength = 8 * displayLevel
@@ -33,10 +42,15 @@ const banRouletteStats = async (interaction) => {
       { name: 'Current Streak', value: `${userStats.currentStreak}`, inline: true },
       { name: '\u200B', value: '\u200B', inline: true }, // Empty spacer column for layout
       { name: 'Maw Visits', value: `${userStats.totalTimeouts}`, inline: true },
-      { name: 'Current Punishment Level', value: `Level ${displayLevel}`, inline: true },
+      { name: 'Next Punishment Level', value: `Level ${displayLevel}`, inline: true },
       { name: '\u200B', value: '\u200B', inline: true }, // Empty spacer column for layout
       { name: 'Next Sentence Length', value: `${nextMawLength} hours`, inline: false }
     ]
+
+  if (displayLevel > 1 && nextDecayDate) {
+    const decayUnix = Math.floor(nextDecayDate.getTime() / 1000)
+    embedFields.push({ name: 'Punish. Level Decreases', value: `<t:${decayUnix}:R>`, inline: false })
+  }
 
     if (userStats.graveyardRelease && userStats.graveyardRelease.getTime() > Date.now()) {
       // Convert JS Date (milliseconds) to Discord UNIX timestamp (seconds)
