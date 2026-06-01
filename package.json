@@ -16,7 +16,7 @@
     "dotenv": "^16.4.5",
     "mongoose": "^8.15.1",
     "nodemon": "^3.1.10",
-    "openai": "^4.97.0",
+    "openai": "^6.40.0",
     "undici": "^7.16.0",
     "xml2js": "^0.6.2",
     "youtube-search": "^1.1.2"
