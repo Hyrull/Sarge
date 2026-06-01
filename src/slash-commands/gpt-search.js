@@ -4,7 +4,10 @@ const { OpenAI } = require('openai')
 
 const gptSearch = async (interaction) => {
   const query = interaction.options.get('question').value
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  const ai = new OpenAI({ 
+  baseURL: "https://models.inference.ai.azure.com", 
+  apiKey: process.env.GITHUB_TOKEN 
+})
 
   // Gonna sum up the three firsts result only
   // Step 1: I'll search through google (API : serpapi)
@@ -56,30 +59,8 @@ const gptSearch = async (interaction) => {
     const secondPageContent = secondUrl ? await fetchPageContent(secondUrl) : ""
     const thirdPageContent = thirdUrl ? await fetchPageContent(thirdUrl) : ""
 
-
-    ////////////////
-
-    ////// THIS IS A TESTING CODE FOR SELF-HOSTED GEMMA3
-    // It works, but it's not as good as GPT-4o-mini - much slower (because it's self-hosted) and the quality is not as convincing.
-    // For the sake of things though, I'll keep the code here because this lil' feature could be useful for a different context or project.
-
-    ////////////////
-
-    // Step 3 : Using self-hosted Gemma3 to summarize it and make it shorter but still informative
-    // const jsonPayload = { 
-    //   "model": "ai/gemma3:latest", 
-    //   "messages": [ 
-    //     { "role": "system", "content": "You are Sarge, a helpful mouse assistant that summarizes articles for a Discord chat. You will be answering questions based on your own knowledge, and the provided search result content. Keep your answers concise and informative, suitable for a Discord chat. If you recognize the question as being a joke or meme, Discord the search result data answer in a humorous way." }, 
-    //     { "role": "user", "content": `A user asked: "${query}". Here is data:\n\nSearch result 1:${firstPageContent}\n\nSearch result 2:${secondPageContent}\n\nSearch result 3:${thirdPageContent}` } 
-    //   ] }
-
-    // const response = await fetch('http://localhost:12434/engines/llama.cpp/v1/chat/completions', 
-    //   { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(jsonPayload) }) 
-
-    ///////////////
-
   // Step 3 : Using ChatGPT to summarize it and make it shorter but still informative
-    const response = await openai.chat.completions.create({
+    const response = await ai.chat.completions.create({
       model: 'gpt-4.1', // chatGPT 5+ isn't as quirky for funny questions. Keeping this model for now. also, cheaper
       messages: [
         {
@@ -103,7 +84,7 @@ const gptSearch = async (interaction) => {
     ].filter(Boolean).join(", ")
 
     console.log(`[QUESTION] Answering ${interaction.user.username}'s question: ${query}`)
-    return `You asked - "**${query}**". \n\nHere's my answer: ${summary}\n\n**Sources:**\n${sources}\n*-# I am a simple mouse. I might be wrong, so take this answer with a grain of cheese.*`
+    return `You asked - "**${query}**". Here's my answer:\n\n${summary}\n\n**Sources:**\n${sources}\n*-# I am a simple mouse. I might be wrong, so take this answer with a grain of cheese.*`
   } catch (err) {
     console.error(err)
     return "There was an error summarizing the text."
