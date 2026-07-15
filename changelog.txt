@@ -1,3 +1,10 @@
+V.12.2 - July 2nd, 2026
+- /question now is answered in an Embed, meaning the character limit is now 4096
+- /question now can use custom persona instructions so Sarge can "know" users
+
+V.12.1 - July 1st, 2026
+- Fixed /question crashing the bot when answers were above 2k characters
+
 V1.12 - April 1st, 2026
 - /roulette now will send users to "the Maw" instead of a simple timeout
 - Added "stats" as an option to /roulette for users to see their standing and stats

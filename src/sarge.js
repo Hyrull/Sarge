@@ -114,7 +114,7 @@ client.on('interactionCreate', async (interaction) => {
         const embed = new EmbedBuilder()
         .setColor('#009dff')
         .setTitle("Sarge's latest version")
-        .setDescription(`I am currently in **v1.12**.\nLast update: April 1st, 2026`)
+        .setDescription(`I am currently in **v1.12.2**.\nLast update: July 2nd, 2026`)
         .addFields(
           {name : "What's new?", value: '[Changelog](https://github.com/Hyrull/Sarge/blob/main/changelog.txt)'}
         )
@@ -202,13 +202,13 @@ client.on('interactionCreate', async (interaction) => {
         // If we're on the guild - check if they're Lv.40. If it's in DMs, check if they're a VIP.
         const hasAccess = interaction.guild
           ? interaction.member.roles.cache.has(lv40Role) || vipList.includes(interaction.user.id)
-          : vipList.includes(interaction.user.id); // In DMs, only VIPs get access
+          : vipList.includes(interaction.user.id) // In DMs, only VIPs get access
 
 
         if (hasAccess) {
           await interaction.deferReply()
           const answer = await gptSearch(interaction)
-          await interaction.editReply({ content: answer })
+          await interaction.editReply(answer)
         } else {
           await interaction.reply({ content: `You don't have access to this command.`, flags: MessageFlags.Ephemeral })
         }

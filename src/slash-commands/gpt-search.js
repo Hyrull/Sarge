@@ -1,6 +1,9 @@
 const axios = require('axios')
 const cheerio = require('cheerio')
 const { OpenAI } = require('openai')
+const { EmbedBuilder } = require('discord.js')
+const path = require('path')
+const fs = require('fs').promises
 
 const gptSearch = async (interaction) => {
   const query = interaction.options.get('question').value
@@ -8,6 +11,8 @@ const gptSearch = async (interaction) => {
   baseURL: "https://models.inference.ai.azure.com", 
   apiKey: process.env.GITHUB_TOKEN 
 })
+
+const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')
 
   // Gonna sum up the three firsts result only
   // Step 1: I'll search through google (API : serpapi)
@@ -59,13 +64,33 @@ const gptSearch = async (interaction) => {
     const secondPageContent = secondUrl ? await fetchPageContent(secondUrl) : ""
     const thirdPageContent = thirdUrl ? await fetchPageContent(thirdUrl) : ""
 
+
+    // Pre-Step 3 : Preparing a custom persona so Sarge matches the user's tone
+    let userPersona = ""
+    try {
+      const personaRaw = await fs.readFile(personasFilePath, 'utf-8')
+      const personaDict = JSON.parse(personaRaw)
+      
+      if (personaDict[interaction.user.id]) {
+        userPersona = `\n\nContext about the anonymous user asking the question: ${personaDict[interaction.user.id]}\nCRITICAL INSTRUCTION: You know this user, but you must be EXTREMELY subtle. DO NOT cram their interests into your response. If making an analogy, pick AT MOST ONE of their interests, and ONLY if it naturally elevates the explanation. If no interest perfectly fits the topic, do not reference them at all. NEVER force a reference. Act like a normal friend, not someone reading from a dossier.`
+      }
+    } catch (err) {
+      // Silently ignore if file doesn't exist or is malformed
+      console.log("[QUESTION] personas.json not found or invalid, using default personality.")
+    }
+
+    // 2. Build the dynamic System Prompt
+    const baseSystemPrompt = "You are Sarge, a helpful mouse assistant created by Hyrul, that summarizes articles for a Discord chat. You will be answering questions based on your own knowledge, and the provided search result content. Keep your answers concise and informative, suitable for a Discord chat, NEVER more than 1800 characters. If you recognize the question as being a joke or meme, discard the search result data answer in a humorous way."
+    
+    const finalSystemPrompt = baseSystemPrompt + userPersona
+
   // Step 3 : Using ChatGPT to summarize it and make it shorter but still informative
     const response = await ai.chat.completions.create({
       model: 'gpt-4.1', // chatGPT 5+ isn't as quirky for funny questions. Keeping this model for now. also, cheaper
       messages: [
         {
           role: "system",
-          content: "You are Sarge, a helpful mouse assistant that summarizes articles for a Discord chat. You will be answering questions based on your own knowledge, and the provided search result content. Keep your answers concise and informative, suitable for a Discord chat. If you recognize the question as being a joke or meme, discard the search result data answer in a humorous way.",
+          content: finalSystemPrompt,
         },
         {
           role: 'user',
@@ -84,10 +109,17 @@ const gptSearch = async (interaction) => {
     ].filter(Boolean).join(", ")
 
     console.log(`[QUESTION] Answering ${interaction.user.username}'s question: ${query}`)
-    return `You asked - "**${query}**". Here's my answer:\n\n${summary}\n\n**Sources:**\n${sources}\n*-# I am a simple mouse. I might be wrong, so take this answer with a grain of cheese.*`
+    // return `You asked - "**${query}**". Here's my answer:\n\n${summary}\n\n**Sources:**\n${sources}\n*-# I am a simple mouse. I might be wrong, so take this answer with a grain of cheese.*`
+    const replyEmbed = new EmbedBuilder()
+      .setColor('#009dff')
+      .setTitle(`You asked: "${query}"`)
+      .setDescription(`${summary}\n\n**Sources:**\n${sources}`)
+      .setFooter({ text: 'I am a simple mouse. I might be wrong, so take this answer with a grain of cheese.' })
+
+    return { embeds: [replyEmbed] }
   } catch (err) {
     console.error(err)
-    return "There was an error summarizing the text."
+    return { content: "There was an error summarizing the text." }
   }
 }
 
