@@ -53,7 +53,30 @@ const globalCommands = [
       .setName('title')
       .setDescription(`What's the game called?`)
       .setRequired(true)
+    ),
+
+  new SlashCommandBuilder()
+    .setName('remindme')
+    .setDescription('Sets a reminder for the future. I\'ll ping you!')
+    .addStringOption(option => 
+      option.setName('message')
+      .setDescription('What do you want me to remind you about?')
+      .setRequired(true)
     )
+    .addStringOption(option => 
+      option.setName('when')
+      .setDescription('e.g., "in 2 hours", "on Friday at 8pm EST", "tomorrow 10am"')
+      .setRequired(true)
+    )
+    .addStringOption(option => 
+      option.setName('destination')
+      .setDescription('Where should I ping you?')
+      .setRequired(true)
+      .addChoices(
+        { name: 'In DMs', value: 'dm' },
+        { name: 'In this channel', value: 'here' }
+      )
+    ),
 ]
 
 const guildCommands = [

@@ -2,7 +2,14 @@ require('dotenv').config()
 const { Client, IntentsBitField, EmbedBuilder, MessageFlags } = require('discord.js')
 const http = require('http')
 const mongoose = require('mongoose')
-const { getSettings, updateSettingsInCache } = require('./utils/settingsManager')
+const { getSettings } = require('./utils/settingsManager')
+const fetchAndAnnounceGiveaways = require('./utils/giveawayFetcher')
+const startReminderDaemon = require('./utils/reminderDaemon.js')
+
+const { default: RouletteStats } = require('./models/rouletteStats.js')
+const { default: remindMe } = require('./slash-commands/remindme.js')
+
+const { default: messageCreateListener } = require('./listeners/messageCreate')
 
 const { youtubeSearchCommand } = require('./slash-commands/youtube')
 const { toggleFeatures } = require('./slash-commands/feature-toggle')
@@ -14,13 +21,10 @@ const { pingCommand } = require('./slash-commands/ping')
 const { eventCommad } = require('./slash-commands/event')
 const { feedbackNotice } = require('./slash-commands/feedback')
 const { gptSearch } = require('./slash-commands/gpt-search')
-const { default: messageCreateListener } = require('./listeners/messageCreate')
 const { checkEasterEggs, handleNsfwBan } = require('./slash-commands/nsfw')
-const fetchAndAnnounceGiveaways = require('./utils/giveawayFetcher')
 const { movieSearchCommand } = require('./slash-commands/movie-search')
 const { gameSearch } = require('./slash-commands/gameSearch') 
 const { default: banRoulette } = require('./slash-commands/ban-roulette')
-const { default: RouletteStats } = require('./models/rouletteStats.js')
 const { default: banRouletteStats } = require('./slash-commands/ban-roulette-stats')
 const greetingsVideo = './data/greetings.mp4'
 
@@ -68,8 +72,15 @@ async function setup() {
 
 client.on('clientReady', (c) => {
   console.log(`${c.user.tag} is up! ID: ${c.user.id}`)
+  
+    client.user.setPresence ({
+    activities: [{
+      name: "Squeak!",
+      type: 4 // "custom"
+    }],
+    status: 'online'
+  })
 })
-
 
 //////////////////////    CRON JOBS     /////////////////////////////////
 
@@ -90,7 +101,7 @@ setInterval(async () => {
       }
 
       // Clear their release time so we don't fetch them again
-      ghost.graveyardRelease = null;
+      ghost.graveyardRelease = null
       await ghost.save()
     }
   } catch (err) {
@@ -98,7 +109,8 @@ setInterval(async () => {
   }
 }, 60 * 1000)
 
-
+// Reminder Daemon
+  startReminderDaemon(client)
 
 /////////////////////////////////////////////////////////////////////
 
@@ -114,7 +126,7 @@ client.on('interactionCreate', async (interaction) => {
         const embed = new EmbedBuilder()
         .setColor('#009dff')
         .setTitle("Sarge's latest version")
-        .setDescription(`I am currently in **v1.12.2**.\nLast update: July 2nd, 2026`)
+        .setDescription(`I am currently in **v1.13**.\nLast update: July 20th, 2026`)
         .addFields(
           {name : "What's new?", value: '[Changelog](https://github.com/Hyrull/Sarge/blob/main/changelog.txt)'}
         )
@@ -239,6 +251,11 @@ client.on('interactionCreate', async (interaction) => {
 
       if (interaction.commandName === "game") {
         await gameSearch(interaction)
+      }
+
+      if (interaction.commandName === 'remindme') {
+        await remindMe(interaction)
+        return
       }
     }
   }

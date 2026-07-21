@@ -1,3 +1,6 @@
+V.13 - July 20th, 2026
+- Added /remindme, to allow users to have Sarge remind them of anything after a specified time.
+
 V.12.2 - July 2nd, 2026
 - /question now is answered in an Embed, meaning the character limit is now 4096
 - /question now can use custom persona instructions so Sarge can "know" users
