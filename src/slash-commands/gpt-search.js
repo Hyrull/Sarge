@@ -7,9 +7,8 @@ const fs = require('fs').promises
 
 const gptSearch = async (interaction) => {
   const query = interaction.options.get('question').value
-  const ai = new OpenAI({ 
-  baseURL: "https://models.inference.ai.azure.com", 
-  apiKey: process.env.GITHUB_TOKEN 
+  const ai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY 
 })
 
 const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')
@@ -86,7 +85,7 @@ const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')
 
   // Step 3 : Using ChatGPT to summarize it and make it shorter but still informative
     const response = await ai.chat.completions.create({
-      model: 'gpt-4.1', // chatGPT 5+ isn't as quirky for funny questions. Keeping this model for now. also, cheaper
+      model: 'gpt-5.6-terra', // switched from 4.1 to 5.6. did you know the openAI api wallet expires after a year? i had barely used the money i added. i got scammed. i'll use my money now.
       messages: [
         {
           role: "system",
@@ -97,8 +96,8 @@ const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')
           content: `A user asked: "${query}". Here is data:\n\nSearch result 1:${firstPageContent}\n\nSearch result 2:${secondPageContent}\n\nSearch result 3:${thirdPageContent}`,
         },
       ],
-      temperature: 0.7,
-      max_tokens: 1500,
+      temperature: 1,
+      max_completion_tokens: 1500,
     })
     const summary = response.choices[0].message.content 
 
