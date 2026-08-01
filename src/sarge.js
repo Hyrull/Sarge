@@ -126,7 +126,7 @@ client.on('interactionCreate', async (interaction) => {
         const embed = new EmbedBuilder()
         .setColor('#009dff')
         .setTitle("Sarge's latest version")
-        .setDescription(`I am currently in **v1.13**.\nLast update: July 20th, 2026`)
+        .setDescription(`I am currently in **v1.13.1**.\nLast update: July 31st, 2026`)
         .addFields(
           {name : "What's new?", value: '[Changelog](https://github.com/Hyrull/Sarge/blob/main/changelog.txt)'}
         )

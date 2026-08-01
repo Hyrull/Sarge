@@ -1,3 +1,7 @@
+V.13.1 - July 31st, 2026
+- /question now has channel context, and will answer accordingly to the current conversation.
+- /question now won't show the sources of its answer if their content couldn't be scrapped, or are totally irrelevant.
+
 V.13 - July 20th, 2026
 - Added /remindme, to allow users to have Sarge remind them of anything after a specified time.
 

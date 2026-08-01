@@ -4,6 +4,9 @@ const { OpenAI } = require('openai')
 const { EmbedBuilder } = require('discord.js')
 const path = require('path')
 const fs = require('fs').promises
+const { z } = require('zod')
+const { zodResponseFormat } = require('openai/helpers/zod')
+const { getChannelHistory } = require('./../utils/contextFetcher')
 
 const gptSearch = async (interaction) => {
   const query = interaction.options.get('question').value
@@ -12,6 +15,8 @@ const gptSearch = async (interaction) => {
 })
 
 const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')
+
+  const channelHistory = await getChannelHistory(interaction, 15)
 
   // Gonna sum up the three firsts result only
   // Step 1: I'll search through google (API : serpapi)
@@ -63,6 +68,7 @@ const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')
     const secondPageContent = secondUrl ? await fetchPageContent(secondUrl) : ""
     const thirdPageContent = thirdUrl ? await fetchPageContent(thirdUrl) : ""
 
+    // console.log(`[Question WIP] THIS IS THE FULL CONTEXT FOR THE QUESTION: ${channelHistory}`)
 
     // Pre-Step 3 : Preparing a custom persona so Sarge matches the user's tone
     let userPersona = ""
@@ -79,12 +85,12 @@ const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')
     }
 
     // 2. Build the dynamic System Prompt
-    const baseSystemPrompt = "You are Sarge, a helpful mouse assistant created by Hyrul, that summarizes articles for a Discord chat. You will be answering questions based on your own knowledge, and the provided search result content. Keep your answers concise and informative, suitable for a Discord chat, NEVER more than 1800 characters. If you recognize the question as being a joke or meme, discard the search result data answer in a humorous way."
+    const baseSystemPrompt = "You are Sarge, a helpful mouse assistant created by Hyrul, that summarizes articles for a Discord chat. You will be answering questions based on your own knowledge, and the provided search result content. Keep your answers concise and informative, suitable for a Discord chat. If the question references previous chat context or is a direct follow-up, use the channel history to answer accurately. If you recognize the question as being a joke or meme, discard the search result data answer in a humorous way."
     
     const finalSystemPrompt = baseSystemPrompt + userPersona
 
   // Step 3 : Using ChatGPT to summarize it and make it shorter but still informative
-    const response = await ai.chat.completions.create({
+    const response = await ai.chat.completions.parse({
       model: 'gpt-5.6-terra', // switched from 4.1 to 5.6. did you know the openAI api wallet expires after a year? i had barely used the money i added. i got scammed. i'll use my money now.
       messages: [
         {
@@ -93,13 +99,20 @@ const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')
         },
         {
           role: 'user',
-          content: `A user asked: "${query}". Here is data:\n\nSearch result 1:${firstPageContent}\n\nSearch result 2:${secondPageContent}\n\nSearch result 3:${thirdPageContent}`,
+          content: `Recent Channel History:\n${channelHistory}\n\nUser Question: "${query}"\n\nSearch result 1:${firstPageContent}\n\nSearch result 2:${secondPageContent}\n\nSearch result 3:${thirdPageContent}`,
         },
       ],
+     response_format: zodResponseFormat(
+       z.object({
+         answer: z.string().describe("The concise response to the user's question. Limited to 2000 characters."),
+         showSources: z.boolean().describe("Set to false if the question is a joke/meme, or if the provided search results were completely blank/irrelevant.")
+       }),
+       "sarge_answer"
+     ),
       temperature: 1,
       max_completion_tokens: 1500,
     })
-    const summary = response.choices[0].message.content 
+    const { answer: summary, showSources } = response.choices[0].message.parsed
 
     const sources = [
       firstResult.title ? `["${firstResult.title}"](<${firstUrl}>)` : "",
@@ -112,8 +125,8 @@ const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')
     const replyEmbed = new EmbedBuilder()
       .setColor('#009dff')
       .setTitle(`You asked: "${query}"`)
-      .setDescription(`${summary}\n\n**Sources:**\n${sources}`)
-      .setFooter({ text: 'I am a simple mouse. I might be wrong, so take this answer with a grain of cheese.' })
+      .setDescription(showSources && sources.length > 0 ? `${summary}\n\n**Sources:**\n${sources}` : summary)
+      .setFooter(showSources && sources.length > 0 ? `I am a simple mouse. I might be wrong, so take this answer with a grain of cheese.` : `Not adding sources - they might be unavailable to me, or were irrelevant to the question.`)
 
     return { embeds: [replyEmbed] }
   } catch (err) {
