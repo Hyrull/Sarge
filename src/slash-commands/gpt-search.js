@@ -126,7 +126,11 @@ const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')
       .setColor('#009dff')
       .setTitle(`You asked: "${query}"`)
       .setDescription(showSources && sources.length > 0 ? `${summary}\n\n**Sources:**\n${sources}` : summary)
-      .setFooter(showSources && sources.length > 0 ? `I am a simple mouse. I might be wrong, so take this answer with a grain of cheese.` : `Not adding sources - they might be unavailable to me, or were irrelevant to the question.`)
+      .setFooter({ 
+        text: showSources && sources.length > 0 
+          ? 'I am a simple mouse. I might be wrong, so take this answer with a grain of cheese.' 
+          : 'Not adding sources - they might be unavailable to me, or were irrelevant to the question.' 
+      })
 
     return { embeds: [replyEmbed] }
   } catch (err) {
