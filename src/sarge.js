@@ -297,7 +297,7 @@ setup()
 
 http.createServer((req, res) => {
   res.writeHead(200)
-  res.end(`${c.user.tag} is running!`)
+  res.end(`Sarge is running!`)
 }).listen(8300, '0.0.0.0', () => {
   console.log('Health check server listening on port 8300')
 })
