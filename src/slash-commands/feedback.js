@@ -2,7 +2,7 @@ import { EmbedBuilder, MessageFlags } from 'discord.js'
 
 const feedbackNotice = async (client, interaction, timeAndDate) => {
   await interaction.deferReply({ flags: MessageFlags.Ephemeral })
-  const adminId = '102080304008695808' // Hyrul
+  const adminId = process.env.BOT_ADMIN_ID // Hyrul
 
   const admin = await client.users.fetch(adminId)
   const feedback = interaction.options.get('feedback')?.value

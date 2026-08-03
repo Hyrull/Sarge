@@ -3,11 +3,14 @@ import fs from 'node:fs/promises'
 import incrementCount from '../utils/incrementCount.js'
 
 const easterEggsPath = path.join(import.meta.dirname, '../../data/eastereggs.json')
-const lv20Role = '518961929583198209'
-const modLogsChannelId = '518821248768278528'
+const nsfwBanProtectionRole = process.env.NSFW_PROTECTED_ROLE_ID 
+const modLogsChannelId = process.env.MOD_LOGS_CHANNEL
 
-
-
+// THIS IS NOT A NSFW COMMAND!!
+// Nor does it do anything nsfw.
+// This is a joke command than bans the user using it,
+// unless they have a role that protects them.
+// I have a very silly community.
 
 
 async function checkEasterEggs(memberId, interaction) {
@@ -32,7 +35,7 @@ async function checkEasterEggs(memberId, interaction) {
 
 
 async function handleNsfwBan(member, interaction) {
-  if (interaction.member.roles.cache.has(lv20Role)) {
+  if (interaction.member.roles.cache.has(nsfwBanProtectionRole)) {
     interaction.reply("You are above level 20, so I'm saving you. Lucky you...")
   } else {
     await interaction.guild.members.ban(member, { reason: 'Fell for the /nsfw command'})

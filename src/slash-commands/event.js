@@ -1,7 +1,7 @@
 import { MessageFlags } from "discord.js"
 
 const eventCommand = async (interaction) => {
-  const roleId = '1095842303429587014'
+  const roleId = process.env.EVENT_ROLE_ID
   const member = interaction.member
   const hasRole = member.roles.cache.has(roleId)
   const removeOption = interaction.options.getBoolean('set') || false

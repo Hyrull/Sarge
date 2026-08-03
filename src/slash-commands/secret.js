@@ -5,17 +5,17 @@ const secretRuleCheck = (interaction) => {
     const currentTime = Date.now()
     if (lastExecutedTime && currentTime - lastExecutedTime < cooldownDuration) {
         const remainingTime = lastExecutedTime + cooldownDuration - currentTime
-        const seconds = Math.ceil(remainingTime / 1000) // par défaut c'est en ms donc on converti en secondes
+        const seconds = Math.ceil(remainingTime / 1000) // to convert to seconds
         interaction.reply(`Please wait ${seconds} seconds before using this command again.`)
         return
     }
 
     const userInput = interaction.options.get('input').value
-    // Séparation des mots
+    // Word separation
     const words = userInput.trim().split(/\s+/)
-    // Calcul du nombre de caractères total dans le message
+    // Calculating total message character count
     const totalLength = words.reduce((sum, word) => sum + word.length, 0)
-    // Nb de car. total / longueur = la moyenne de longueur de mot
+    // Total char/length = avg word length
     const averageWordLength = totalLength / words.length
 
     if (averageWordLength >= 4.3 && averageWordLength <= 4.8) 

@@ -9,7 +9,7 @@ async function messageCreateListener(message, client) {
 
   if (lowerCaseContent.includes('<:gorfil:1209654573871013888>') && settings.gorfil) {
     message.react(message.guild.emojis.cache.get('1209654573871013888'))
-  }
+  } // this is so specific to our own channel, feel free to change it if you want but it just won't do anything on your own server
 
   if (lowerCaseContent.includes('french') && settings.frenchSnake) {
     message.react('🐍')
@@ -47,10 +47,6 @@ async function messageCreateListener(message, client) {
       console.log(`Dodged crazy! RNG: ${randomNumber}/${settings.crazyOdds}`)
     }
   }
-
-  // if (lowerCaseContent.startsWith('$greetings')) {
-  //   message.reply('https://cdn.discordapp.com/attachments/523257630332813324/1288019769299173407/greetings.mp4?ex=66f3a963&is=66f257e3&hm=ecb7688f9c6b6b045b920ee206d7eadf846b9bb04856dd57f8e6f4bfe5214ed4&')
-  // }
 
   // YouTube Search (legacy)
   if (lowerCaseContent.startsWith('$youtube')) {

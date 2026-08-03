@@ -12,7 +12,7 @@ import messageCreateListener from './listeners/messageCreate.js'
 import remindMe from './slash-commands/remindme.js'
 import youtubeSearchCommand from './slash-commands/youtube.js'
 import toggleFeatures from './slash-commands/feature-toggle.js'
-// import { secretRuleCheck } from './secret.js'
+// import { secretRuleCheck } from './slash-commands/secret.js'
 import discordStatus from './slash-commands/discordStatus.js'
 import featuresCommand from './slash-commands/features.js'
 import quotesCommand from './slash-commands/quotes.js'
@@ -64,7 +64,7 @@ async function setup() {
       console.error('Error: failed to login to Discord - invalid Token?.')
     }
 
-    // Announce giveaways every hour
+    // Announce giveaways every hour.
     setInterval(() => {
       fetchAndAnnounceGiveaways(client)
     }, 60 * 60 * 1000) // 1 hour 
@@ -97,7 +97,7 @@ setInterval(async () => {
 
       const member = await guild.members.fetch(ghost.userId).catch(() => null)
       if (member) {
-        await member.roles.remove('900129282838384682').catch(console.error)
+        await member.roles.remove(process.env.MAW_ROLE_ID).catch(console.error)
       }
 
       // Clear their release time so we don't fetch them again
@@ -109,7 +109,7 @@ setInterval(async () => {
   }
 }, 60 * 1000)
 
-// Reminder Daemon
+// Reminder Daemon (for /reminderme)
   startReminderDaemon(client)
 
 /////////////////////////////////////////////////////////////////////
@@ -118,12 +118,16 @@ setInterval(async () => {
 client.on('interactionCreate', async (interaction) => {
     if (interaction.isCommand()) {
       let settings = null
+
+      // reading back-oustanding, i query my DB on every / command. Remind me to optimize this.
         if (interaction.guild) {
-        settings = await getSettings(interaction.guild.id);
+          settings = await getSettings(interaction.guild.id);
         }
+
+
       
       if(interaction.commandName === "version") {
-
+        // Update this manually if you will, or just leave it as is if you wanna credit me or didn't change your fork.
         const embed = new EmbedBuilder()
         .setColor('#009dff')
         .setTitle("Sarge's latest version")
@@ -135,6 +139,12 @@ client.on('interactionCreate', async (interaction) => {
 
       await interaction.reply({ embeds: [embed] })
       }
+
+
+      // /secret is a game where people need to find the secret rule, by trying out different strings.
+      // The bot returns true or false depending on if the offered string passes the rule or not.
+      // Users can try out different strings and deduct the final rule. Edit the rule in slash-commands/secret.js
+      // Add secret.js to .gitignore if your code if you started the game and your code is open-source. users could peak. 
 
       // if(interaction.commandName === "secret-test") {
       //   secretRuleCheck(interaction)
@@ -173,10 +183,12 @@ client.on('interactionCreate', async (interaction) => {
       }
 
       if (interaction.commandName === "discord-status") {
+        // for bot mods to edit Sarge's discord status
         discordStatus(interaction, client)
       }
 
       if(interaction.commandName === "quotes") {
+        // very specific to my own discord and you might as well disable this
         quotesCommand(interaction)
       }
 
@@ -185,19 +197,23 @@ client.on('interactionCreate', async (interaction) => {
       }
 
       if(interaction.commandName === "greetings") {
+        // don't ask
         interaction.reply({files: [greetingsVideo]})
       }
       
       if(interaction.commandName === "event") {
+        // adds or remove the 'event' role
         eventCommand(interaction)
       }
       
       if(interaction.commandName === "youtube") {
+        // lookup youtube videos. features a way to browse through results
         await interaction.deferReply()
         await youtubeSearchCommand(interaction)
       }
 
       if(interaction.commandName === "roulette") {
+        // genuinely 80% chance of banning a random unprotected user and 20% chance of timing you out for incremental lengths (default 8 hours)
         const wantsStats = interaction.options.getBoolean('stats')
         if (wantsStats) {
           await banRouletteStats(interaction)
@@ -208,13 +224,17 @@ client.on('interactionCreate', async (interaction) => {
       }
 
       if(interaction.commandName === "question") {
-        const lv40Role = '518962130372919317'
+
+        // Googles the question. Fetches results. Uses GPT to summary the answer based off the source and its own knowledge.
+        // Has context of the channel's history in which the command is used, meaning Sarge will answer on topic
+
+        const allowanceRole = process.env.QUESTION_CLEARANCE_ROLE_ID // On my own discord: lv.40 role
 
         // Fetching VIP list from .env
-        const vipList = process.env.SARGE_VIPS ? process.env.SARGE_VIPS.split(',').map(id => id.trim()) : [];
-        // If we're on the guild - check if they're Lv.40. If it's in DMs, check if they're a VIP.
+        const vipList = process.env.SARGE_VIPS ? process.env.SARGE_VIPS.split(',').map(id => id.trim()) : []
+        // If we're on the guild - check if they have the allowance role. If it's in DMs, check if they're a VIP.
         const hasAccess = interaction.guild
-          ? interaction.member.roles.cache.has(lv40Role) || vipList.includes(interaction.user.id)
+          ? interaction.member.roles.cache.has(allowanceRole) || vipList.includes(interaction.user.id)
           : vipList.includes(interaction.user.id) // In DMs, only VIPs get access
 
 
@@ -228,6 +248,7 @@ client.on('interactionCreate', async (interaction) => {
       }
       
       if(interaction.commandName === "nsfw") {
+        // F*cking bans the user using this command unless they're protected one way or another.
         const eggTriggered = await checkEasterEggs(interaction.member.id, interaction)
         if (!eggTriggered) {
           console.log(`${interaction.member.user.tag} used the /nsfw command and has no easter egg...`)
@@ -238,23 +259,28 @@ client.on('interactionCreate', async (interaction) => {
 
 
       if (interaction.commandName === "toggle") {
+        // toggle misc features off such as "crazy", "french snake" etc
         await toggleFeatures(interaction.options, interaction)
       }
 
       if (interaction.commandName === 'feedback') {
+        // dms the bot admin with feedback
         const timeAndDate = getTimeAndDate()
         feedbackNotice(client, interaction, timeAndDate)
       }
 
       if (interaction.commandName === "movie") {
+        // lookup any movie on TMDB. featuring a way to browse through results
         await movieSearchCommand(interaction)
       }
 
       if (interaction.commandName === "game") {
+        // lookup any game on TGDB, featuring a way to browse through results
         await gameSearch(interaction)
       }
 
       if (interaction.commandName === 'remindme') {
+        // pings the user about what they wanted to be reminded about, when they wanted to be reminded of it
         await remindMe(interaction)
         return
       }
@@ -271,7 +297,7 @@ setup()
 
 http.createServer((req, res) => {
   res.writeHead(200)
-  res.end('Sarge is running!')
+  res.end(`${c.user.tag} is running!`)
 }).listen(8300, '0.0.0.0', () => {
   console.log('Health check server listening on port 8300')
 })

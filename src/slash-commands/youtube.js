@@ -14,6 +14,8 @@ const youtubeSearchCommand = async (source, isLegacy, message) => {
 
   if (isLegacy) {
     // --- LEGACY STUFF  ---
+    // "wtf does Legacy mean here?" before i used slash commands i used prefix commands. some people got used to $youtube and still use it.
+    // i'm a big fan of adding or improving features but i don't like breaking user habit if I don't have to. $youtube remains.
     query = source?.trim?.()
     if (!query) return message.reply('Please input a search.')
     

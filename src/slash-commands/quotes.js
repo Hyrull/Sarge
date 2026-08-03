@@ -1,5 +1,10 @@
 import { EmbedBuilder } from 'discord.js'
 
+// THIS COMMAND IS VERY SPECIFIC TO MY OWN DISCORD.
+// Back when the message pin limit was 50 pins per channel, we made a 
+// thread containing screenshots of the best quotes / moments of the discord
+// this is a way to find it easily. Just disable it honestly.
+
 const quotesCommand = async (interaction) => {
 
   const embed = new EmbedBuilder()

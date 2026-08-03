@@ -5,7 +5,7 @@ let lastUsedTime = 0
 const COOLDOWN_DURATION = 30 * 1000 // 30 seconds
 
 const banRoulette = async (interaction) => {
-  const graveyardRoleId = '900129282838384682'
+  const graveyardRoleId = process.env.MAW_ROLE_ID
   
   if (interaction.member.roles.cache.has(graveyardRoleId)) {
     return interaction.reply({content: "Did you try to play from the Maw? How bold of you...", ephemeral: true})
@@ -26,11 +26,11 @@ const banRoulette = async (interaction) => {
     
     // SETUP
     await interaction.deferReply()
-    const lv5Role = '559076061519020042'
+    const protectedRoleId = process.env.ROULETTE_BAN_PROTECTION_ROLE_ID
     const userId = interaction.user.id
     const guildId = interaction.guild.id
     const shooterName = interaction.user.globalName || interaction.user.username
-    const modLogsChannelId = '518821248768278528'
+    const modLogsChannelId = process.env.MOD_LOGS_CHANNEL
     const modLogsChannel = interaction.client.channels.cache.get(modLogsChannelId)
     
     // Getting stats for later on
@@ -44,7 +44,7 @@ const banRoulette = async (interaction) => {
     // no bot, no lv.5 members, and only bannable (should be obvious, but)
     const possibleVictims = members.filter(member => 
       !member.user.bot &&
-      !member.roles.cache.has(lv5Role) &&
+      !member.roles.cache.has(protectedRoleId) &&
       member.bannable 
     )
     
