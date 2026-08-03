@@ -1,5 +1,4 @@
-const { ActivityType } = require('discord.js')
-const { MessageFlags } = require("discord.js");
+import { ActivityType, MessageFlags } from 'discord.js'
 
 const discordStatus = (interaction, client) => {
 
@@ -18,4 +17,4 @@ const discordStatus = (interaction, client) => {
   interaction.reply({content: `Sarge's status updated!`, flags: MessageFlags.Ephemeral })
 }
 
-module.exports = { discordStatus }
+export default discordStatus

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
 const settingsSchema = new mongoose.Schema({
   guildId: { type: String, required: true, unique: true },
@@ -15,4 +15,4 @@ const settingsSchema = new mongoose.Schema({
   nsfwBans: { type: Number, default: 0 },
 })
 
-module.exports = mongoose.model('Settings', settingsSchema)
+export default mongoose.model('Settings', settingsSchema)

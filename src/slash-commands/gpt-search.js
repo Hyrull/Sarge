@@ -1,12 +1,12 @@
-const axios = require('axios')
-const cheerio = require('cheerio')
-const { OpenAI } = require('openai')
-const { EmbedBuilder } = require('discord.js')
-const path = require('path')
-const fs = require('fs').promises
-const { z } = require('zod')
-const { zodResponseFormat } = require('openai/helpers/zod')
-const { getChannelHistory } = require('./../utils/contextFetcher')
+import axios from 'axios'
+import * as cheerio from 'cheerio'
+import OpenAI from 'openai'
+import { EmbedBuilder } from 'discord.js'
+import path from 'path'
+import fs from 'node:fs/promises'
+import { z } from 'zod'
+import { zodResponseFormat } from 'openai/helpers/zod'
+import { getChannelHistory } from './../utils/contextFetcher.js'
 
 const gptSearch = async (interaction) => {
   const query = interaction.options.get('question').value
@@ -139,4 +139,4 @@ const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')
   }
 }
 
-module.exports = { gptSearch }
+export default gptSearch

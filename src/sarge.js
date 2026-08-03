@@ -1,31 +1,31 @@
-require('dotenv').config()
-const { Client, IntentsBitField, EmbedBuilder, MessageFlags } = require('discord.js')
-const http = require('http')
-const mongoose = require('mongoose')
-const { getSettings } = require('./utils/settingsManager')
-const fetchAndAnnounceGiveaways = require('./utils/giveawayFetcher')
-const startReminderDaemon = require('./utils/reminderDaemon.js')
+import 'dotenv/config'
+import { Client, IntentsBitField, EmbedBuilder, MessageFlags } from 'discord.js'
+import http from 'http'
+import mongoose from 'mongoose'
 
-const { default: RouletteStats } = require('./models/rouletteStats.js')
-const { default: remindMe } = require('./slash-commands/remindme.js')
+import { getSettings } from './utils/settingsManager.js'
+import fetchAndAnnounceGiveaways from './utils/giveawayFetcher.js'
+import startReminderDaemon from './utils/reminderDaemon.js'
+import RouletteStats from './models/rouletteStats.js'
+import messageCreateListener from './listeners/messageCreate.js'
 
-const { default: messageCreateListener } = require('./listeners/messageCreate')
+import remindMe from './slash-commands/remindme.js'
+import youtubeSearchCommand from './slash-commands/youtube.js'
+import toggleFeatures from './slash-commands/feature-toggle.js'
+// import { secretRuleCheck } from './secret.js'
+import discordStatus from './slash-commands/discordStatus.js'
+import featuresCommand from './slash-commands/features.js'
+import quotesCommand from './slash-commands/quotes.js'
+import pingCommand from './slash-commands/ping.js'
+import eventCommand from './slash-commands/event.js'
+import feedbackNotice from './slash-commands/feedback.js'
+import gptSearch from './slash-commands/gpt-search.js'
+import { checkEasterEggs, handleNsfwBan } from './slash-commands/nsfw.js'
+import movieSearchCommand from './slash-commands/movie-search.js'
+import gameSearch from './slash-commands/gameSearch.js'
+import banRoulette from './slash-commands/ban-roulette.js'
+import banRouletteStats from './slash-commands/ban-roulette-stats.js'
 
-const { youtubeSearchCommand } = require('./slash-commands/youtube')
-const { toggleFeatures } = require('./slash-commands/feature-toggle')
-// const { secretRuleCheck } = require('./secret')
-const { discordStatus } = require('./slash-commands/discordStatus')
-const { featuresCommand } = require('./slash-commands/features')
-const { quotesCommand } = require('./slash-commands/quotes')
-const { pingCommand } = require('./slash-commands/ping')
-const { eventCommad } = require('./slash-commands/event')
-const { feedbackNotice } = require('./slash-commands/feedback')
-const { gptSearch } = require('./slash-commands/gpt-search')
-const { checkEasterEggs, handleNsfwBan } = require('./slash-commands/nsfw')
-const { movieSearchCommand } = require('./slash-commands/movie-search')
-const { gameSearch } = require('./slash-commands/gameSearch') 
-const { default: banRoulette } = require('./slash-commands/ban-roulette')
-const { default: banRouletteStats } = require('./slash-commands/ban-roulette-stats')
 const greetingsVideo = './data/greetings.mp4'
 
 const client = new Client ({
@@ -117,6 +117,7 @@ setInterval(async () => {
 // Custom slash commands
 client.on('interactionCreate', async (interaction) => {
     if (interaction.isCommand()) {
+      let settings = null
         if (interaction.guild) {
         settings = await getSettings(interaction.guild.id);
         }
@@ -188,7 +189,7 @@ client.on('interactionCreate', async (interaction) => {
       }
       
       if(interaction.commandName === "event") {
-        eventCommad(interaction)
+        eventCommand(interaction)
       }
       
       if(interaction.commandName === "youtube") {
@@ -275,4 +276,4 @@ http.createServer((req, res) => {
   console.log('Health check server listening on port 8300')
 })
 
-module.exports = { client }
+export { client }

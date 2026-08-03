@@ -1,8 +1,8 @@
 // If you're wondering what the f- cheese is this file, it's a daemon that checks about stored "reminders" and pings users when the right time comes.
 // Just check the remindme.js file or the command description in register-commands.js
 
-const { EmbedBuilder } = require('discord.js')
-const { default: Reminder } = require('../models/reminderModel.js')
+import { EmbedBuilder } from 'discord.js'
+import Reminder from '../models/reminderModel.js'
 
 const startReminderDaemon = (client) => {
   setInterval(async () => {
@@ -56,4 +56,4 @@ const startReminderDaemon = (client) => {
   }, 60000)
 }
 
-module.exports = startReminderDaemon
+export default startReminderDaemon

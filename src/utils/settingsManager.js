@@ -1,4 +1,4 @@
-const GuildSettings = require('../models/settingsModel')
+import GuildSettings from '../models/settingsModel.js'
 const settingsCache = new Map()
 
 async function getSettings(guildId) {
@@ -46,7 +46,7 @@ async function updateSettingsInCache(guildId, updatedData) {
   }
 }
 
-module.exports = {
+export {
   getSettings,
   clearSettings,
   updateSettingsInCache

@@ -1,5 +1,4 @@
-require('dotenv').config();
-const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+import { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } from 'discord.js'
 
 const globalCommands = [
   new SlashCommandBuilder()

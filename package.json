@@ -1,10 +1,11 @@
 {
   "name": "immersive-quotes",
   "version": "1.0.0",
+  "type":"module",
   "description": "",
-  "main": "src/index.js",
+  "main": "src/sarge.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node --env-file=.env src/sarge.js"
   },
   "keywords": [],
   "author": "",

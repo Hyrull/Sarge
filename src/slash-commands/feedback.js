@@ -1,4 +1,4 @@
-const { EmbedBuilder, MessageFlags } = require('discord.js')
+import { EmbedBuilder, MessageFlags } from 'discord.js'
 
 const feedbackNotice = async (client, interaction, timeAndDate) => {
   await interaction.deferReply({ flags: MessageFlags.Ephemeral })
@@ -22,4 +22,4 @@ const feedbackNotice = async (client, interaction, timeAndDate) => {
   await interaction.editReply({ content: 'Your feedback has successfully been sent.', flags: MessageFlags.Ephemeral })
 }
 
-module.exports = { feedbackNotice }
+export default feedbackNotice

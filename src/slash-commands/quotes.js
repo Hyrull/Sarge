@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+import { EmbedBuilder } from 'discord.js'
 
 const quotesCommand = async (interaction) => {
 
@@ -13,4 +13,4 @@ const quotesCommand = async (interaction) => {
   await interaction.reply({ embeds: [embed] })
 }
 
-module.exports = { quotesCommand }
+export default quotesCommand

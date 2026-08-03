@@ -1,7 +1,7 @@
-const axios = require('axios')
-const { EmbedBuilder } = require('discord.js')
+import axios from 'axios'
+import { EmbedBuilder } from 'discord.js'
 
-const GuildSettings = require('../models/settingsModel')
+import GuildSettings from '../models/settingsModel.js'
 const discordChannel = '518805681566908417'
 
 // Retry configuration
@@ -147,4 +147,4 @@ async function fetchAndAnnounceGiveaways(client) {
   }
 }
 
-module.exports = fetchAndAnnounceGiveaways
+export default fetchAndAnnounceGiveaways

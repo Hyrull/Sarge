@@ -4,7 +4,7 @@
  * @param {Function} renderPage - Async function(item, index, total) -> returns EmbedBuilder
  */
 
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder } = require('discord.js')
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder } from 'discord.js'
 
 async function startPagination(interaction, items, renderPage) {
   if (!items || items.length === 0) return
@@ -90,4 +90,4 @@ async function startPagination(interaction, items, renderPage) {
   })
 }
 
-module.exports = { startPagination }
+export default startPagination

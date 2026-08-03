@@ -1,4 +1,4 @@
-const { MessageFlags } = require("discord.js");
+import { MessageFlags } from "discord.js"
 
 const pingCommand = async (interaction, startTime) => {
   await interaction.deferReply({ flags: MessageFlags.Ephemeral })
@@ -23,4 +23,4 @@ const pingCommand = async (interaction, startTime) => {
   await interaction.editReply({ content: `*Pong! Latency: **${ping}**ms*\nUptime: ${uptimeFormatted}`, flags: MessageFlags.Ephemeral }) 
 }
 
-module.exports = { pingCommand }
+export default pingCommand

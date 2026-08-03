@@ -1,6 +1,6 @@
-const { MessageFlags } = require("discord.js");
+import { MessageFlags } from "discord.js"
 
-const eventCommad = async (interaction) => {
+const eventCommand = async (interaction) => {
   const roleId = '1095842303429587014'
   const member = interaction.member
   const hasRole = member.roles.cache.has(roleId)
@@ -25,4 +25,4 @@ const eventCommad = async (interaction) => {
   }
 }
 
-module.exports = { eventCommad }
+export default eventCommand

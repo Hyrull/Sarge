@@ -1,5 +1,5 @@
-const GuildSettings = require('../models/settingsModel');
-const { updateSettingsInCache } = require('./settingsManager');
+import GuildSettings from '../models/settingsModel.js'
+import { updateSettingsInCache } from './settingsManager.js'
 
 async function incrementCount(guildId, field) {
   const updated = await GuildSettings.findOneAndUpdate(
@@ -16,4 +16,4 @@ async function incrementCount(guildId, field) {
   return null
 }
 
-module.exports = incrementCount
+export default incrementCount

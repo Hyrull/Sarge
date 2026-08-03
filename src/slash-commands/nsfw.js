@@ -1,8 +1,8 @@
-const path = require('path')
-const fs = require('fs').promises
-const incrementCount = require('../utils/incrementCount')
+import path from 'path'
+import fs from 'node:fs/promises'
+import incrementCount from '../utils/incrementCount.js'
 
-const easterEggsPath = path.join(__dirname, '../../data/eastereggs.json')
+const easterEggsPath = path.join(import.meta.dirname, '../../data/eastereggs.json')
 const lv20Role = '518961929583198209'
 const modLogsChannelId = '518821248768278528'
 
@@ -66,7 +66,7 @@ async function handleNsfwBan(member, interaction) {
   }
 }
 
-module.exports = {
+export {
   checkEasterEggs,
   handleNsfwBan
 }

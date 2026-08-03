@@ -1,6 +1,6 @@
-const search = require('youtube-search')
-const { EmbedBuilder } = require('discord.js')
-const { startPagination } = require('../utils/paginationManager')
+import search from 'youtube-search'
+// import { EmbedBuilder } from 'discord.js'
+import startPagination from '../utils/paginationManager.js'
 
 const opts = {
   maxResults: 10,
@@ -60,4 +60,4 @@ const youtubeSearchCommand = async (source, isLegacy, message) => {
   }
 }
 
-module.exports = { youtubeSearchCommand }
+export default youtubeSearchCommand

@@ -1,5 +1,5 @@
-const { EmbedBuilder } = require('discord.js')
-const { startPagination } = require('../utils/paginationManager')
+import { EmbedBuilder } from 'discord.js'
+import startPagination from '../utils/paginationManager.js'
 
 const movieSearchCommand = async (interaction) => {
   await interaction.deferReply()
@@ -74,4 +74,4 @@ const movieSearchCommand = async (interaction) => {
   }
 }
 
-module.exports = { movieSearchCommand }
+export default movieSearchCommand

@@ -1,6 +1,6 @@
-const axios = require('axios')
-const { EmbedBuilder } = require('discord.js')
-const { startPagination } = require('../utils/paginationManager')
+import axios from 'axios'
+import { EmbedBuilder } from 'discord.js'
+import startPagination from '../utils/paginationManager.js'
 
 // yes theorically it's a twitch developer portal app token, but it's used for igdb's api so let's not get confused here and let's call a cat a cat
 async function getIgdbToken() {
@@ -112,4 +112,4 @@ async function gameSearch(interaction) {
 }
 
 
-module.exports = { gameSearch }
+export default gameSearch

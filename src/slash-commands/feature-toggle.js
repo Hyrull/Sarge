@@ -1,4 +1,4 @@
-const { updateSettingsInCache } = require('../utils/settingsManager')
+import { updateSettingsInCache } from '../utils/settingsManager.js'
 
 const toggleFeatures = async (options, interaction) => {
   const replies = []
@@ -32,4 +32,4 @@ const toggleFeatures = async (options, interaction) => {
 
 }
 
-module.exports = { toggleFeatures }
+export default toggleFeatures

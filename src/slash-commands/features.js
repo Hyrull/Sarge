@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+import { EmbedBuilder } from 'discord.js'
 const featuresCommand = async (interaction, settings) => {
 
   const embed = new EmbedBuilder()
@@ -16,4 +16,4 @@ const featuresCommand = async (interaction, settings) => {
   await interaction.reply({ embeds: [embed] })
 }
 
-module.exports = { featuresCommand }
+export default featuresCommand
