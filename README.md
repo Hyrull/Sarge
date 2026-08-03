@@ -1,7 +1,6 @@
-
 #  Sarge
 
-<img src="data/Sarge.png" alt="Sarge himself" height="150" />
+<img src="https://github.com/Hyrull/Sarge/blob/main/data/sarge.png?raw=true" alt="Sarge himself" height="150" />
 
 Sarge is a Discord bot that I made for my own community server. He's essentially a toolbox bot, that has very specific features that my community wanted to have. I added more and more features over time.
 > Some of these features include ways to ban yourself or others. Read this README if you want to self-host your own Sarge!
@@ -77,10 +76,12 @@ volumes:
   sarge_nodemodules:
 ```
 
-
 Build the image, install dependencies, and boot up the container:
+
 2.  `docker compose build --no-cache bot-sarge`
+
 3.  `docker compose run --rm bot-sarge npm install`
+
 4.  `docker compose up -d`
 
   
