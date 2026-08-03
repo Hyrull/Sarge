@@ -34,6 +34,7 @@ Sarge is a Discord bot that I made for my own community server. He's essentially
 - Will react with a teacup to anyone saying "english".
 - Will react with a blue heart to anyone saying "good bot" or "i love you Sarge".
 - Has a tiny chance of answering a meme to anyone saying "crazy".
+- Will alert about free-to-redeem games being available on Steam or Epic Games Store. 
   
 ###  "Why did you even code these?" :
 - /american-snake-count - See how many times Sarge reacted a snake to "american".
