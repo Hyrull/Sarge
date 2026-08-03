@@ -18,9 +18,9 @@ Sarge is a Discord bot that I made for my own community server. He's essentially
 - /event - Add or remove yourself an "event" role. I built it before the "channels & roles" Discord feature tbh.
   
 ##  "Use Cautiously" Commands!!
-- /nsfw, that **bans the user using the command**, unless that have the role that spares them.
+- /nsfw, that **bans the user using the command**, unless they have the role that spares them.
 - /roulette, that **can ban a random unprotected user**, or time you out for incremental lengths.
-> FOR THE LOVE OF GOD DISABLE THESE IF YOU'RE NOT SURE WHAT YOU'RE DOING
+> FOR THE LOVE OF AZEROTH DISABLE THESE IF YOU'RE NOT SURE WHAT YOU'RE DOING
 
 ---
 
@@ -35,8 +35,8 @@ Sarge is a Discord bot that I made for my own community server. He's essentially
 - Will react with a blue heart to anyone saying "good bot" or "i love you Sarge".
 - Has a tiny chance of answering a meme to anyone saying "crazy".
   
-###  Why did you even code these?
-- /american-snake-count - See how many times Sarge reacted a snake to "american"
+###  "Why did you even code these?" :
+- /american-snake-count - See how many times Sarge reacted a snake to "american".
 - /french-snake-count - Same, but with "french". I love clutter commands.
 - /greetings - Sends a short video of that creature saying "...greeetiiiings!". Don't ask.
   
@@ -48,8 +48,8 @@ We all do.
 
 ###  Run it with node:
 1. Clone the repo.
-2. Remove the features you don't want from scripts/register-commands.js
-3. Populate .env - use my .env.example. Don't need to populate fields of features you disabled.
+2. Remove the features you don't want from *scripts/register-commands.js*
+3. Populate *.env* - use my *.env.example*. Don't need to populate fields of features you disabled.
 4. Run the following: `npm i` and  `node scripts/register-commands.js`.
 5. From now on, you can use `node src/sarge.js` to run Sarge locally.
   
@@ -92,7 +92,7 @@ Sure. I'll take any improvement PRs. If you PR a full new request I probably won
 
 ##  Why "Sarge" anyway? What a weird name.
 
-Sarge is the mascot mouse from Hearthstone. He appeared as a pet in World of Warcraft in 2024 and I found him so cute I brought him along all my adventures since and made this Discord bot in his honor. If you want to respect the legacy, you can find Sarge's profile pic in data/Sarge.png.
+Sarge is the mascot mouse from Hearthstone. He was added as [a pet in World of Warcraft](https://www.wowhead.com/item=212606/sarge) in 2024 and I found him so adorable, I brought him along all my adventures since and made this Discord bot in his honor. If you want to respect the legacy, you can find Sarge's profile pic in *data/Sarge.png*.
 
   
 
