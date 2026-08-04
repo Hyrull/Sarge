@@ -15,10 +15,12 @@ const gptSearch = async (interaction) => {
   apiKey: process.env.OPENAI_API_KEY 
 })
 
+const excludedUsers = process.env.EXCLUDED_KNOWLEDGE_USERS
+
 const SargeResponseSchema = z.object({
   answer: z.string().describe("Your markdown-formatted response to the user's prompt."),
   showSources: z.boolean().describe("Set to false if the question is a joke/meme, or if the provided search results were completely blank/irrelevant."),
-  extracted_facts: z.array(z.string()).describe("A list of distinct, persistent facts learned from this prompt. You MUST explicitly state the username in every fact (e.g., 'ThisUser likes hockey'). Return an empty array if no new facts are present.")
+  extracted_facts: z.array(z.string()).describe(`A list of distinct, persistent facts learned from this prompt. You MUST explicitly state the username in every fact (e.g., 'ThisUser likes hockey'). Return an empty array if no new facts are present. Do NOT learn anything about these users: ${excludedUsers}`)
 })
 
 const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')

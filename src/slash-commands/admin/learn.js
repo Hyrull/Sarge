@@ -1,4 +1,5 @@
 import OpenAI from 'openai'
+import { MessageFlags } from "discord.js"
 import { z } from 'zod'
 import { zodResponseFormat } from 'openai/helpers/zod'
 import Memory from '../../models/memoryModel.js'
@@ -6,10 +7,10 @@ import { getChannelHistory } from '../../utils/contextFetcher.js'
 
 const openai = new OpenAI()
 
-
+const excludedUsers = process.env.EXCLUDED_KNOWLEDGE_USERS
 
 const ExtractionSchema = z.object({
-  extracted_facts: z.array(z.string()).describe("List of persistent facts learned about any users in the chat log. You MUST explicitly state the username in every extracted fact string (e.g., 'UserName likes hockey'). Return an empty array if nothing notable is found.")
+  extracted_facts: z.array(z.string()).describe(`List of persistent facts learned about any users in the chat log. You MUST explicitly state the username in every extracted fact string (e.g., 'UserName likes hockey'). Return an empty array if nothing notable is found. Do NOT learn anything about these users: ${excludedUsers}`)
 })
 
 const learnCommand = async (interaction) => {
