@@ -26,6 +26,7 @@ import gameSearch from './slash-commands/gameSearch.js'
 import banRoulette from './slash-commands/ban-roulette.js'
 import banRouletteStats from './slash-commands/ban-roulette-stats.js'
 import learnCommand from './slash-commands/admin/learn.js'
+import reactCommand from './slash-commands/admin/react.js'
 
 const greetingsVideo = './data/greetings.mp4'
 
@@ -132,7 +133,7 @@ client.on('interactionCreate', async (interaction) => {
         const embed = new EmbedBuilder()
         .setColor('#009dff')
         .setTitle("Sarge's latest version")
-        .setDescription(`I am currently in **v1.13.1**.\nLast update: July 31st, 2026`)
+        .setDescription(`I am currently in **v1.13.2**.\nLast update: August 3rd, 2026`)
         .addFields(
           {name : "What's new?", value: '[Changelog](https://github.com/Hyrull/Sarge/blob/main/changelog.txt)'}
         )
@@ -266,6 +267,10 @@ client.on('interactionCreate', async (interaction) => {
 
       if (interaction.commandName === "learn") {
         await learnCommand(interaction)
+      }
+
+      if (interaction.commandName === "react") {
+        await reactCommand(interaction)
       }
 
       if (interaction.commandName === 'feedback') {

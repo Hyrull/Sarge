@@ -160,6 +160,19 @@ const guildCommands = [
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
+
+  new SlashCommandBuilder()
+    .setName('react')
+    .setDescription('[ADMIN] Makes Sarge chime in naturally based on recent chat history.')
+    .addIntegerOption(opt => 
+      opt.setName('limit')
+        .setDescription('Number of recent messages to read for context (max 100)')
+        .setRequired(true)
+        .setMinValue(1)
+        .setMaxValue(100)
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+
   // USER COMMANDS
     
   new SlashCommandBuilder()

@@ -1,3 +1,7 @@
+V.13.2 - August 3rd, 2026
+- Sarge now has global knowledge for /question. He learns from the context he reads and remembers relevant stuff.
+- Added admin commands to manage this and have Sarge react "unprompted".
+
 V.13.1 - July 31st, 2026
 - /question now has channel context, and will answer accordingly to the current conversation.
 - /question now won't show the sources of its answer if their content couldn't be scrapped, or are totally irrelevant.
