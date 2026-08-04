@@ -25,6 +25,7 @@ import movieSearchCommand from './slash-commands/movie-search.js'
 import gameSearch from './slash-commands/gameSearch.js'
 import banRoulette from './slash-commands/ban-roulette.js'
 import banRouletteStats from './slash-commands/ban-roulette-stats.js'
+import learnCommand from './slash-commands/admin/learn.js'
 
 const greetingsVideo = './data/greetings.mp4'
 
@@ -261,6 +262,10 @@ client.on('interactionCreate', async (interaction) => {
       if (interaction.commandName === "toggle") {
         // toggle misc features off such as "crazy", "french snake" etc
         await toggleFeatures(interaction.options, interaction)
+      }
+
+      if (interaction.commandName === "learn") {
+        await learnCommand(interaction)
       }
 
       if (interaction.commandName === 'feedback') {

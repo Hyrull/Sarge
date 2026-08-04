@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } from 'discord.js'
 
 const globalCommands = [
@@ -145,6 +146,19 @@ const guildCommands = [
         { name: 'Invisible', value: 'invisible' }
       ])
     ),
+
+  // ADMIN COMMANDS
+  new SlashCommandBuilder()
+    .setName('learn')
+    .setDescription('[ADMIN] Learn from recent chat history.')
+    .addIntegerOption(opt => 
+      opt.setName('limit')
+        .setDescription('Number of messages to scan (max 100)')
+        .setRequired(true)
+        .setMinValue(1)
+        .setMaxValue(100)
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   // USER COMMANDS
     

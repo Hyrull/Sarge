@@ -7,11 +7,18 @@ import fs from 'node:fs/promises'
 import { z } from 'zod'
 import { zodResponseFormat } from 'openai/helpers/zod'
 import { getChannelHistory } from './../utils/contextFetcher.js'
+import Memory from '../models/memoryModel.js'
 
 const gptSearch = async (interaction) => {
   const query = interaction.options.get('question').value
   const ai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY 
+})
+
+const SargeResponseSchema = z.object({
+  answer: z.string().describe("Your markdown-formatted response to the user's prompt."),
+  showSources: z.boolean().describe("Set to false if the question is a joke/meme, or if the provided search results were completely blank/irrelevant."),
+  extracted_facts: z.array(z.string()).describe("A list of distinct, persistent facts learned from this prompt. You MUST explicitly state the username in every fact (e.g., 'ThisUser likes hockey'). Return an empty array if no new facts are present.")
 })
 
 const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')
@@ -72,22 +79,28 @@ const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')
 
     // Pre-Step 3 : Preparing a custom persona so Sarge matches the user's tone
     let userPersona = ""
-    try {
-      const personaRaw = await fs.readFile(personasFilePath, 'utf-8')
-      const personaDict = JSON.parse(personaRaw)
+    // try {
+    //   const personaRaw = await fs.readFile(personasFilePath, 'utf-8')
+    //   const personaDict = JSON.parse(personaRaw)
       
-      if (personaDict[interaction.user.id]) {
-        userPersona = `\n\nContext about the anonymous user asking the question: ${personaDict[interaction.user.id]}\nCRITICAL INSTRUCTION: You know this user, but you must be EXTREMELY subtle. DO NOT cram their interests into your response. If making an analogy, pick AT MOST ONE of their interests, and ONLY if it naturally elevates the explanation. If no interest perfectly fits the topic, do not reference them at all. NEVER force a reference. Act like a normal friend, not someone reading from a dossier.`
-      }
-    } catch (err) {
-      // Silently ignore if file doesn't exist or is malformed
-      console.log("[QUESTION] personas.json not found or invalid, using default personality.")
-    }
+    //   if (personaDict[interaction.user.id]) {
+    //     userPersona = `\n\nContext about the anonymous user asking the question: ${personaDict[interaction.user.id]}\nCRITICAL INSTRUCTION: You know this user, but you must be EXTREMELY subtle. DO NOT cram their interests into your response. If making an analogy, pick AT MOST ONE of their interests, and ONLY if it naturally elevates the explanation. If no interest perfectly fits the topic, do not reference them at all. NEVER force a reference. Act like a normal friend, not someone reading from a dossier.`
+    //   }
+    // } catch (err) {
+    //   // Silently ignore if file doesn't exist or is malformed
+    //   console.log("[QUESTION] personas.json not found or invalid, using default personality.")
+    // }
+
+    // Fetching Sarge's knowledge
+    const allMemories = await Memory.find({})
+    const memoryContext = allMemories.length > 0 
+      ? `Global knowledge base and user facts:\n${allMemories.map(m => `- ${m.fact}`).join('\n')}` 
+      : "You have no prior knowledge."
 
     // 2. Build the dynamic System Prompt
     const baseSystemPrompt = "You are Sarge, a helpful mouse assistant created by Hyrul, that summarizes articles for a Discord chat. You will be answering questions based on your own knowledge, and the provided search result content. Keep your answers concise and informative, suitable for a Discord chat. If the question references previous chat context or is a direct follow-up, use the channel history to answer accurately. If you recognize the question as being a joke or meme, discard the search result data answer in a humorous way."
     
-    const finalSystemPrompt = baseSystemPrompt + userPersona
+    const finalSystemPrompt = baseSystemPrompt + userPersona + memoryContext
 
   // Step 3 : Using ChatGPT to summarize it and make it shorter but still informative
     const response = await ai.chat.completions.parse({
@@ -102,17 +115,25 @@ const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')
           content: `Recent Channel History:\n${channelHistory}\n\nUser Question: "${query}"\n\nSearch result 1:${firstPageContent}\n\nSearch result 2:${secondPageContent}\n\nSearch result 3:${thirdPageContent}`,
         },
       ],
-     response_format: zodResponseFormat(
-       z.object({
-         answer: z.string().describe("The concise response to the user's question. Limited to 2000 characters."),
-         showSources: z.boolean().describe("Set to false if the question is a joke/meme, or if the provided search results were completely blank/irrelevant.")
-       }),
-       "sarge_answer"
-     ),
+     response_format: zodResponseFormat(SargeResponseSchema, "sarge_response"),
       temperature: 1,
       max_completion_tokens: 1500,
     })
-    const { answer: summary, showSources } = response.choices[0].message.parsed
+    const { answer: summary, showSources, extracted_facts } = response.choices[0].message.parsed
+
+    // If we learnt anything, let's store it in DB
+    if (extracted_facts && extracted_facts.length > 0) {
+      
+      extracted_facts.forEach(fact => {
+        console.log(`[KNOWLEDGE] Learnt this: ${fact}`)
+      })
+
+      const memoryDocs = extracted_facts.map(fact => ({
+        userId: interaction.user.id,
+        fact: fact
+      }))
+      Memory.insertMany(memoryDocs).catch(err => console.error("[QUESTION - KNOWLEDGE] Memory save failed:", err))
+    }
 
     const sources = [
       firstResult.title ? `["${firstResult.title}"](<${firstUrl}>)` : "",
