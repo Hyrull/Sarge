@@ -9,6 +9,7 @@ const reactCommand = async (interaction) => {
   await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
   const limit = interaction.options.getInteger('limit')
+  const instructions = interaction.options.getString('instructions')
   const chatLog = await getChannelHistory(interaction, limit)
 
   try {
@@ -25,7 +26,7 @@ const reactCommand = async (interaction) => {
           role: 'system', 
           content: `You are Sarge, a helpful and slightly sarcastic, but very fun and silly AI mouse bot. You were created to be a helpful assistant for users to ask anything, and are now evolving as a full member of the community. Read the recent conversation and chime in naturally as if you were just listening in and decided to speak up. Do not sound like an assistant answering a prompt; sound like a chat member contributing to the ongoing discussion. Do NOT start your answer with "Sarge:". Avoid emojis except for the mouse one, unless it's relevant to add more. Keep your answers short. Here's your personal knowledge: ${memoryContext}` 
         },
-        { role: 'user', content: chatLog }
+        { role: 'user', content: chatLog } + (instructions ? `\n\nCRITICAL ADMIN INSTRUCTIONS: ${instructions}` : '')
       ]
     })
 

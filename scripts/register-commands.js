@@ -171,6 +171,11 @@ const guildCommands = [
         .setMinValue(1)
         .setMaxValue(100)
     )
+    .addStringOption(opt => 
+      opt.setName('instructions')
+        .setDescription('Secret instructions for how Sarge should react.')
+        .setRequired(false)
+    )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   // USER COMMANDS
