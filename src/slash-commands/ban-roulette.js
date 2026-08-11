@@ -1,14 +1,20 @@
+import { MessageFlags } from "discord.js"
 import RouletteStats from '../models/rouletteStats.js'
 
 // declaring cooldown cause that's a lot of api calls in one go and discord has mouse traps
 let lastUsedTime = 0
 const COOLDOWN_DURATION = 30 * 1000 // 30 seconds
+const rouletteAccessRole = process.env.ROULETTE_ACCESS_ROLE
 
 const banRoulette = async (interaction) => {
   const graveyardRoleId = process.env.MAW_ROLE_ID
   
   if (interaction.member.roles.cache.has(graveyardRoleId)) {
-    return interaction.reply({content: "Did you try to play from the Maw? How bold of you...", ephemeral: true})
+    return interaction.reply({content: "Did you try to play from the Maw? How bold of you...", flags: MessageFlags.Ephemeral })
+  }
+
+  if (!interaction.member.roles.cache.has(rouletteAccessRole)) {
+    return interaction.reply({content: "You do not have access to this command.", flags: MessageFlags.Ephemeral })
   }
   
   try {
@@ -16,7 +22,7 @@ const banRoulette = async (interaction) => {
     // COOLDOWN CHECK
     const now = Date.now()
     if (now - lastUsedTime < COOLDOWN_DURATION) {
-      const timeLeft = ((COOLDOWN_DURATION - (now - lastUsedTime)) / 1000).toFixed(1);
+      const timeLeft = ((COOLDOWN_DURATION - (now - lastUsedTime)) / 1000).toFixed(1)
       return interaction.reply({ 
         content: `The gun is still hot! Wait **${timeLeft}s** before spinning the cylinder again.`, 
         ephemeral: true 

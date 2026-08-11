@@ -206,7 +206,7 @@ const guildCommands = [
 
   new SlashCommandBuilder()
     .setName('roulette')
-    .setDescription('!!WARNING!! 5/6 chance to ban a random whitename. 1/6 chance to time you out for 24 hours!')
+    .setDescription('(Lv.20+) !!WARNING!! 5/6 chance to ban a random whitename. 1/6 chance to time you out for 24 hours!')
     .addBooleanOption(option => 
       option.setName('stats')
       .setDescription("Set to 'true' to view your stats instead of playing.")

@@ -1,3 +1,6 @@
+V.13.3 - August 11th, 2026
+- /roulette is now only accessible by users level 20 or more.
+
 V.13.2 - August 3rd, 2026
 - Sarge now has global knowledge for /question. He learns from the context he reads and remembers relevant stuff.
 - Added admin commands to manage this and have Sarge react "unprompted".
