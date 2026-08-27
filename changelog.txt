@@ -1,3 +1,6 @@
+V.13.3.1 - August 27th, 2026
+- Fixed /question crashing if the question was more than 256 characters long.
+
 V.13.3 - August 11th, 2026
 - /roulette is now only accessible by users level 20 or more.
 

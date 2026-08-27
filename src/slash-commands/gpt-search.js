@@ -147,7 +147,7 @@ const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')
     // return `You asked - "**${query}**". Here's my answer:\n\n${summary}\n\n**Sources:**\n${sources}\n*-# I am a simple mouse. I might be wrong, so take this answer with a grain of cheese.*`
     const replyEmbed = new EmbedBuilder()
       .setColor('#009dff')
-      .setTitle(`You asked: "${query}"`)
+      .setTitle((`You asked: "${prompt}"`).length > 256 ? (`You asked: "${prompt}"`).slice(0, 253) + '...' : `You asked: "${prompt}"`)
       .setDescription(showSources && sources.length > 0 ? `${summary}\n\n**Sources:**\n${sources}` : summary)
       .setFooter({ 
         text: showSources && sources.length > 0 
