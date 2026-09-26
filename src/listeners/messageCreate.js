@@ -35,6 +35,7 @@ async function messageCreateListener(message, client) {
     || lowerCaseContent.includes('gud bot')
     || lowerCaseContent.includes('ty sarge')
     || lowerCaseContent.includes('thanks sarge')
+    || lowerCaseContent.includes('cheers sarge')
     || lowerCaseContent.includes('thank you sarge')) {
     message.react('🩵')
   }
