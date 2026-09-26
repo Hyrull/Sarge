@@ -30,74 +30,85 @@ const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')
   // Gonna sum up the three firsts result only
   // Step 1: I'll search through google (API : serpapi)
   try {
-    const serpRes = await axios.get("https://serpapi.com/search", {
-      params: {
-        q: query,
-        api_key: process.env.SERPAPI_KEY,
-        engine: "google",
-      },
-    })
 
-    // Filter out any results from *.fandom.com
-    const filteredResults = (serpRes.data.organic_results || []).filter(
-      r => !/^https?:\/\/[^\/]*\.fandom\.com/.test(r.link)
-    )
+    let firstPageContent = "[Search unavailable]"
+    let secondPageContent = ""
+    let thirdPageContent = ""
+    let firstResult, secondResult, thirdResult
+    let firstUrl, secondUrl, thirdUrl
+    try {
 
-    // Declaring it this way because i'll need the .title later on
-    const firstResult = filteredResults[0]
-    const secondResult = filteredResults[1]
-    const thirdResult = filteredResults[2]
-
-    if (!firstResult) return "No results found."
-    const firstUrl = firstResult.link
-    const secondUrl = secondResult ? secondResult.link : null
-    const thirdUrl = thirdResult ? thirdResult.link : null
-
-
-    // Step 2 : Scraping the result's page
-    async function fetchPageContent(url) {
-      try {
-        // If it's youtube, it's irrelevant
-        if (url.includes("youtube.com"))  return "[Video content]"
-        // Reddit blocks the requests unless it's a .json request
-        if (url.includes("reddit.com") && !url.endsWith(".json")) url += ".json"
-
-
-        const page = await axios.get(url, { timeout: 10000, headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36','Accept-Language': 'en-US,en;q=0.9',} })
-        const $ = cheerio.load(page.data)
-        const paragraphs = $("p").map((i, el) => $(el).text()).get()
-        console.log(`[QUESTION] Fetched content from ${url}`)
-        return paragraphs.join(" ").slice(0, 3000) // Limit for token size 'cause I ain't gonna pay that much for a discord bot
-      } catch (error) {
-        console.error(`[QUESTION] Error fetching ${url}:`, error.message)
-        return "[Content unavilable due to an error while fetching the page.]"
-      }
-    }
-    const firstPageContent = await fetchPageContent(firstUrl)
-    const secondPageContent = secondUrl ? await fetchPageContent(secondUrl) : ""
-    const thirdPageContent = thirdUrl ? await fetchPageContent(thirdUrl) : ""
-
-    // console.log(`[Question WIP] THIS IS THE FULL CONTEXT FOR THE QUESTION: ${channelHistory}`)
-
-    // Pre-Step 3 : Preparing a custom persona so Sarge matches the user's tone
-    let userPersona = ""
-    // try {
-    //   const personaRaw = await fs.readFile(personasFilePath, 'utf-8')
-    //   const personaDict = JSON.parse(personaRaw)
+      const serpRes = await axios.get("https://serpapi.com/search", {
+        params: {
+          q: query,
+          api_key: process.env.SERPAPI_KEY,
+          engine: "google",
+        },
+      })
       
-    //   if (personaDict[interaction.user.id]) {
-    //     userPersona = `\n\nContext about the anonymous user asking the question: ${personaDict[interaction.user.id]}\nCRITICAL INSTRUCTION: You know this user, but you must be EXTREMELY subtle. DO NOT cram their interests into your response. If making an analogy, pick AT MOST ONE of their interests, and ONLY if it naturally elevates the explanation. If no interest perfectly fits the topic, do not reference them at all. NEVER force a reference. Act like a normal friend, not someone reading from a dossier.`
-    //   }
-    // } catch (err) {
-    //   // Silently ignore if file doesn't exist or is malformed
-    //   console.log("[QUESTION] personas.json not found or invalid, using default personality.")
-    // }
-
-    // Fetching Sarge's knowledge
-    const allMemories = await Memory.find({})
-    const memoryContext = allMemories.length > 0 
-      ? `Global knowledge base and user facts:\n${allMemories.map(m => `- ${m.fact}`).join('\n')}` 
-      : "You have no prior knowledge."
+      // Filter out any results from *.fandom.com
+      const filteredResults = (serpRes.data.organic_results || []).filter(
+        r => !/^https?:\/\/[^\/]*\.fandom\.com/.test(r.link)
+      )
+      
+      // Declaring it this way because i'll need the .title later on
+      firstResult = filteredResults[0]
+      secondResult = filteredResults[1]
+      thirdResult = filteredResults[2]
+      
+      if (!firstResult) return "No results found."
+      firstUrl = firstResult.link
+      secondUrl = secondResult ? secondResult.link : null
+      thirdUrl = thirdResult ? thirdResult.link : null
+      
+      
+      // Step 2 : Scraping the result's page
+      async function fetchPageContent(url) {
+        try {
+          // If it's youtube, it's irrelevant
+          if (url.includes("youtube.com"))  return "[Video content]"
+          // Reddit blocks the requests unless it's a .json request
+          if (url.includes("reddit.com") && !url.endsWith(".json")) url += ".json"
+          
+          
+          const page = await axios.get(url, { timeout: 10000, headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36','Accept-Language': 'en-US,en;q=0.9',} })
+          const $ = cheerio.load(page.data)
+          const paragraphs = $("p").map((i, el) => $(el).text()).get()
+          console.log(`[QUESTION] Fetched content from ${url}`)
+          return paragraphs.join(" ").slice(0, 3000) // Limit for token size 'cause I ain't gonna pay that much for a discord bot
+        } catch (error) {
+          console.error(`[QUESTION] Error fetching ${url}:`, error.message)
+          return "[Content unavilable due to an error while fetching the page.]"
+        }
+      }
+      firstPageContent = await fetchPageContent(firstUrl)
+      secondPageContent = secondUrl ? await fetchPageContent(secondUrl) : ""
+      thirdPageContent = thirdUrl ? await fetchPageContent(thirdUrl) : ""
+      
+      // console.log(`[Question WIP] THIS IS THE FULL CONTEXT FOR THE QUESTION: ${channelHistory}`)
+      
+    } catch(err) {
+      console.log("[QUESTION] SerpAPI search crashed!", err.message)
+    }
+    // Pre-Step 3 : Preparing a custom persona so Sarge matches the user's tone
+      let userPersona = ""
+      // try {
+        //   const personaRaw = await fs.readFile(personasFilePath, 'utf-8')
+        //   const personaDict = JSON.parse(personaRaw)
+        
+        //   if (personaDict[interaction.user.id]) {
+          //     userPersona = `\n\nContext about the anonymous user asking the question: ${personaDict[interaction.user.id]}\nCRITICAL INSTRUCTION: You know this user, but you must be EXTREMELY subtle. DO NOT cram their interests into your response. If making an analogy, pick AT MOST ONE of their interests, and ONLY if it naturally elevates the explanation. If no interest perfectly fits the topic, do not reference them at all. NEVER force a reference. Act like a normal friend, not someone reading from a dossier.`
+          //   }
+          // } catch (err) {
+            //   // Silently ignore if file doesn't exist or is malformed
+            //   console.log("[QUESTION] personas.json not found or invalid, using default personality.")
+            // }
+            
+            // Fetching Sarge's knowledge
+            const allMemories = await Memory.find({})
+            const memoryContext = allMemories.length > 0 
+            ? `Global knowledge base and user facts:\n${allMemories.map(m => `- ${m.fact}`).join('\n')}` 
+            : "You have no prior knowledge."
 
     // 2. Build the dynamic System Prompt
     const baseSystemPrompt = "You are Sarge, a helpful mouse assistant created by Hyrul, that summarizes articles for a Discord chat. You will be answering questions based on your own knowledge, and the provided search result content. Keep your answers concise and informative, suitable for a Discord chat. If the question references previous chat context or is a direct follow-up, use the channel history to answer accurately. If you recognize the question as being a joke or meme, discard the search result data answer in a humorous way."
@@ -138,7 +149,7 @@ const personasFilePath = path.join(process.cwd(), 'data', 'personas.json')
     }
 
     const sources = [
-      firstResult.title ? `["${firstResult.title}"](<${firstUrl}>)` : "",
+      firstResult?.title ? `["${firstResult.title}"](<${firstUrl}>)` : "",
       secondResult && secondResult.title ? `["${secondResult.title}"](<${secondUrl}>)` : "",
       thirdResult && thirdResult.title ? `["${thirdResult.title}"](<${thirdUrl}>)` : ""
     ].filter(Boolean).join(", ")
